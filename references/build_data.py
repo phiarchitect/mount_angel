@@ -49,7 +49,7 @@ def parse_markdown(filepath):
 
 if __name__ == "__main__":
     md_path = "/home/phi/PROJECTS/phiarchitect/mountangel/references/drawings_index.md"
-    json_path = "/home/phi/PROJECTS/phiarchitect/mountangel/references/web/data.json"
+    json_path = "/home/phi/PROJECTS/phiarchitect/mountangel/docs/data.json"
     
     data = parse_markdown(md_path)
     
