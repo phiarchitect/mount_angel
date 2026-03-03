@@ -1,0 +1,331 @@
+[
+    {
+        "id": 1,
+        "filename": "01-a1_gm-1142x700.jpg",
+        "type": "Site Plan / Title Sheet",
+        "title_block": "LOCATION AND ACCESS PLAN / MT. ANGEL ABBEY LIBRARY, ST. BENEDICT, OREGON",
+        "contents": "Overall site plan with topography contours, 'List of Drawings' index, 'Key to Symbols', and project title info."
+    },
+    {
+        "id": 2,
+        "filename": "02-a2_gm-1140x700.jpg",
+        "type": "Site Plan / Sections",
+        "title_block": "SITE PLAN",
+        "contents": "Detailed site layout including roads, topography, existing buildings, and several sections showing stairs and typical tread details."
+    },
+    {
+        "id": 3,
+        "filename": "03-a3_gm-1135x700.jpg",
+        "type": "Floor Plan",
+        "title_block": "FLOOR PLAN LEVEL #1",
+        "contents": "First level floor plan including fan-shaped layout outline, corner details, splitting details, and general notes."
+    },
+    {
+        "id": 4,
+        "filename": "04-a4_gm-1144x700.jpg",
+        "type": "Floor Plan",
+        "title_block": "FLOOR PLAN LEVEL TWO",
+        "contents": "Second level floor plan denoting reading areas, stacks, mechanical areas, and general layout notes."
+    },
+    {
+        "id": 5,
+        "filename": "05-a5_gm-1145x700.jpg",
+        "type": "Floor Plan",
+        "title_block": "FLOOR PLAN LEVEL #3",
+        "contents": "Main floor plan showing entry, control desk, offices, and radiating curved bookshelves."
+    },
+    {
+        "id": 6,
+        "filename": "06-a6_gm-1149x700.jpg",
+        "type": "Plan / Details",
+        "title_block": "BASIC PLAN LAYOUT",
+        "contents": "Geometrical and structural layout of the fan shape, showing radial column lines and several window/jamb details (West Jamb, East Jamb)."
+    },
+    {
+        "id": 7,
+        "filename": "07-a7_gm-1145x700.jpg",
+        "type": "Roof Plan / Details",
+        "title_block": "ROOF PLAN & DETAILS",
+        "contents": "Layout of the roof with skylights, parapet walls, sill details, flashings, scuppers, and built-up roofing areas."
+    },
+    {
+        "id": 8,
+        "filename": "08-a8_gm-1144x700.jpg",
+        "type": "Ceiling Plan",
+        "title_block": "REFLECTED CEILING PLAN LEVEL #1",
+        "contents": "Ceiling layout showing lighting placement over the stacks & reading areas on the first floor."
+    },
+    {
+        "id": 9,
+        "filename": "09-a9_gm-1139x700.jpg",
+        "type": "Ceiling Plan",
+        "title_block": "REFLECTED CEILING PLAN LEVEL #2",
+        "contents": "Ceiling grid and lighting layout for the second floor, including typical carrell details."
+    },
+    {
+        "id": 10,
+        "filename": "10-a10_gm-1145x700.jpg",
+        "type": "Ceiling Plan / Details",
+        "title_block": "REFLECTED CEILING PLAN LEVEL #3 & DETAILS",
+        "contents": "Third-level ceiling plan, particularly detailing the skylight ceiling screens, transitions, and oculus layouts."
+    },
+    {
+        "id": 11,
+        "filename": "11-a11_gm-1142x700.jpg",
+        "type": "Elevation / Details",
+        "title_block": "EXTERIOR ELEVATIONS & WINDOW SLAT DETAILS",
+        "contents": "East and West Elevations, section details of window slats, supports, and shade systems."
+    },
+    {
+        "id": 12,
+        "filename": "12-a12_gm-1143x700.jpg",
+        "type": "Elevation / Schedule",
+        "title_block": "EXTERIOR ELEVATIONS & WINDOW SCHEDULE",
+        "contents": "North and South Elevations, wood screen sections/plans, and window/glazing dimension points."
+    },
+    {
+        "id": 13,
+        "filename": "13-a13_gm-1150x700.jpg",
+        "type": "Sections / Details",
+        "title_block": "SECTIONS & DETAILS",
+        "contents": "Major building cross-sections (Section A-A, Section B-B), detail cutaways of the stairs, catalog desks, and structural elements."
+    },
+    {
+        "id": 14,
+        "filename": "14-a14_gm-1146x700.jpg",
+        "type": "Interior Elevations",
+        "title_block": "INTERIOR ELEVATIONS",
+        "contents": "Wall-by-wall interior elevations for spaces like Corridors, Stacks, Receiving, and Bindery."
+    },
+    {
+        "id": 15,
+        "filename": "15-a15_gm-1145x700.jpg",
+        "type": "Interior Elevations",
+        "title_block": "INTERIOR ELEVATIONS",
+        "contents": "Interior wall elevations for Seminar Rooms, Periodical Lounge, Dark Room, Print Room, and Stacks."
+    },
+    {
+        "id": 16,
+        "filename": "16-a16_gm-1149x700.jpg",
+        "type": "Interior Elevations",
+        "title_block": "INTERIOR ELEVATIONS",
+        "contents": "Detailed interior elevations of the Entry Area, Lobby, Rare Book & Meeting Room, and A/V Control Booth."
+    },
+    {
+        "id": 17,
+        "filename": "17-a17_gm-1148x700.jpg",
+        "type": "Wall Sections",
+        "title_block": "TYPICAL WALL SECTIONS",
+        "contents": "Details of wall construction from footings to the roof, including section views through the stairwells and retaining walls."
+    },
+    {
+        "id": 18,
+        "filename": "18-a18_gm-1147x700.jpg",
+        "type": "Sections / Details",
+        "title_block": "WALL SECTIONS & SKYLIGHT DETAILS",
+        "contents": "Specific construction details of the sloping skylights, sills, and continuous parapets across the library."
+    },
+    {
+        "id": 19,
+        "filename": "19-a19_gm-1148x700.jpg",
+        "type": "Schedule / Details",
+        "title_block": "DOOR SCHEDULE & DETAILS",
+        "contents": "Comprehensive list of doors, hardware, thresholds, jamb details, and head conditions."
+    },
+    {
+        "id": 20,
+        "filename": "20-a20_gm-1145x700.jpg",
+        "type": "Schedule / Details",
+        "title_block": "FINISH SCHEDULE & WALL DETAILS",
+        "contents": "Room Finish Schedule detailing floor, base, wall, and ceiling finishes across the library. Also shows partition types and structural wall details."
+    },
+    {
+        "id": 21,
+        "filename": "21-a21_gm-1147x700.jpg",
+        "type": "Details",
+        "title_block": "WINDOW DETAILS",
+        "contents": "High-resolution sections and plans of window assemblies, including frames, jambs, sills, mullions, and headers."
+    },
+    {
+        "id": 22,
+        "filename": "22-a22_gm-1146x700.jpg",
+        "type": "Plans / Sections / Details",
+        "title_block": "STAIRS NO. 1 & 2",
+        "contents": "Detailed architectural plans, vertical sections, and specific details (handrail brackets, tread/riser profiles) for Stair 1 and Stair 2."
+    },
+    {
+        "id": 23,
+        "filename": "23-a23_gm-1141x700.jpg",
+        "type": "Plans / Sections / Details",
+        "title_block": "STAIRS NO. 3, 4, 5 & ELEVATOR",
+        "contents": "Comprehensive routing, vertical sections, and plans for the remaining interior stairs and the elevator core."
+    },
+    {
+        "id": 24,
+        "filename": "24-a24_gm-1142x700.jpg",
+        "type": "Details",
+        "title_block": "MILLWORK DETAILS",
+        "contents": "Detailed drawings for wood screens, mullions, fire hose cabinets, baseboards, and specific trim/batten intersections."
+    },
+    {
+        "id": 27,
+        "filename": "27-a26_gm-1134x700.jpg",
+        "type": "Plans / Elevations / Sections",
+        "title_block": "CONTROL COUNTER",
+        "contents": "Detailed millwork package for the famous curved Control Desk and various reading carrels (small/large, open/closed), including dutch doors and shelving."
+    },
+    {
+        "id": 28,
+        "filename": "28-a27_gm-1130x700.jpg",
+        "type": "Plans / Elevations / Details",
+        "title_block": "TOILET PLANS & ELEVATIONS / ENTRY CANOPY",
+        "contents": "Layouts for men\u2019s and women\u2019s restrooms (Levels 1, 2, 3), and specific structural connections, fascia, and column details for the Entry Canopy."
+    },
+    {
+        "id": 29,
+        "filename": "29-f1_gm-1134x700.jpg",
+        "type": "Floor Plan (Furniture/Fixtures)",
+        "title_block": "STACK LAYOUT LEVEL 1",
+        "contents": "Dedicated layout for bookshelf placement on Level 1, detailing double-faced versus single-faced units against walls."
+    },
+    {
+        "id": 30,
+        "filename": "30-f2_gm-1135x700.jpg",
+        "type": "Floor Plan (Furniture/Fixtures)",
+        "title_block": "STACK LAYOUT LEVEL 2",
+        "contents": "Dedicated bookshelf layout for Level 2, including book capacity schedules and spacing dimensions."
+    },
+    {
+        "id": 31,
+        "filename": "31-f3_gm-1144x700.jpg",
+        "type": "Floor Plan (Furniture/Fixtures)",
+        "title_block": "STACK LAYOUT LEVEL 3",
+        "contents": "Expansive bookshelf arrangements for the main fan-shaped upper floor (Level 3) with exact book capacities delineated into zones."
+    },
+    {
+        "id": 32,
+        "filename": "32-s1_gm-1145x700.jpg",
+        "type": "Structural Notes / Details",
+        "title_block": "GENERAL NOTES & TYPICAL DETAILS",
+        "contents": "Foundation layouts, concrete/steel specs, typical wall sections, construction joints, anchors, retaining wall reinforcement schedules, and the Structural List of Drawings."
+    },
+    {
+        "id": 33,
+        "filename": "33-s2_gm-1142x700.jpg",
+        "type": "Structural Plan",
+        "title_block": "LEVEL ONE FRAMING & FOUNDATION PLAN",
+        "contents": "Layout indicating column grid, footing locations, slab dimensions, and bearing walls for Level 1."
+    },
+    {
+        "id": 34,
+        "filename": "34-s3_gm-1139x700.jpg",
+        "type": "Structural Plan",
+        "title_block": "LEVEL TWO FRAMING & FOUNDATION PLAN",
+        "contents": "Detailed structural framing grid for Level 2, defining major girders, beams, floor slabs, and load paths."
+    },
+    {
+        "id": 35,
+        "filename": "35-s4_gm-1140x700.jpg",
+        "type": "Structural Plan",
+        "title_block": "LEVEL THREE FRAMING & FOUNDATION PLAN",
+        "contents": "The framing blueprint for the expansive upper deck (Level 3), displaying beam and girder networks supporting the fan shape."
+    },
+    {
+        "id": 36,
+        "filename": "36-s5_gm-1140x700.jpg",
+        "type": "Structural Plan",
+        "title_block": "ROOF LEVEL FRAMING PLAN",
+        "contents": "Upper roof and vault ceiling framing, showing support structures for the complex skylights and radial roof spans."
+    },
+    {
+        "id": 37,
+        "filename": "37-s6_gm-1142x700.jpg",
+        "type": "Foundation Details",
+        "title_block": "FOUNDATION DETAILS",
+        "contents": "Profiles of typical spread footings, grade beams, step elevations, elevator pit, and typical slab-on-grade conditions."
+    },
+    {
+        "id": 38,
+        "filename": "38-s7_gm-1142x700.jpg",
+        "type": "Structural Details",
+        "title_block": "LEVEL TWO FRAMING DETAILS",
+        "contents": "Sectional elevations and reinforcing layouts for Level 2 Girders and Beams."
+    },
+    {
+        "id": 39,
+        "filename": "39-s8-1_gm.jpg",
+        "type": "Structural Details",
+        "title_block": "LEVEL THREE FRAMING DETAILS - I",
+        "contents": "Extensive sectional elevations of major Level 3 Girders."
+    },
+    {
+        "id": 40,
+        "filename": "40-s9_gm-1144x700.jpg",
+        "type": "Structural Details",
+        "title_block": "LEVEL THREE FRAMING DETAILS - II",
+        "contents": "Continuing sectional elevations specifically detailing Level 3 Beams."
+    },
+    {
+        "id": 41,
+        "filename": "41-s10_gm-1142x700.jpg",
+        "type": "Structural Details",
+        "title_block": "LEVEL THREE FRAMING DETAILS - III",
+        "contents": "Further detail of Level 3 Beams and specific connections."
+    },
+    {
+        "id": 42,
+        "filename": "42-s11_gm-1143x700.jpg",
+        "type": "Structural Elevations",
+        "title_block": "WALL ELEVATIONS - I",
+        "contents": "Structural elevations of specific interior shear walls or load-bearing corridor walls."
+    },
+    {
+        "id": 43,
+        "filename": "43-s12_gm-1143x700.jpg",
+        "type": "Structural Elevations",
+        "title_block": "WALL ELEVATIONS - II",
+        "contents": "More detailed shear wall and foundation wall structural elevations showing reinforcing bars."
+    },
+    {
+        "id": 44,
+        "filename": "44-s13_gm-1141x700.jpg",
+        "type": "Details",
+        "title_block": "STAIR DETAILS",
+        "contents": "Rebar layouts, slab thickness, and anchoring details for concrete monolithic stairs (Stairs No. 1, 2, 4, 5)."
+    },
+    {
+        "id": 45,
+        "filename": "45-s14_gm-1139x700.jpg",
+        "type": "Structural Details",
+        "title_block": "H-COLUMN DETAILS",
+        "contents": "Specifications for distinctive steel H-columns connecting to the building framework and supporting the roof around the skylights."
+    },
+    {
+        "id": 46,
+        "filename": "46-s15_gm-1140x700.jpg",
+        "type": "Structural Details",
+        "title_block": "COLUMN & MISCELLANEOUS DETAILS",
+        "contents": "Reinforcing schedules for round columns, mezzanine slab reinforcement plans, and specialized splice details."
+    },
+    {
+        "id": 47,
+        "filename": "47-s16_gm-1139x700.jpg",
+        "type": "Structural Details",
+        "title_block": "STRUCTURAL STEEL DETAILS - I",
+        "contents": "Metal decking connections, wide flange (WF) to corner wall joints, paired circular column attachments, and bracket assemblies."
+    },
+    {
+        "id": 48,
+        "filename": "48-s17_gm-1141x700.jpg",
+        "type": "Structural Details",
+        "title_block": "STRUCTURAL STEEL DETAILS - II",
+        "contents": "Focus on the main skylight framing details, skewed bracing, and header beam integration."
+    },
+    {
+        "id": 49,
+        "filename": "49-s18_gm-1140x700.jpg",
+        "type": "Structural Details",
+        "title_block": "SITE STRUCTURES",
+        "contents": "Site retaining wall layouts and extensive rebar schedules for retaining walls and the Entry Canopy foundation."
+    }
+]

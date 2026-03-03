@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mount Angel Library Drawings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="glass-header">
+        <div class="header-content">
+            <h1>Mount Angel Library</h1>
+            <p class="subtitle">Alvar Aalto - Architectural Drawings Archive</p>
+        </div>
+        <div class="controls">
+            <div class="search-wrap">
+                <input type="text" id="searchInput" placeholder="Search title or contents...">
+            </div>
+            <div class="filter-wrap">
+                <select id="typeFilter">
+                    <option value="all">All Types</option>
+                    <!-- Options populated by JS -->
+                </select>
+            </div>
+            <div class="sort-wrap">
+                <select id="sortSelect">
+                    <option value="id_asc">Sort by ID (Asc)</option>
+                    <option value="id_desc">Sort by ID (Desc)</option>
+                    <option value="type_asc">Sort by Type</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main class="gallery-container">
+        <div id="galleryGrid" class="grid">
+            <!-- Cards populated by JS -->
+        </div>
+    </main>
+
+    <!-- Modal for full size image -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <button id="prevBtn" class="nav-btn left-btn">&lsaquo;</button>
+            <button id="nextBtn" class="nav-btn right-btn">&rsaquo;</button>
+            <img id="modalImage" src="" alt="Full Drawing">
+            <div id="modalCaption" class="modal-caption"></div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
