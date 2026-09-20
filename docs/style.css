@@ -239,3 +239,160 @@ input:focus, select:focus {
     text-align: center;
     max-width: 800px;
 }
+
+/* --- Editor Styles --- */
+
+.action-btn {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.action-btn:hover {
+    background-color: #357abd;
+}
+
+.modal-header-tools {
+    position: absolute;
+    top: -2rem;
+    left: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: white;
+    font-weight: 600;
+}
+
+/* Toggle Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(255,255,255,0.2);
+    transition: .4s;
+    border-radius: 24px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px; width: 18px;
+    left: 3px; bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+input:checked + .slider {
+    background-color: var(--accent);
+}
+input:checked + .slider:before {
+    transform: translateX(24px);
+}
+
+/* Toolbar */
+.editor-toolbar {
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    padding: 0.5rem;
+    border-radius: 8px;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 20;
+}
+
+.tool-btn {
+    background: transparent;
+    color: white;
+    border: 1px solid transparent;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tool-btn:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.tool-btn.active {
+    background: rgba(74, 144, 226, 0.2);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Canvas container */
+.canvas-container {
+    position: relative;
+    display: inline-block; /* strictly fits the image inside */
+}
+
+.annotations-layer, .drawing-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none; /* Let events pass to the overlay */
+}
+
+.drawing-overlay {
+    pointer-events: auto; /* Active when editing */
+    cursor: crosshair;
+}
+
+/* Drawn Elements */
+.bounding-box {
+    position: absolute;
+    border: 2px solid var(--accent);
+    background: rgba(74, 144, 226, 0.1);
+    box-sizing: border-box;
+    pointer-events: auto;
+}
+
+.bounding-box:hover {
+    background: rgba(74, 144, 226, 0.2);
+}
+
+.box-label {
+    position: absolute;
+    top: -24px;
+    left: -2px;
+    background: var(--accent);
+    color: white;
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    border-radius: 4px 4px 0 0;
+    white-space: nowrap;
+}
+
+.ref-point {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+}
+.ref-point::before, .ref-point::after {
+    content: '';
+    position: absolute;
+    background: #ff4757;
+}
+.ref-point::before {
+    top: 9px; left: 0; width: 20px; height: 2px;
+}
+.ref-point::after {
+    left: 9px; top: 0; width: 2px; height: 20px;
+}

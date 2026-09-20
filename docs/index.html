@@ -45,7 +45,29 @@
             <span class="close-modal">&times;</span>
             <button id="prevBtn" class="nav-btn left-btn">&lsaquo;</button>
             <button id="nextBtn" class="nav-btn right-btn">&rsaquo;</button>
-            <img id="modalImage" src="" alt="Full Drawing">
+            
+            <div class="modal-header-tools">
+                <label class="switch">
+                    <input type="checkbox" id="editModeToggle">
+                    <span class="slider round"></span>
+                </label>
+                <span>Edit Mode</span>
+            </div>
+
+            <div id="editorToolbar" class="editor-toolbar" style="display: none;">
+                <button id="toolBox" class="tool-btn active">Draw Bounding Box</button>
+                <button id="toolPoint" class="tool-btn">Set Reference Point</button>
+                <div style="width: 1px; background: rgba(255,255,255,0.2); margin: 0 0.5rem;"></div>
+                <button id="exportBtn" class="action-btn" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;">Export JSON</button>
+            </div>
+
+            <div class="canvas-container" id="canvasContainer">
+                <img id="modalImage" src="" alt="Full Drawing" draggable="false">
+                <div id="annotationsLayer" class="annotations-layer"></div>
+                <!-- Drawing overlay specifically for mouse interactions -->
+                <div id="drawingOverlay" class="drawing-overlay" style="display: none;"></div>
+            </div>
+
             <div id="modalCaption" class="modal-caption"></div>
         </div>
     </div>
