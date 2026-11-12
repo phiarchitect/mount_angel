@@ -396,3 +396,176 @@ input:checked + .slider:before {
 .ref-point::after {
     left: 9px; top: 0; width: 2px; height: 20px;
 }
+
+
+/* --- Constructive Vector Overlay & 3D Viewer Additions --- */
+
+.viewer-3d-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: linear-gradient(135deg, #d97706, #b45309);
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.viewer-3d-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(217, 119, 6, 0.45);
+}
+
+.calibrated-filter-btn {
+    background: rgba(0, 229, 255, 0.08);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    padding: 0.5rem 0.9rem;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.calibrated-filter-btn:hover,
+.calibrated-filter-btn.active {
+    background: rgba(0, 229, 255, 0.22);
+    color: #e0f2fe;
+    border-color: #00e5ff;
+    box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+}
+
+.card-img-wrap {
+    position: relative;
+}
+
+.card.is-calibrated {
+    border-color: rgba(56, 189, 248, 0.35);
+}
+
+.calibrated-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(11, 15, 25, 0.88);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.55);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    backdrop-filter: blur(6px);
+    z-index: 2;
+}
+
+.vector-control-bar {
+    width: 100%;
+    background: rgba(13, 19, 32, 0.92);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 10px;
+    padding: 0.55rem 0.9rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.65rem;
+    z-index: 25;
+}
+
+.vec-master-toggle,
+.vec-dark-toggle,
+.vec-opacity-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    cursor: pointer;
+    user-select: none;
+}
+
+.vec-opacity-wrap input[type="range"] {
+    width: 88px;
+    padding: 0;
+    accent-color: #38bdf8;
+    cursor: pointer;
+}
+
+.vec-divider {
+    width: 1px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.vec-layer-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.vec-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(255, 255, 255, 0.06);
+    color: #cbd5e1;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 999px;
+    padding: 0.22rem 0.65rem;
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.vec-pill .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.vec-pill.active {
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.42);
+}
+
+.vec-pill:not(.active) {
+    opacity: 0.42;
+}
+
+.canvas-container {
+    background: #0b101d;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#modalImage {
+    display: block;
+    transition: filter 0.2s ease, opacity 0.15s ease;
+}
+
+#modalImage.dark-blueprint {
+    filter: invert(1) hue-rotate(195deg) saturate(1.25) contrast(1.18) brightness(0.88);
+}
+
+.vector-svg-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 4;
+}
+
+.vector-svg-layer svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}

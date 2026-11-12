@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1150 700" width="1150" height="700" class="aalto-vector-svg">
+  <g class="vec-layer" data-layer="regulating">
+    <line x1="243.88" y1="518.39" x2="726.32" y2="516.28" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="6,4" stroke-linecap="round"/>
+    <text x="733.76" y="519.27" fill="#38bdf8" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">UPPER LOBBY (+2'-0")</text>
+    <line x1="416.21" y1="524.53" x2="726.35" y2="523.18" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="6,4" stroke-linecap="round"/>
+    <text x="733.79" y="526.16" fill="#00e5ff" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">LEVEL #3 FAN (0'-0")</text>
+    <line x1="423.15" y1="536.56" x2="726.40" y2="535.24" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="6,4" stroke-linecap="round"/>
+    <text x="733.84" y="538.22" fill="#a855f7" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">REF. GALLERY (-4'-6")</text>
+    <line x1="347.46" y1="564.46" x2="726.52" y2="562.81" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="6,4" stroke-linecap="round"/>
+    <text x="733.96" y="565.79" fill="#22c55e" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">LEVEL #2 (-12'-6")</text>
+    <line x1="533.75" y1="611.89" x2="726.73" y2="611.05" stroke="#10b981" stroke-width="1.5" stroke-dasharray="6,4" stroke-linecap="round"/>
+    <text x="734.17" y="614.03" fill="#10b981" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">LEVEL #1 (-26'-6")</text>
+    <polyline points="164.63,520.46 248.02,519.06 271.47,522.40 350.93,569.61 423.35,581.36 537.23,618.77 651.04,638.95 717.84,628.32 795.85,657.27" fill="none" stroke="#a3e635" stroke-width="2.0" stroke-dasharray="8,4" stroke-linejoin="round"/>
+  </g>
+  <g class="vec-layer" data-layer="walls">
+    <polyline points="173.11,488.83 247.88,488.51" fill="none" stroke="#f59e0b" stroke-width="2.6" stroke-linejoin="round"/>
+    <polyline points="248.01,518.37 412.73,517.65 423.10,524.50 502.01,524.16" fill="none" stroke="#10b981" stroke-width="2.6" stroke-linejoin="round"/>
+    <polyline points="580.93,523.81 717.39,523.22" fill="none" stroke="#10b981" stroke-width="2.8" stroke-linejoin="round"/>
+    <polyline points="350.91,564.44 717.56,562.84" fill="none" stroke="#10b981" stroke-width="2.6" stroke-linejoin="round"/>
+    <polyline points="537.20,611.88 717.77,611.09" fill="none" stroke="#10b981" stroke-width="2.6" stroke-linejoin="round"/>
+    <line x1="717.90" y1="640.38" x2="717.12" y2="462.91" stroke="#10b981" stroke-width="2.8" stroke-linecap="round"/>
+    <line x1="537.33" y1="641.17" x2="536.99" y2="563.63" stroke="#10b981" stroke-width="2.4" stroke-linecap="round"/>
+  </g>
+  <g class="vec-layer" data-layer="stairs_millwork">
+    <polyline points="580.93,523.81 580.88,513.13" fill="none" stroke="#facc15" stroke-width="2.8" stroke-linejoin="round"/>
+    <polyline points="502.01,524.16 502.07,536.22 536.87,536.06" fill="none" stroke="#c084fc" stroke-width="2.2" stroke-linejoin="round"/>
+  </g>
+  <g class="vec-layer" data-layer="roof_skylights">
+    <polyline points="247.80,468.98 503.83,467.86 543.73,449.88 563.85,480.81 683.08,480.29 717.12,462.91" fill="none" stroke="#facc15" stroke-width="2.6" stroke-linejoin="round"/>
+    <polyline points="520.09,480.66 524.52,468.92 532.40,458.55 543.73,449.88" fill="none" stroke="#38bdf8" stroke-width="2.0" stroke-dasharray="4,2" stroke-linejoin="round"/>
+    <polyline points="318.87,488.77 322.53,457.74 337.00,457.68 340.93,488.68" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linejoin="round"/>
+    <polyline points="356.78,488.61 360.43,457.58 374.91,457.51 378.83,488.51" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linejoin="round"/>
+    <polyline points="435.69,488.26 439.35,457.23 453.82,457.17 457.75,488.17" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linejoin="round"/>
+    <text x="513.19" y="440.74" fill="#fde047" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">NORTH LIGHT SCOOP (+21'-6")</text>
+  </g>
+</svg>

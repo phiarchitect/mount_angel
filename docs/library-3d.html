@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mount Angel Abbey Library — Alvar Aalto Interactive 3D Reconstruction</title>
+  <style>
+    :root {
+      --bg-sky-top: #1a2639;
+      --panel-bg: rgba(12, 18, 29, 0.86);
+      --panel-border: rgba(217, 155, 82, 0.35);
+      --accent: #eab308;
+      --cyan: #38bdf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #141e2e;
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      user-select: none;
+    }
+
+    #glCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      cursor: grab;
+    }
+    #glCanvas:active { cursor: grabbing; }
+
+    .top-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 54px;
+      background: rgba(10, 15, 25, 0.88);
+      border-bottom: 1px solid var(--panel-border);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 20;
+    }
+
+    .title-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .title-wrap h1 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      color: #fef3c7;
+    }
+    .title-wrap span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-link, .cutaway-btn {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-link:hover, .cutaway-btn:hover {
+      background: rgba(234, 179, 8, 0.2);
+      border-color: var(--accent);
+    }
+    .cutaway-btn.active {
+      background: rgba(56, 189, 248, 0.24);
+      border-color: var(--cyan);
+      color: #e0f2fe;
+    }
+
+    .side-panel {
+      position: fixed;
+      top: 70px;
+      left: 18px;
+      width: 280px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      padding: 14px;
+      backdrop-filter: blur(12px);
+      z-index: 15;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .panel-heading {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #fbbf24;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 5px;
+    }
+
+    .preset-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .cam-btn {
+      text-align: left;
+      background: rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .cam-btn:hover, .cam-btn.active {
+      background: rgba(234, 179, 8, 0.22);
+      border-color: #fbbf24;
+      color: #fff;
+    }
+
+    .layer-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .layer-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.77rem;
+      color: #cbd5e1;
+      cursor: pointer;
+    }
+    .layer-item input { accent-color: #fbbf24; cursor: pointer; }
+
+    .hud-caption {
+      position: fixed;
+      bottom: 18px;
+      right: 20px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 10px 16px;
+      max-width: 480px;
+      backdrop-filter: blur(10px);
+      z-index: 15;
+    }
+    .hud-caption h3 {
+      font-size: 0.88rem;
+      color: #fde68a;
+      margin-bottom: 3px;
+    }
+    .hud-caption p {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    body.studio-mode .top-bar,
+    body.studio-mode .side-panel {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="glCanvas"></canvas>
+
+  <header class="top-bar">
+    <div class="title-wrap">
+      <h1>Mount Angel Abbey Library</h1>
+      <span>Alvar Aalto (1970) &middot; IngeTrazo 0.6.0 Parametric 3D Model</span>
+    </div>
+    <div class="nav-actions">
+      <button id="roofCutawayBtn" class="cutaway-btn" type="button">&#9698; Toggle Roof Cutaway</button>
+      <a href="index.html" class="btn-link">&larr; Blueprint &amp; Vector Archive</a>
+    </div>
+  </header>
+
+  <aside class="side-panel">
+    <div>
+      <div class="panel-heading">Architectural Views</div>
+      <div class="preset-grid" id="presetButtons" style="margin-top:7px;"></div>
+    </div>
+    <div>
+      <div class="panel-heading">IngeTrazo Model Layers</div>
+      <div class="layer-list" id="layerList" style="margin-top:7px;"></div>
+    </div>
+    <div style="font-size:0.7rem;color:#94a3b8;line-height:1.35;">
+      <strong>Controls:</strong> Left-drag Orbit &middot; Right/Shift-drag Pan &middot; Scroll Zoom
+    </div>
+  </aside>
+
+  <div class="hud-caption" id="hudCaption">
+    <h3 id="camTitle">Loading IngeTrazo 3D Scene...</h3>
+    <p id="camDesc">Reconstructing Aalto's polycentric fan, dual daylight scoops, and three hillside tiers.</p>
+  </div>
+
+  <script>
+  (() => {
+    const PRESETS = {
+      hillside_hero: {
+        label: "1. North-East Hillside Hero",
+        title: "North-East Abbey Bluff Hero View",
+        desc: "Three-story faceted Mount Angel buff-brick curtain wall, H-piers B/C/D, wood sun louvers, and curved copper/glass North Daylight Scoop emerging from the grassy hillside.",
+        target: [2.0, 7.5, -1.8],
+        yaw: 0.72,
+        pitch: 0.25,
+        dist: 66.0,
+        fov: 44,
+        hideLayers: ["0_Regulating_Grid"]
+      },
+      south_entry: {
+        label: "2. South Entrance & Canopy",
+        title: "South Upper Plaza & Entry Portico",
+        desc: "Serene one-story upper Abbey courtyard approach with cantilevered copper-and-hemlock marquee, Rare Book auditorium wing, and 12 conical skylight lanterns.",
+        target: [-4.5, -7.0, 1.8],
+        yaw: -2.42,
+        pitch: 0.23,
+        dist: 56.0,
+        fov: 45,
+        hideLayers: ["0_Regulating_Grid"]
+      },
+      cutaway_axon: {
+        label: "3. Roof Cutaway Axonometric",
+        title: "Roof-Off Constructive Plan-Axonometric",
+        desc: "Cutaway looking directly into Level 3's asymmetric polycentric fan, WP #4 regulating rays, 15 radiating birch bookstacks, mezzanine reading counter, and sunken Level 2 well.",
+        target: [-1.0, 8.5, -0.5],
+        yaw: 0.95,
+        pitch: 0.78,
+        dist: 64.0,
+        fov: 42,
+        hideLayers: ["7_Roof_And_Daylight_Scoop"]
+      },
+      mezzanine_pov: {
+        label: "4. Mezzanine Reading Counter POV",
+        title: "Level 3 Mezzanine Counter & Dome Lamps",
+        desc: "Standing in the main reading aisle behind Aalto's continuous matte-black linoleum desk and white dome lamps, looking across the double-height Reading Well toward the Control Desk and curved North Daylight Scoop.",
+        target: [1.2, 4.8, 1.35],
+        yaw: 2.08,
+        pitch: 0.03,
+        dist: 11.4,
+        fov: 62,
+        hideLayers: ["0_Regulating_Grid"]
+      },
+      sunken_well: {
+        label: "5. Level 2 Well Looking Up",
+        title: "Level 2 Reading Well & Concave Light Scoop",
+        desc: "Standing in the open double-height Level 2 well (-12'-6\") looking up past the R = 31'-10\" reference bookwall, Semicircular Gallery (-4'-6\"), stepped flanking stairs, and 18\"Ø white columns into the glowing North Light Scoop.",
+        target: [1.5, 7.6, 1.65],
+        yaw: 2.48,
+        pitch: -0.46,
+        dist: 9.2,
+        fov: 68,
+        hideLayers: ["0_Regulating_Grid"]
+      },
+      lounge_mthood: {
+        label: "6. East Prow & Mt. Hood Window",
+        title: "East Prow (Axis E) & Periodical Lounge",
+        desc: "Oblique view of the sharp East brick prow, Periodical Lounge floor-to-ceiling Mt. Hood picture window with exterior hemlock louvers, and central daylight monitor.",
+        target: [10.0, 7.0, -0.5],
+        yaw: 0.22,
+        pitch: 0.24,
+        dist: 52.0,
+        fov: 45,
+        hideLayers: ["0_Regulating_Grid"]
+      }
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("studio") === "1") {
+      document.body.classList.add("studio-mode");
+    }
+
+    const canvas = document.getElementById("glCanvas");
+    const gl = canvas.getContext("webgl2", { antialias: true, alpha: false, preserveDrawingBuffer: true });
+    if (!gl) {
+      document.getElementById("camTitle").textContent = "WebGL2 Not Available";
+      return;
+    }
+
+    // --- Shaders (Architectural Sun + Hemisphere Sky + Warm Interior Fill + Depth Fog) ---
+    const VS_SOLID = `#version 300 es
+      layout(location=0) in vec3 aPos;
+      layout(location=1) in vec3 aNrm;
+      layout(location=2) in vec4 aCol;
+      uniform mat4 uMVP;
+      out vec3 vPos;
+      out vec3 vNrm;
+      out vec4 vCol;
+      void main() {
+        vPos = aPos;
+        vNrm = aNrm;
+        vCol = aCol;
+        gl_Position = uMVP * vec4(aPos, 1.0);
+      }
+    `;
+
+    const FS_SOLID = `#version 300 es
+      precision highp float;
+      in vec3 vPos;
+      in vec3 vNrm;
+      in vec4 vCol;
+      uniform vec3 uEye;
+      out vec4 fragColor;
+
+      void main() {
+        vec3 base = vCol.rgb;
+        float alpha = vCol.a;
+        if (alpha > 1.5) {
+          // Emissive lamp / regulating line
+          fragColor = vec4(base * 1.08, 1.0);
+          return;
+        }
+        vec3 N = normalize(vNrm);
+        vec3 V = normalize(uEye - vPos);
+        // Flip normal if viewing interior face of glass/vault
+        if (dot(N, V) < 0.0 && alpha < 0.99) N = -N;
+
+        // Golden Oregon morning/afternoon sun from ENE + soft NW fill + floor-bounced hemisphere sky
+        vec3 sunDir = normalize(vec3(0.56, 0.42, 0.71));
+        vec3 fillDir = normalize(vec3(-0.62, 0.55, 0.56));
+        float ndl = max(dot(N, sunDir), 0.0);
+        float ndf = max(dot(N, fillDir), 0.0);
+        float hemi = 0.52 + 0.48 * N.z;
+
+        // Luminous North Daylight Scoop & Reading Well indirect bounce (illuminates ceilings & well walls!)
+        vec3 wellPos = vec3(0.45, 10.2, 4.4);
+        vec3 toWell = wellPos - vPos;
+        float wellDist = length(toWell);
+        float scoopGlow = (26.0 / (16.0 + wellDist * wellDist)) * (0.45 + 0.55 * max(dot(N, normalize(vec3(0.0, 0.35, -0.65))), 0.25));
+
+        vec3 ambient = mix(vec3(0.46, 0.47, 0.50), vec3(0.62, 0.67, 0.76), hemi);
+        vec3 sunCol = vec3(1.02, 0.96, 0.86) * (0.58 * ndl);
+        vec3 fillCol = vec3(0.55, 0.66, 0.82) * (0.22 * ndf);
+        vec3 intBounce = vec3(0.97, 0.95, 0.90) * scoopGlow * 0.42;
+
+        // Subtle specular sheen on glass & copper
+        vec3 H = normalize(sunDir + V);
+        float spec = pow(max(dot(N, H), 0.0), 36.0) * (alpha < 0.95 ? 0.55 : 0.10);
+
+        vec3 lit = base * (ambient + sunCol + fillCol + intBounce) + vec3(spec);
+
+        // Subtle atmospheric distance perspective
+        float camDist = length(uEye - vPos);
+        float fog = clamp((camDist - 75.0) / 160.0, 0.0, 0.38);
+        lit = mix(lit, vec3(0.76, 0.83, 0.90), fog);
+
+        // Clean ACES-inspired filmic tone curve
+        lit = lit / (lit + vec3(0.88)) * 1.62;
+        lit = pow(clamp(lit, 0.0, 1.0), vec3(0.94));
+        fragColor = vec4(lit, clamp(alpha, 0.0, 1.0));
+      }
+    `;
+
+    const VS_EDGE = `#version 300 es
+      layout(location=0) in vec3 aPos;
+      uniform mat4 uMVP;
+      out float vDist;
+      uniform vec3 uEye;
+      void main() {
+        vDist = length(uEye - aPos);
+        gl_Position = uMVP * vec4(aPos, 1.0);
+        gl_Position.z -= 0.00035 * gl_Position.w;
+      }
+    `;
+
+    const FS_EDGE = `#version 300 es
+      precision mediump float;
+      in float vDist;
+      out vec4 fragColor;
+      void main() {
+        float a = clamp(0.34 - vDist * 0.0022, 0.06, 0.30);
+        fragColor = vec4(0.10, 0.12, 0.16, a);
+      }
+    `;
+
+    const VS_SKY = `#version 300 es
+      out vec2 vUV;
+      void main() {
+        vec2 p = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2);
+        vUV = p;
+        gl_Position = vec4(p * 2.0 - 1.0, 0.9999, 1.0);
+      }
+    `;
+
+    const FS_SKY = `#version 300 es
+      precision mediump float;
+      in vec2 vUV;
+      out vec4 fragColor;
+      void main() {
+        // Soft Willamette Valley architectural sky gradient
+        vec3 horizon = vec3(0.83, 0.87, 0.91);
+        vec3 zenith  = vec3(0.46, 0.61, 0.79);
+        vec3 ground  = vec3(0.66, 0.71, 0.75);
+        float t = clamp((vUV.y - 0.35) / 0.65, 0.0, 1.0);
+        vec3 col = vUV.y >= 0.35 ? mix(horizon, zenith, pow(t, 0.75)) : mix(ground, horizon, vUV.y / 0.35);
+        fragColor = vec4(col, 1.0);
+      }
+    `;
+
+    function compileProg(vsSrc, fsSrc) {
+      const vs = gl.createShader(gl.VERTEX_SHADER);
+      gl.shaderSource(vs, vsSrc);
+      gl.compileShader(vs);
+      const fs = gl.createShader(gl.FRAGMENT_SHADER);
+      gl.shaderSource(fs, fsSrc);
+      gl.compileShader(fs);
+      const p = gl.createProgram();
+      gl.attachShader(p, vs);
+      gl.attachShader(p, fs);
+      gl.linkProgram(p);
+      return p;
+    }
+
+    const progSolid = compileProg(VS_SOLID, FS_SOLID);
+    const progEdge = compileProg(VS_EDGE, FS_EDGE);
+    const progSky = compileProg(VS_SKY, FS_SKY);
+    const emptyVao = gl.createVertexArray();
+
+    // --- Minimal 4x4 Matrix Math (Z-Up Camera) ---
+    function perspective(fovDeg, aspect, near, far) {
+      const f = 1.0 / Math.tan((fovDeg * Math.PI) / 360.0);
+      const nf = 1.0 / (near - far);
+      return new Float32Array([
+        f / aspect, 0, 0, 0,
+        0, f, 0, 0,
+        0, 0, (far + near) * nf, -1,
+        0, 0, 2 * far * near * nf, 0
+      ]);
+    }
+
+    function lookAtZUp(eye, target) {
+      let fx = target[0] - eye[0], fy = target[1] - eye[1], fz = target[2] - eye[2];
+      let fl = Math.hypot(fx, fy, fz) || 1;
+      fx /= fl; fy /= fl; fz /= fl;
+      // Right = normalize(f x [0,0,1])
+      let rx = fy, ry = -fx, rz = 0;
+      let rl = Math.hypot(rx, ry, rz);
+      if (rl < 1e-4) { rx = 1; ry = 0; rz = 0; } else { rx /= rl; ry /= rl; }
+      // Up = r x f
+      const ux = ry * fz - rz * fy;
+      const uy = rz * fx - rx * fz;
+      const uz = rx * fy - ry * fx;
+      return new Float32Array([
+        rx, ux, -fx, 0,
+        ry, uy, -fy, 0,
+        rz, uz, -fz, 0,
+        -(rx * eye[0] + ry * eye[1] + rz * eye[2]),
+        -(ux * eye[0] + uy * eye[1] + uz * eye[2]),
+        fx * eye[0] + fy * eye[1] + fz * eye[2],
+        1
+      ]);
+    }
+
+    function mul4(a, b) {
+      const o = new Float32Array(16);
+      for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+          o[j * 4 + i] =
+            a[0 * 4 + i] * b[j * 4 + 0] +
+            a[1 * 4 + i] * b[j * 4 + 1] +
+            a[2 * 4 + i] * b[j * 4 + 2] +
+            a[3 * 4 + i] * b[j * 4 + 3];
+        }
+      }
+      return o;
+    }
+
+    // --- Camera & Layer State ---
+    let cam = {
+      target: [2.0, 7.5, -1.8],
+      yaw: 0.72,
+      pitch: 0.25,
+      dist: 66.0,
+      fov: 44
+    };
+
+    let gpuLayers = [];
+    let layerVisible = {};
+
+    function makeTriVao(posArr, nrmArr, colArr) {
+      if (!posArr || posArr.length === 0) return { vao: null, count: 0 };
+      const vao = gl.createVertexArray();
+      gl.bindVertexArray(vao);
+
+      const bPos = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, bPos);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(posArr), gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(0);
+      gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+
+      const bNrm = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, bNrm);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(nrmArr), gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(1);
+      gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 0, 0);
+
+      const bCol = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, bCol);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colArr), gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(2);
+      gl.vertexAttribPointer(2, 4, gl.FLOAT, false, 0, 0);
+
+      gl.bindVertexArray(null);
+      return { vao, count: posArr.length / 3 };
+    }
+
+    function makeEdgeVao(edgeArr) {
+      if (!edgeArr || edgeArr.length === 0) return { vao: null, count: 0 };
+      const vao = gl.createVertexArray();
+      gl.bindVertexArray(vao);
+      const b = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, b);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(edgeArr), gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(0);
+      gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+      gl.bindVertexArray(null);
+      return { vao, count: edgeArr.length / 3 };
+    }
+
+    function applyPreset(key) {
+      const p = PRESETS[key] || PRESETS.hillside_hero;
+      cam.target = [...p.target];
+      cam.yaw = p.yaw;
+      cam.pitch = p.pitch;
+      cam.dist = p.dist;
+      cam.fov = p.fov;
+
+      gpuLayers.forEach(l => {
+        layerVisible[l.name] = !(p.hideLayers || []).includes(l.name);
+      });
+      syncUiCheckboxes();
+
+      document.querySelectorAll(".cam-btn").forEach(b => {
+        b.classList.toggle("active", b.dataset.cam === key);
+      });
+      document.getElementById("camTitle").textContent = p.title;
+      document.getElementById("camDesc").textContent = p.desc;
+      requestRender();
+    }
+
+    function syncUiCheckboxes() {
+      document.querySelectorAll("#layerList input[type=checkbox]").forEach(cb => {
+        cb.checked = Boolean(layerVisible[cb.dataset.layer]);
+      });
+      const roofHidden = layerVisible["7_Roof_And_Daylight_Scoop"] === false;
+      document.getElementById("roofCutawayBtn").classList.toggle("active", roofHidden);
+    }
+
+    // Build Camera Buttons
+    const presetContainer = document.getElementById("presetButtons");
+    Object.entries(PRESETS).forEach(([k, v]) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "cam-btn";
+      btn.dataset.cam = k;
+      btn.textContent = v.label;
+      btn.addEventListener("click", () => applyPreset(k));
+      presetContainer.appendChild(btn);
+    });
+
+    document.getElementById("roofCutawayBtn").addEventListener("click", () => {
+      const cur = Boolean(layerVisible["7_Roof_And_Daylight_Scoop"]);
+      layerVisible["7_Roof_And_Daylight_Scoop"] = !cur;
+      syncUiCheckboxes();
+      requestRender();
+    });
+
+    // Mouse Orbit / Pan / Zoom
+    let dragging = false, panMode = false, lx = 0, ly = 0;
+    canvas.addEventListener("contextmenu", e => e.preventDefault());
+    canvas.addEventListener("mousedown", e => {
+      dragging = true;
+      panMode = (e.button === 2 || e.shiftKey);
+      lx = e.clientX; ly = e.clientY;
+    });
+    window.addEventListener("mouseup", () => { dragging = false; });
+    window.addEventListener("mousemove", e => {
+      if (!dragging) return;
+      const dx = e.clientX - lx, dy = e.clientY - ly;
+      lx = e.clientX; ly = e.clientY;
+      if (panMode) {
+        const scale = cam.dist * 0.0014;
+        const rx = -Math.sin(cam.yaw), ry = Math.cos(cam.yaw);
+        cam.target[0] -= rx * dx * scale;
+        cam.target[1] -= ry * dx * scale;
+        cam.target[2] += dy * scale;
+      } else {
+        cam.yaw -= dx * 0.0065;
+        cam.pitch = Math.max(-1.25, Math.min(1.42, cam.pitch + dy * 0.0065));
+      }
+      requestRender();
+    });
+    canvas.addEventListener("wheel", e => {
+      e.preventDefault();
+      cam.dist = Math.max(2.5, Math.min(180.0, cam.dist * Math.exp(e.deltaY * 0.001)));
+      requestRender();
+    }, { passive: false });
+
+    let rafPending = false;
+    function requestRender() {
+      if (!rafPending) {
+        rafPending = true;
+        requestAnimationFrame(drawScene);
+      }
+    }
+
+    function drawScene() {
+      rafPending = false;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = Math.floor(window.innerWidth * dpr);
+      const h = Math.floor(window.innerHeight * dpr);
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w; canvas.height = h;
+      }
+      gl.viewport(0, 0, w, h);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+      // 1. Sky Background
+      gl.disable(gl.DEPTH_TEST);
+      gl.disable(gl.BLEND);
+      gl.useProgram(progSky);
+      gl.bindVertexArray(emptyVao);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+      if (gpuLayers.length === 0) return;
+
+      const cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch);
+      const eye = [
+        cam.target[0] + cam.dist * cp * Math.cos(cam.yaw),
+        cam.target[1] + cam.dist * cp * Math.sin(cam.yaw),
+        cam.target[2] + cam.dist * sp
+      ];
+      const proj = perspective(cam.fov, w / Math.max(h, 1), 0.25, 420.0);
+      const view = lookAtZUp(eye, cam.target);
+      const mvp = mul4(proj, view);
+
+      // 2. Opaque Architectural Geometry
+      gl.enable(gl.DEPTH_TEST);
+      gl.depthMask(true);
+      gl.useProgram(progSolid);
+      gl.uniformMatrix4fv(gl.getUniformLocation(progSolid, "uMVP"), false, mvp);
+      gl.uniform3fv(gl.getUniformLocation(progSolid, "uEye"), eye);
+
+      for (const lyr of gpuLayers) {
+        if (!layerVisible[lyr.name] || !lyr.opaque.vao) continue;
+        gl.bindVertexArray(lyr.opaque.vao);
+        gl.drawArrays(gl.TRIANGLES, 0, lyr.opaque.count);
+      }
+
+      // 3. Crisp Architectural Feature Edges
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      gl.useProgram(progEdge);
+      gl.uniformMatrix4fv(gl.getUniformLocation(progEdge, "uMVP"), false, mvp);
+      gl.uniform3fv(gl.getUniformLocation(progEdge, "uEye"), eye);
+      for (const lyr of gpuLayers) {
+        if (!layerVisible[lyr.name] || !lyr.edges.vao) continue;
+        gl.bindVertexArray(lyr.edges.vao);
+        gl.drawArrays(gl.LINES, 0, lyr.edges.count);
+      }
+
+      // 4. Translucent Windows & Skylight Glazing
+      gl.depthMask(false);
+      gl.useProgram(progSolid);
+      for (const lyr of gpuLayers) {
+        if (!layerVisible[lyr.name] || !lyr.trans.vao) continue;
+        gl.bindVertexArray(lyr.trans.vao);
+        gl.drawArrays(gl.TRIANGLES, 0, lyr.trans.count);
+      }
+      gl.depthMask(true);
+    }
+
+    window.addEventListener("resize", requestRender);
+
+    // Load 1:1 IngeTrazo Exported Scene JSON
+    fetch("overlays/library_3d_scene.json")
+      .then(r => r.json())
+      .then(data => {
+        const listEl = document.getElementById("layerList");
+        listEl.innerHTML = "";
+        gpuLayers = data.layers.map(l => {
+          layerVisible[l.name] = true;
+          const pretty = l.name.replace(/^\d+_/, "").replace(/_/g, " ");
+          const lbl = document.createElement("label");
+          lbl.className = "layer-item";
+          lbl.innerHTML = `<input type="checkbox" data-layer="${l.name}" checked><span>${pretty}</span>`;
+          lbl.querySelector("input").addEventListener("change", e => {
+            layerVisible[l.name] = e.target.checked;
+            syncUiCheckboxes();
+            requestRender();
+          });
+          listEl.appendChild(lbl);
+          return {
+            name: l.name,
+            opaque: makeTriVao(l.opaque_pos, l.opaque_nrm, l.opaque_col),
+            trans: makeTriVao(l.trans_pos, l.trans_nrm, l.trans_col),
+            edges: makeEdgeVao(l.edge_pos),
+          };
+        });
+
+        const initialCam = params.get("cam") || "hillside_hero";
+        applyPreset(initialCam);
+      })
+      .catch(err => {
+        document.getElementById("camTitle").textContent = "Scene Load Error";
+        document.getElementById("camDesc").textContent = String(err);
+      });
+  })();
+  </script>
+</body>
+</html>

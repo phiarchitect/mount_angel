@@ -1,0 +1,19 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# CAD & 3D backups
+*.FCBak
+*.FCStd1
+*.blend1
+
+# OS / Editor
+.DS_Store
+*.swp
+*~

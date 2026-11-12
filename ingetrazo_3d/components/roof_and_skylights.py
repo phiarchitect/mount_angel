@@ -1,0 +1,308 @@
+"""
+Layer 7: Dual-Scoop Daylight Roof, Copper Fascia & 12 Conical Lanterns (`7_Roof_And_Daylight_Scoop`).
+
+Models Alvar Aalto's celebrated Mount Angel daylighting roof system:
+  1. Curved Central North Daylight Monitor Scoop (R = 24.0..41.8 ft, peak +6.55 m):
+     - Copper-clad curved exterior shell
+     - Smooth concave white plaster interior reflector vault
+     - Steep North-facing skylight glass with 15 radial aluminum mullions
+     - Leaves R = 24.0..41.8 ft completely open below so north light pours straight
+       into the double-height Reading Well!
+  2. Tipped North Perimeter Fan Roof (+3.81 m sweeping upward to +5.25 m at the
+     faceted North Curtain Wall): creates the upward-sweeping interior daylight
+     soffit over the Level 3 bookstacks & carrels.
+  3. South Wing Built-up Roof (+4.98 m) with weathered copper parapet coping,
+     Suspended Slatted Birch Acoustic Ceiling Drum over the Control Desk, and
+     all 12 Aalto Conical Roof Skylight Lanterns!
+"""
+
+from __future__ import annotations
+
+import math
+
+from phiarchitect.mountangel.vectors import AaltoGeometry, polar_pt
+
+from .primitives import (
+    MATERIALS,
+    add_arc_band_ft,
+    add_cylinder_ft,
+    add_extruded_polygon_ft,
+    add_frustum_ft,
+    add_oriented_box_ft,
+    add_quad,
+    add_tri,
+    add_wall_strip_ft,
+    create_scene_group,
+    m_ft,
+    xy_m,
+)
+
+
+def _ray_segment_dist_ft(origin: tuple[float, float], deg: float, a: tuple[float, float], b: tuple[float, float]) -> float | None:
+    """Intersect ray from `origin` at `deg` with line segment `a -> b`; return distance in ft."""
+    rad = math.radians(deg)
+    dx, dy = math.cos(rad), math.sin(rad)
+    sx, sy = b[0] - a[0], b[1] - a[1]
+    denom = dx * sy - dy * sx
+    if abs(denom) < 1e-8:
+        return None
+    qpx, qpy = a[0] - origin[0], a[1] - origin[1]
+    t = (qpx * sy - qpy * sx) / denom
+    u = (qpx * dy - qpy * dx) / denom
+    if t > 1.0 and -0.02 <= u <= 1.02:
+        return t
+    return None
+
+
+def _fan_outer_radius_at_angle(deg: float) -> float:
+    """Distance from WP3A along `deg` to the faceted outer Fan boundary A-B-C-D-E."""
+    G = AaltoGeometry
+    segs = [
+        ((-77.5, 1.5), G.PT_A_INNER_JUNC),
+        (G.PT_A_INNER_JUNC, G.PT_A),
+        (G.PT_A, G.PT_B),
+        (G.PT_B, G.PT_C),
+        (G.PT_C, G.PT_D),
+        (G.PT_D, G.PT_E),
+        (G.PT_E, G.PT_LOUNGE_JUNC),
+        (G.PT_LOUNGE_JUNC, (19.0, 4.0)),
+    ]
+    best = None
+    for a, b in segs:
+        d = _ray_segment_dist_ft(G.WP3A, deg, a, b)
+        if d is not None and (best is None or d < best):
+            best = d
+    return best if best is not None else 82.0
+
+
+def build_roof_and_skylights(scene):
+    grp = create_scene_group(scene, "7_Roof_And_Daylight_Scoop")
+    mesh = grp.mesh
+    G = AaltoGeometry
+
+    z_fan_low = m_ft(G.Z_FAN_ROOF_LOW_FT)   # +3.81 m
+    z_south_rf = m_ft(G.Z_SOUTH_ROOF_FT)    # +4.98 m
+    z_par_n = m_ft(G.Z_FAN_PARAPET_N_FT)    # +5.33 m
+    z_ridge = m_ft(G.Z_SCOOP_RIDGE_FT)      # +6.55 m
+    z_lantern = m_ft(G.Z_LANTERN_TOP_FT)    # +5.94 m
+
+    # =========================================================================
+    # 1. CURVED CENTRAL NORTH DAYLIGHT MONITOR SCOOP (46° .. 155° around WP3A)
+    # =========================================================================
+    n_scoop = 36
+    deg0, deg1 = 45.0, 156.0
+    angles = [deg0 + (deg1 - deg0) * (i / n_scoop) for i in range(n_scoop + 1)]
+
+    # Concave white plaster reflector profile (radius_ft_from_WP3A, z_interior_m, z_exterior_m)
+    vault_profile = [
+        (G.R_SCOOP_INNER, 3.88, z_south_rf + 0.04),
+        (26.8, 4.95, 5.42),
+        (30.4, 5.88, 6.02),
+        (G.R_SCOOP_RIDGE, z_ridge - 0.10, z_ridge),
+    ]
+
+    for i in range(n_scoop):
+        a0, a1 = angles[i], angles[i + 1]
+        for k in range(len(vault_profile) - 1):
+            r_a, zi_a, ze_a = vault_profile[k]
+            r_b, zi_b, ze_b = vault_profile[k + 1]
+            p00_xy = xy_m(polar_pt(G.WP3A, r_a, a0))
+            p10_xy = xy_m(polar_pt(G.WP3A, r_a, a1))
+            p11_xy = xy_m(polar_pt(G.WP3A, r_b, a1))
+            p01_xy = xy_m(polar_pt(G.WP3A, r_b, a0))
+
+            # Exterior Copper Roof Slope (+Z/+South outward normal)
+            add_quad(
+                mesh,
+                (*p00_xy, ze_a),
+                (*p01_xy, ze_b),
+                (*p11_xy, ze_b),
+                (*p10_xy, ze_a),
+                MATERIALS["copper_roof"],
+            )
+            # Interior Concave White Plaster Daylight Reflector Vault (facing North/Down into Well!)
+            add_quad(
+                mesh,
+                (*p00_xy, zi_a),
+                (*p10_xy, zi_a),
+                (*p11_xy, zi_b),
+                (*p01_xy, zi_b),
+                MATERIALS["white_plaster"],
+            )
+
+        # Steep North-Facing Skylight Glazing (from Ridge R = 34.8 ft, Z = +6.55 m down to Curb R = 41.8 ft, Z = +3.92 m)
+        pr0 = (*xy_m(polar_pt(G.WP3A, G.R_SCOOP_RIDGE, a0)), z_ridge - 0.04)
+        pr1 = (*xy_m(polar_pt(G.WP3A, G.R_SCOOP_RIDGE, a1)), z_ridge - 0.04)
+        pc1 = (*xy_m(polar_pt(G.WP3A, G.R_SCOOP_OUTER, a1)), z_fan_low + 0.12)
+        pc0 = (*xy_m(polar_pt(G.WP3A, G.R_SCOOP_OUTER, a0)), z_fan_low + 0.12)
+        add_quad(mesh, pr0, pc0, pc1, pr1, MATERIALS["glass_skylight"])
+        add_quad(mesh, pr0, pr1, pc1, pc0, MATERIALS["glass_skylight"])
+
+    # Radial Aluminum Skylight Mullions along North Scoop Glazing
+    for i in range(0, n_scoop + 1, 2):
+        ang = angles[i]
+        m_top = xy_m(polar_pt(G.WP3A, G.R_SCOOP_RIDGE, ang))
+        m_bot = xy_m(polar_pt(G.WP3A, G.R_SCOOP_OUTER, ang))
+        rad = math.radians(ang + 90.0)
+        ox, oy = 0.045 * math.cos(rad), 0.045 * math.sin(rad)
+        add_quad(
+            mesh,
+            (m_top[0] - ox, m_top[1] - oy, z_ridge + 0.02),
+            (m_bot[0] - ox, m_bot[1] - oy, z_fan_low + 0.16),
+            (m_bot[0] + ox, m_bot[1] + oy, z_fan_low + 0.16),
+            (m_top[0] + ox, m_top[1] + oy, z_ridge + 0.02),
+            MATERIALS["mullion_alum"],
+        )
+
+    # Copper End-Cheek Gables closing East (45°) and West (156°) ends of the Daylight Scoop
+    for end_ang, flip in ((deg0, False), (deg1, True)):
+        p_in = (*xy_m(polar_pt(G.WP3A, G.R_SCOOP_INNER, end_ang)), z_fan_low)
+        p_rg = (*xy_m(polar_pt(G.WP3A, G.R_SCOOP_RIDGE, end_ang)), z_ridge)
+        p_ou = (*xy_m(polar_pt(G.WP3A, G.R_SCOOP_OUTER, end_ang)), z_fan_low)
+        if not flip:
+            add_tri(mesh, p_in, p_ou, p_rg, MATERIALS["copper_roof"])
+            add_tri(mesh, p_in, p_rg, p_ou, MATERIALS["white_plaster"])
+        else:
+            add_tri(mesh, p_in, p_rg, p_ou, MATERIALS["copper_roof"])
+            add_tri(mesh, p_in, p_ou, p_rg, MATERIALS["white_plaster"])
+
+    # Outer Skylight Curb Beam at R = 41.8 ft
+    add_arc_band_ft(
+        mesh,
+        G.WP3A,
+        G.R_SCOOP_OUTER - 0.5,
+        G.R_SCOOP_OUTER + 0.4,
+        deg0,
+        deg1,
+        z_fan_low - 0.25,
+        z_fan_low + 0.18,
+        MATERIALS["white_plaster"],
+        steps=36,
+    )
+
+    # =========================================================================
+    # 2. TIPPED NORTH PERIMETER FAN ROOF & SWEEPING INTERIOR DAYLIGHT SOFFIT
+    # =========================================================================
+    fan_steps = 56
+    f_deg0, f_deg1 = 31.0, 170.0
+    f_angles = [f_deg0 + (f_deg1 - f_deg0) * (i / fan_steps) for i in range(fan_steps + 1)]
+
+    for i in range(fan_steps):
+        a0, a1 = f_angles[i], f_angles[i + 1]
+        r_out0 = _fan_outer_radius_at_angle(a0)
+        r_out1 = _fan_outer_radius_at_angle(a1)
+        # Inner radius starts outside the Scoop (41.8 ft) for 45°..156°, or from 24.0 ft on the flanks
+        a_mid = 0.5 * (a0 + a1)
+        r_in = G.R_SCOOP_OUTER if (deg0 <= a_mid <= deg1) else G.R_SCOOP_INNER
+        r_hinge0 = r_in + 0.72 * (r_out0 - r_in)
+        r_hinge1 = r_in + 0.72 * (r_out1 - r_in)
+
+        # Zone A: Flat Roof & Acoustic Soffit from r_in to r_hinge (Z = +3.81 m)
+        q_in0 = xy_m(polar_pt(G.WP3A, r_in, a0))
+        q_in1 = xy_m(polar_pt(G.WP3A, r_in, a1))
+        q_hg1 = xy_m(polar_pt(G.WP3A, r_hinge1, a1))
+        q_hg0 = xy_m(polar_pt(G.WP3A, r_hinge0, a0))
+        q_ou1 = xy_m(polar_pt(G.WP3A, r_out1, a1))
+        q_ou0 = xy_m(polar_pt(G.WP3A, r_out0, a0))
+
+        # Top gravel roof + bottom white ceiling soffit (Zone A)
+        add_quad(mesh, (*q_in0, z_fan_low), (*q_hg0, z_fan_low), (*q_hg1, z_fan_low), (*q_in1, z_fan_low), MATERIALS["builtup_roof"])
+        add_quad(mesh, (*q_in0, z_fan_low - 0.22), (*q_in1, z_fan_low - 0.22), (*q_hg1, z_fan_low - 0.22), (*q_hg0, z_fan_low - 0.22), MATERIALS["white_soffit"])
+
+        # Zone B: Upward-Sweeping Perimeter Daylight Scoop from r_hinge (+3.81 m) to North Curtain Wall (+5.22 m)!
+        add_quad(mesh, (*q_hg0, z_fan_low), (*q_ou0, z_par_n - 0.08), (*q_ou1, z_par_n - 0.08), (*q_hg1, z_fan_low), MATERIALS["copper_roof"])
+        add_quad(mesh, (*q_hg0, z_fan_low - 0.22), (*q_hg1, z_fan_low - 0.22), (*q_ou1, z_par_n - 0.32), (*q_ou0, z_par_n - 0.32), MATERIALS["white_soffit"])
+
+    # Clerestory Vertical Fascia closing height step between South Wing Roof (+4.98 m) and Lower Fan Deck (+3.81 m) on flanks
+    add_arc_band_ft(mesh, G.WP3A, G.R_SCOOP_INNER - 0.6, G.R_SCOOP_INNER + 0.3, 31.0, 45.2, z_fan_low - 0.22, z_south_rf, MATERIALS["buff_brick"], steps=8)
+    add_arc_band_ft(mesh, G.WP3A, G.R_SCOOP_INNER - 0.6, G.R_SCOOP_INNER + 0.3, 155.8, 170.0, z_fan_low - 0.22, z_south_rf, MATERIALS["buff_brick"], steps=8)
+
+    # Weathered Copper Parapet Fascia Cap along North Faceted Bays A-B-C-D-E
+    add_wall_strip_ft(
+        mesh,
+        [G.PT_A_INNER_JUNC, G.PT_A, G.PT_B, G.PT_C, G.PT_D, G.PT_E, G.PT_LOUNGE_JUNC],
+        1.55,
+        z_par_n - 0.14,
+        z_par_n + 0.14,
+        MATERIALS["copper_roof"],
+    )
+
+    # =========================================================================
+    # 3. SOUTH WING BUILT-UP ROOF (+4.98 m), COPPER COPING & WOOD CEILING DRUM
+    # =========================================================================
+    south_roof_arc = [polar_pt(G.WP3A, G.R_SCOOP_INNER, 170.0 - (170.0 - 31.0) * (k / 30)) for k in range(31)]
+    south_roof_poly = [
+        (-126.5, 1.5),
+        (-77.5, 1.5),
+        (-77.5, 12.8),
+        *south_roof_arc,  # Seals seamlessly against fan roof & Central Daylight Scoop!
+        (51.8, 32.8),
+        (51.8, -8.8),
+        (61.5, -8.8),
+        (61.5, -59.5),
+        (19.5, -59.5),
+        (16.5, -50.8),
+        (-91.5, -50.8),
+        (-91.5, -28.0),
+        (-126.5, -28.0),
+    ]
+    add_extruded_polygon_ft(
+        mesh,
+        south_roof_poly,
+        z_south_rf - 0.26,
+        z_south_rf,
+        MATERIALS["builtup_roof"],
+        MATERIALS["buff_brick"],
+        MATERIALS["white_soffit"],
+    )
+
+    # Copper Parapet Coping around South Wing & Periodical Lounge Perimeter
+    add_wall_strip_ft(
+        mesh,
+        [
+            (51.8, 32.8), (51.8, -8.8), (61.5, -8.8), (61.5, -59.5),
+            (19.5, -59.5), (16.5, -50.8), (-91.5, -50.8), (-91.5, -28.0),
+            (-126.5, -28.0), (-126.5, 1.5), (-77.5, 1.5),
+        ],
+        1.50,
+        z_south_rf,
+        z_south_rf + 0.22,
+        MATERIALS["copper_roof"],
+    )
+
+    # Suspended Slatted Birch/Hemlock Acoustic Ceiling Drum above Control Desk (R = 17.5 ft, Z = +3.30 m)
+    add_cylinder_ft(mesh, G.WP_DESK, G.R_WOOD_DRUM, 3.25, 3.65, MATERIALS["hemlock_slat"], sides=36)
+
+    # =========================================================================
+    # 4. 12 SIGNATURE AALTO CONICAL ROOF SKYLIGHT LANTERNS
+    # =========================================================================
+    for sx, sy, sr in G.CONICAL_SKYLIGHTS:
+        # Exterior Weathered Copper Cylindrical Skylight Drum above Roof
+        add_cylinder_ft(mesh, (sx, sy), sr + 0.25, z_south_rf, z_lantern - 0.22, MATERIALS["copper_roof"], sides=20)
+        # Conical Translucent Skylight Dome Cap
+        add_frustum_ft(
+            mesh,
+            (sx, sy),
+            r0_ft=sr + 0.30,
+            r1_ft=0.35,
+            z0_m=z_lantern - 0.22,
+            z1_m=z_lantern + 0.28,
+            attrs=MATERIALS["glass_skylight"],
+            sides=20,
+            cap_top=True,
+        )
+        # Interior Deep White Plaster Conical Light-Diffusing Throat visible from Control Area & Lobby below!
+        z_ceil = 3.22 if sy > 4.0 else (z_south_rf - 0.30)
+        add_frustum_ft(
+            mesh,
+            (sx, sy),
+            r0_ft=sr + 0.85,
+            r1_ft=sr - 0.15,
+            z0_m=z_ceil,
+            z1_m=z_south_rf + 0.05,
+            attrs=MATERIALS["white_plaster"],
+            sides=20,
+            double_sided=True,
+        )
+
+    return grp

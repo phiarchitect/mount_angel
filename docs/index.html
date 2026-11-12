@@ -3,17 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mount Angel Library Drawings</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Mount Angel Abbey Library — Alvar Aalto Drawings &amp; Vector Reconstruction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header class="glass-header">
         <div class="header-content">
-            <h1>Mount Angel Library</h1>
-            <p class="subtitle">Alvar Aalto - Architectural Drawings Archive</p>
+            <h1>Mount Angel Abbey Library</h1>
+            <p class="subtitle">Alvar Aalto (1970) — Constructive Vector Overlays &amp; IngeTrazo 3D Reconstruction</p>
         </div>
         <div class="controls">
+            <a href="library-3d.html" class="viewer-3d-btn" title="Open Interactive IngeTrazo 3D Model">
+                &#9670; Interactive 3D Model
+            </a>
+            <button id="calibratedOnlyBtn" class="calibrated-filter-btn" type="button">
+                &#10022; Vector Calibrated (7)
+            </button>
             <div class="search-wrap">
                 <input type="text" id="searchInput" placeholder="Search title or contents...">
             </div>
@@ -45,13 +51,35 @@
             <span class="close-modal">&times;</span>
             <button id="prevBtn" class="nav-btn left-btn">&lsaquo;</button>
             <button id="nextBtn" class="nav-btn right-btn">&rsaquo;</button>
-            
+
             <div class="modal-header-tools">
                 <label class="switch">
                     <input type="checkbox" id="editModeToggle">
                     <span class="slider round"></span>
                 </label>
                 <span>Edit Mode</span>
+            </div>
+
+            <!-- College-Geometry-Style Constructive Vector Control Bar -->
+            <div id="vectorOverlayBar" class="vector-control-bar" style="display: none;">
+                <label class="vec-master-toggle">
+                    <input type="checkbox" id="vecMasterCheck" checked>
+                    <span>&#10022; Vectors</span>
+                </label>
+                <div class="vec-divider"></div>
+                <div id="vecLayerPills" class="vec-layer-pills">
+                    <!-- Populated from overlays/manifest.json -->
+                </div>
+                <div class="vec-divider"></div>
+                <label class="vec-dark-toggle" title="Invert scan to dark architectural blueprint mode">
+                    <input type="checkbox" id="vecDarkBlueprintCheck" checked>
+                    <span>Dark Blueprint</span>
+                </label>
+                <label class="vec-opacity-wrap" title="Dim low-resolution raster scan to inspect pure extracted vectors">
+                    <span>Scan</span>
+                    <input type="range" id="scanOpacitySlider" min="0" max="100" value="78">
+                    <span id="scanOpacityVal">78%</span>
+                </label>
             </div>
 
             <div id="editorToolbar" class="editor-toolbar" style="display: none;">
@@ -63,6 +91,7 @@
 
             <div class="canvas-container" id="canvasContainer">
                 <img id="modalImage" src="" alt="Full Drawing" draggable="false">
+                <div id="vectorSvgLayer" class="vector-svg-layer"></div>
                 <div id="annotationsLayer" class="annotations-layer"></div>
                 <!-- Drawing overlay specifically for mouse interactions -->
                 <div id="drawingOverlay" class="drawing-overlay" style="display: none;"></div>

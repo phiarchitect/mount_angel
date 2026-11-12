@@ -1,0 +1,124 @@
+{
+  "origin_description": "Working Point #4 (convergence of Rays B, C, D) on Level 3 Finished Floor",
+  "units": "feet (canonical) / metres (IngeTrazo 3D)",
+  "layers": [
+    {
+      "id": "regulating",
+      "label": "Regulating Grid & Rays",
+      "color": "#00e5ff"
+    },
+    {
+      "id": "structure",
+      "label": "Columns & H-Piers",
+      "color": "#f43f5e"
+    },
+    {
+      "id": "walls",
+      "label": "Walls, Slabs & Carrels",
+      "color": "#10b981"
+    },
+    {
+      "id": "stairs_millwork",
+      "label": "Well, Stairs & Bookstacks",
+      "color": "#facc15"
+    },
+    {
+      "id": "roof_skylights",
+      "label": "Roof, Scoop & Skylights",
+      "color": "#f59e0b"
+    }
+  ],
+  "sheets": {
+    "3": {
+      "sheet_id": 3,
+      "filename": "03-a3_gm-1135x700.jpg",
+      "title": "FLOOR PLAN LEVEL #1",
+      "svg": "overlays/sheet_03.svg",
+      "scale_px_per_ft": 3.4115,
+      "rot_deg": -0.6,
+      "origin_px": [
+        621.0,
+        418.8
+      ],
+      "mode": "plan"
+    },
+    "4": {
+      "sheet_id": 4,
+      "filename": "04-a4_gm-1144x700.jpg",
+      "title": "FLOOR PLAN LEVEL TWO",
+      "svg": "overlays/sheet_04.svg",
+      "scale_px_per_ft": 3.4534,
+      "rot_deg": -0.563,
+      "origin_px": [
+        618.99,
+        420.14
+      ],
+      "mode": "plan"
+    },
+    "5": {
+      "sheet_id": 5,
+      "filename": "05-a5_gm-1145x700.jpg",
+      "title": "FLOOR PLAN LEVEL #3",
+      "svg": "overlays/sheet_05.svg",
+      "scale_px_per_ft": 3.4416,
+      "rot_deg": -0.741,
+      "origin_px": [
+        620.25,
+        418.53
+      ],
+      "mode": "plan"
+    },
+    "6": {
+      "sheet_id": 6,
+      "filename": "06-a6_gm-1149x700.jpg",
+      "title": "BASIC PLAN LAYOUT",
+      "svg": "overlays/sheet_06.svg",
+      "scale_px_per_ft": 6.91,
+      "rot_deg": -0.78,
+      "origin_px": [
+        693.58,
+        691.15
+      ],
+      "mode": "plan"
+    },
+    "7": {
+      "sheet_id": 7,
+      "filename": "07-a7_gm-1145x700.jpg",
+      "title": "ROOF PLAN & DETAILS",
+      "svg": "overlays/sheet_07.svg",
+      "scale_px_per_ft": 3.4416,
+      "rot_deg": -0.741,
+      "origin_px": [
+        619.25,
+        418.53
+      ],
+      "mode": "plan"
+    },
+    "13": {
+      "sheet_id": 13,
+      "filename": "13-a13_gm-1150x700.jpg",
+      "title": "SECTION A-A & B-B",
+      "svg": "overlays/sheet_13.svg",
+      "scale_px_per_ft": 3.446,
+      "rot_deg": -0.25,
+      "origin_px": [
+        423.1,
+        524.5
+      ],
+      "mode": "section_aa"
+    },
+    "35": {
+      "sheet_id": 35,
+      "filename": "35-s4_gm-1140x700.jpg",
+      "title": "LEVEL THREE FRAMING & FOUNDATION PLAN",
+      "svg": "overlays/sheet_35.svg",
+      "scale_px_per_ft": 3.4414,
+      "rot_deg": -0.761,
+      "origin_px": [
+        618.45,
+        417.22
+      ],
+      "mode": "plan"
+    }
+  }
+}
