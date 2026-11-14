@@ -83,11 +83,15 @@ def export_web_scene_json(scene, out_path: Path):
         trans_col: list[float] = []
 
         edge_pos: list[float] = []
-        edge_adj: dict[tuple[tuple[float, float, float], tuple[float, float, float]], list[tuple[float, float, float, tuple[float, float, float], bool]]] = {}
+        edge_adj: dict[tuple[tuple[float, float, float], tuple[float, float, float]], list[tuple[float, float, float, tuple[float, float, float], bool, bool]]] = {}
 
         is_terrain = grp.name.startswith("1_")
         is_reg = grp.name.startswith("0_")
 
+        # Pre-pass: accumulate smooth vertex normals across smooth-tagged faces sharing position & material
+        import math as _math
+        smooth_acc: dict[tuple[tuple[float, float, float], tuple[float, float, float]], list[float]] = {}
+        face_records = []
         for face in grp.mesh.faces:
             attrs = face.attrs or {}
             col = attrs.get("color", (0.94, 0.93, 0.90))
@@ -95,13 +99,30 @@ def export_web_scene_json(scene, out_path: Path):
             opacity = float(attrs.get("opacity", 1.0))
             emissive = 1.0 if attrs.get("emissive", False) else 0.0
             is_furn = bool(attrs.get("furniture", False))
+            is_smooth = bool(attrs.get("smooth", False))
             n = face.normal()
-            nx, ny, nz = r3(n.x()), r3(n.y()), r3(n.z())
+            fnx, fny, fnz = float(n.x()), float(n.y()), float(n.z())
 
             tris = list(export_triangles(face))
             if not tris:
                 continue
 
+            tri_pts = []
+            for a, b, c in tris:
+                pa = (r3(a.x()), r3(a.y()), r3(a.z()))
+                pb = (r3(b.x()), r3(b.y()), r3(b.z()))
+                pc = (r3(c.x()), r3(c.y()), r3(c.z()))
+                tri_pts.append((pa, pb, pc))
+                if is_smooth:
+                    for pv in (pa, pb, pc):
+                        acc = smooth_acc.setdefault((pv, col_key), [0.0, 0.0, 0.0])
+                        acc[0] += fnx
+                        acc[1] += fny
+                        acc[2] += fnz
+
+            face_records.append((col_key, opacity, emissive, is_furn, is_smooth, r3(fnx), r3(fny), r3(fnz), fnx, fny, fnz, tri_pts))
+
+        for col_key, opacity, emissive, is_furn, is_smooth, nx, ny, nz, fnx, fny, fnz, tri_pts in face_records:
             is_trans = opacity < 0.98
             if is_trans:
                 t_pos, t_nrm, t_col = trans_pos, trans_nrm, trans_col
@@ -111,13 +132,19 @@ def export_web_scene_json(scene, out_path: Path):
                 t_pos, t_nrm, t_col = struct_pos, struct_nrm, struct_col
 
             face_edges: Counter = Counter()
-            for a, b, c in tris:
-                pa = (r3(a.x()), r3(a.y()), r3(a.z()))
-                pb = (r3(b.x()), r3(b.y()), r3(b.z()))
-                pc = (r3(c.x()), r3(c.y()), r3(c.z()))
+            rgba = (*col_key, round(opacity if is_trans else (2.0 if emissive else 1.0), 3))
+            for pa, pb, pc in tri_pts:
                 t_pos.extend((*pa, *pb, *pc))
-                t_nrm.extend((nx, ny, nz, nx, ny, nz, nx, ny, nz))
-                rgba = (*col_key, round(opacity if is_trans else (2.0 if emissive else 1.0), 3))
+                if is_smooth:
+                    for pv in (pa, pb, pc):
+                        sx, sy, sz = smooth_acc.get((pv, col_key), (fnx, fny, fnz))
+                        sl = _math.sqrt(sx * sx + sy * sy + sz * sz)
+                        if sl > 1e-6 and (sx * fnx + sy * fny + sz * fnz) > 0.35 * sl:
+                            t_nrm.extend((r3(sx / sl), r3(sy / sl), r3(sz / sl)))
+                        else:
+                            t_nrm.extend((nx, ny, nz))
+                else:
+                    t_nrm.extend((nx, ny, nz, nx, ny, nz, nx, ny, nz))
                 t_col.extend((*rgba, *rgba, *rgba))
 
                 if not is_terrain and not is_reg:
@@ -125,17 +152,18 @@ def export_web_scene_json(scene, out_path: Path):
                         ek = (u, v) if u <= v else (v, u)
                         face_edges[ek] += 1
 
-            # Collect per-face outer boundary edges for layer-wide coplanar crease filtering
+            # Collect per-face outer boundary edges for layer-wide coplanar / smooth-surface crease filtering
             for ek, cnt in face_edges.items():
                 if cnt == 1:
-                    edge_adj.setdefault(ek, []).append((nx, ny, nz, col_key, is_trans))
+                    edge_adj.setdefault(ek, []).append((nx, ny, nz, col_key, is_trans, is_smooth))
 
         for ek, infos in edge_adj.items():
             if len(infos) == 2:
-                n0x, n0y, n0z, c0, tr0 = infos[0]
-                n1x, n1y, n1z, c1, tr1 = infos[1]
-                # Suppress coplanar ear-clipping triangulation diagonals sharing identical normal & material
-                if c0 == c1 and tr0 == tr1 and (n0x * n1x + n0y * n1y + n0z * n1z) > 0.985:
+                n0x, n0y, n0z, c0, tr0, sm0 = infos[0]
+                n1x, n1y, n1z, c1, tr1, sm1 = infos[1]
+                dot_n = n0x * n1x + n0y * n1y + n0z * n1z
+                thresh = 0.55 if (sm0 and sm1) else 0.985
+                if c0 == c1 and tr0 == tr1 and dot_n > thresh:
                     continue
             edge_pos.extend((*ek[0], *ek[1]))
 

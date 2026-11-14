@@ -577,22 +577,22 @@ def get_radial_bookstacks_ft(r_start: float = 50.0, r_end: float = 69.5) -> list
 
 
 def get_well_stairs_ft() -> list[list[tuple[float, float]]]:
-    """West and East radial stairs connecting Level 3 Mezzanine, Reading Gallery, and Level 2."""
+    """West and East radial U-turn switchback stairs connecting Level 3, -4'-6" Mezzanine, and Level 2."""
     G = AaltoGeometry
     stairs = []
-    for ang_c in (155.5, 48.5):
-        rad = math.radians(ang_c)
-        ux, uy = math.cos(rad), math.sin(rad)
-        nx, ny = -uy, ux
-        hw = 3.2  # 6'-5" stair width
-        r0, r1 = 22.8, 43.8
-        cx, cy = G.WP3A
-        stairs.append([
-            (cx + r0 * ux - hw * nx, cy + r0 * uy - hw * ny),
-            (cx + r1 * ux - hw * nx, cy + r1 * uy - hw * ny),
-            (cx + r1 * ux + hw * nx, cy + r1 * uy + hw * ny),
-            (cx + r0 * ux + hw * nx, cy + r0 * uy + hw * ny),
-        ])
+    for ang_up, ang_dn in ((45.4, 52.2), (158.1, 151.3)):
+        for ang_c, r0, r1 in ((ang_up, 32.2, 43.8), (ang_dn, 32.2, 44.8)):
+            rad = math.radians(ang_c)
+            ux, uy = math.cos(rad), math.sin(rad)
+            nx, ny = -uy, ux
+            hw = 1.82
+            cx, cy = G.WP3A
+            stairs.append([
+                (cx + r0 * ux - hw * nx, cy + r0 * uy - hw * ny),
+                (cx + r1 * ux - hw * nx, cy + r1 * uy - hw * ny),
+                (cx + r1 * ux + hw * nx, cy + r1 * uy + hw * ny),
+                (cx + r0 * ux + hw * nx, cy + r0 * uy + hw * ny),
+            ])
     # Also Stair #2 along SE diagonal wall (X=+65..+81, along Ray E)
     rad_e = math.radians(G.RAY_E_DEG)
     uxe, uye = math.cos(rad_e), math.sin(rad_e)
@@ -759,11 +759,14 @@ def build_sheet_svg(sheet_id: int) -> str:
         # South Entry Canopy
         svg.add_polyline("roof_skylights", [(-22.5, -50.8), (4.5, -50.8), (4.5, -65.5), (-22.5, -65.5)], "#f59e0b", width=2.0, closed=True, dash="5,3")
         svg.add_label("roof_skylights", (-21.5, -64.5), "ENTRY CANOPY", "#fbbf24", size=9, dx=2, dy=11)
-        # Mezzanine Opening & Continuous Reading Counter
-        svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, G.R_MEZZ_OPENING, 51.0, 152.0, 40), "#facc15", width=2.2)
-        svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, G.R_MEZZ_DESK, 51.0, 152.0, 40), "#eab308", width=1.6)
-        svg.add_label("stairs_millwork", polar_pt(G.WP3A, G.R_MEZZ_DESK, 99.0), "MEZZANINE READING COUNTER", "#fde047", size=9, dx=-55, dy=-6)
-        # Semicircular Reference Gallery below & Control Counter
+        # Level 3 Mezzanine Opening & Continuous Reading Counter
+        svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, G.R_MEZZ_OPENING, 48.2, 155.3, 40), "#facc15", width=2.2)
+        svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, G.R_MEZZ_DESK, 48.2, 155.3, 40), "#eab308", width=1.6)
+        svg.add_label("stairs_millwork", polar_pt(G.WP3A, G.R_MEZZ_DESK, 99.0), "L3 WORKBENCH (STOOLS + LAMPS)", "#fde047", size=9, dx=-64, dy=-6)
+        # -4'-6" Mezzanine below: Outer-Arc Workbench (R = 29.4..31.83') & Inner Reference Bookwall (R = 22.8')
+        svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, G.R_WELL_L2_WALL, 55.8, 147.8, 36), "#fde047", width=1.9)
+        svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, 29.42, 55.8, 147.8, 36), "#fbbf24", width=1.4, dash="4,2")
+        svg.add_label("stairs_millwork", polar_pt(G.WP3A, 29.42, 100.0), "MEZZ. WORKBENCH (CHAIRS + LAMPS)", "#fde047", size=8, dx=-68, dy=11)
         svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, G.R_GALLERY_RAIL, 45.0, 158.0, 32), "#38bdf8", width=1.6, dash="4,3")
         svg.add_polyline("stairs_millwork", arc_pts(G.WP_DESK, G.R_DESK_OUTER, 25.0, 165.0, 32), "#f97316", width=2.2)
         svg.add_polyline("stairs_millwork", arc_pts(G.WP_DESK, G.R_DESK_INNER, 25.0, 165.0, 32), "#f97316", width=1.6)
@@ -780,14 +783,16 @@ def build_sheet_svg(sheet_id: int) -> str:
         # Drawing 04: Floor Plan Level #2
         _add_common_regulating_and_structure(svg, cal)
         svg.add_polyline("walls", get_level2_envelope_ft(), "#10b981", width=2.5, closed=True, fill="#10b981", fill_opacity=0.05)
-        # L2 Curved Reference Bookwall (R = 31'-10") & Semicircular Gallery above
-        svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, G.R_WELL_L2_WALL, 48.0, 152.0, 36), "#facc15", width=2.2)
-        svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, G.R_GALLERY_RAIL, 45.0, 158.0, 32), "#f97316", width=1.8)
+        # L2 Curved Core Wall (R = 31'-10") & Mezzanine above
+        svg.add_polyline("walls", arc_pts(G.WP3A, G.R_WELL_L2_WALL, 42.0, 161.0, 38), "#10b981", width=2.2)
+        svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, G.R_GALLERY_RAIL, 45.0, 158.0, 32), "#f97316", width=1.6, dash="4,3")
         for box in get_carrel_alcoves_ft():
             svg.add_polyline("walls", box, "#34d399", width=1.3, closed=True, fill="#34d399", fill_opacity=0.08)
         for st in get_well_stairs_ft():
             svg.add_polyline("stairs_millwork", st, "#fbbf24", width=1.8, closed=True, fill="#fbbf24", fill_opacity=0.14)
-        for stk in get_radial_bookstacks_ft(46.0, 68.5):
+        for stk in get_radial_bookstacks_ft(34.4, 47.4)[2:13]:
+            svg.add_polyline("stairs_millwork", stk, "#a3e635", width=1.0, closed=True, fill="#a3e635", fill_opacity=0.12)
+        for stk in get_radial_bookstacks_ft(51.4, 68.5):
             svg.add_polyline("stairs_millwork", stk, "#a3e635", width=1.0, closed=True, fill="#a3e635", fill_opacity=0.10)
 
     elif sheet_id == 3:
@@ -831,7 +836,7 @@ def build_sheet_svg(sheet_id: int) -> str:
         elevs = [
             ("UPPER LOBBY (+2'-0\")", G.Z_LOBBY_FT, -52.0, 0.0, "#38bdf8"),
             ("LEVEL #3 FAN (0'-0\")", G.Z_L3_FT, -2.0, 86.0, "#00e5ff"),
-            ("REF. GALLERY (-4'-6\")", G.Z_REF_GALLERY_FT, 0.0, 26.0, "#a855f7"),
+            ("MEZZANINE (-4'-6\")", G.Z_REF_GALLERY_FT, 0.0, 32.5, "#a855f7"),
             ("LEVEL #2 (-12'-6\")", G.Z_L2_FT, -22.0, 86.0, "#22c55e"),
             ("LEVEL #1 (-26'-6\")", G.Z_L1_FT, 32.0, 86.0, "#10b981"),
         ]
@@ -843,8 +848,8 @@ def build_sheet_svg(sheet_id: int) -> str:
         svg.add_polyline("walls", [(-72.5, G.Z_CANOPY_FT), (-50.8, G.Z_CANOPY_FT)], "#f59e0b", width=2.6)
         svg.add_polyline("walls", [(-50.8, G.Z_LOBBY_FT), (-3.0, G.Z_LOBBY_FT), (0.0, G.Z_L3_FT), (22.9, G.Z_L3_FT)], "#10b981", width=2.6)
         svg.add_polyline("walls", [(45.8, G.Z_L3_FT), (85.4, G.Z_L3_FT)], "#10b981", width=2.8)
-        svg.add_polyline("stairs_millwork", [(45.8, G.Z_L3_FT), (45.8, G.Z_L3_FT + 3.1)], "#facc15", width=2.8)
-        svg.add_polyline("stairs_millwork", [(22.9, G.Z_L3_FT), (22.9, G.Z_REF_GALLERY_FT), (33.0, G.Z_REF_GALLERY_FT)], "#c084fc", width=2.2)
+        svg.add_polyline("stairs_millwork", [(45.8, G.Z_L3_FT), (45.8, G.Z_L3_FT + 3.2)], "#facc15", width=2.8)
+        svg.add_polyline("stairs_millwork", [(22.9, G.Z_L3_FT), (22.9, G.Z_REF_GALLERY_FT), (32.2, G.Z_REF_GALLERY_FT), (32.2, G.Z_REF_GALLERY_FT + 3.2)], "#c084fc", width=2.4)
         svg.add_polyline("walls", [(-21.0, G.Z_L2_FT), (85.4, G.Z_L2_FT)], "#10b981", width=2.6)
         svg.add_polyline("walls", [(33.0, G.Z_L1_FT), (85.4, G.Z_L1_FT)], "#10b981", width=2.6)
         svg.add_line("walls", (85.4, G.Z_CRAWL_FT), (85.4, G.Z_FAN_PARAPET_N_FT), "#10b981", width=2.8)

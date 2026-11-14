@@ -47,14 +47,18 @@ MATERIALS: dict[str, dict] = {
     "floor_oatmeal": {"color": (0.71, 0.67, 0.60), "roughness": 0.80, "metallic": 0.03},
     "floor_lobby": {"color": (0.62, 0.58, 0.53), "roughness": 0.76, "metallic": 0.04},
     "floor_lower": {"color": (0.66, 0.64, 0.59), "roughness": 0.82, "metallic": 0.03},
+    "carpet_blue": {"color": (0.38, 0.46, 0.54), "roughness": 0.90, "metallic": 0.02},
+    "stack_canopy_grey": {"color": (0.41, 0.44, 0.45), "roughness": 0.62, "metallic": 0.18},
 
-    # Aalto Birch, Hemlock, Black Linoleum & Brass Millwork
+    # Aalto Birch, Hemlock, Black Linoleum, Dark Bronze & White Enamel Millwork
     "birch_wood": {"color": (0.82, 0.63, 0.40), "roughness": 0.54, "metallic": 0.05},
     "hemlock_slat": {"color": (0.75, 0.55, 0.33), "roughness": 0.58, "metallic": 0.05},
     "louver_wood": {"color": (0.67, 0.47, 0.28), "roughness": 0.64, "metallic": 0.06},
     "black_linoleum": {"color": (0.14, 0.15, 0.17), "roughness": 0.48, "metallic": 0.08},
     "brass": {"color": (0.82, 0.66, 0.31), "roughness": 0.28, "metallic": 0.86},
+    "railing_bronze": {"color": (0.20, 0.19, 0.18), "roughness": 0.36, "metallic": 0.78},
     "lamp_shade": {"color": (0.98, 0.96, 0.90), "roughness": 0.30, "metallic": 0.12},
+    "lamp_white": {"color": (0.97, 0.97, 0.95), "roughness": 0.24, "metallic": 0.10, "furniture": True},
     "lamp_glow": {"color": (1.00, 0.95, 0.82), "emissive": True},
 
     # Roof & Skylights
@@ -472,8 +476,9 @@ def add_stepped_stair_ft(
     z_top_m: float,
     z_bot_m: float,
     n_steps: int = 16,
+    tread_attrs: dict | None = None,
 ):
-    """Build a true 3D stepped architectural stair with birch treads, white stringers, and brass handrails."""
+    """Build a true 3D stepped architectural stair with treads, white stringers, birch caps, and bronze handrails."""
     dx, dy = p_bot_ft[0] - p_top_ft[0], p_bot_ft[1] - p_top_ft[1]
     L = math.hypot(dx, dy)
     if L < 0.5:
@@ -483,6 +488,7 @@ def add_stepped_stair_ft(
     ux, uy = math.cos(rad), math.sin(rad)
     nx, ny = -uy, ux
 
+    t_mat = tread_attrs or MATERIALS["birch_wood"]
     step_run = L / n_steps
     dz = (z_top_m - z_bot_m) / n_steps
     for s in range(n_steps):
@@ -490,27 +496,27 @@ def add_stepped_stair_ft(
         scy = p_top_ft[1] + uy * (s + 0.5) * step_run
         zt = z_top_m - s * dz
         zb = zt - dz - 0.14
-        add_oriented_box_ft(mesh, (scx, scy), step_run * 1.04, width_ft - 0.3, ang_deg, zb, zt, MATERIALS["birch_wood"])
+        add_oriented_box_ft(mesh, (scx, scy), step_run * 1.04, width_ft - 0.3, ang_deg, zb, zt, t_mat)
 
-    # Flanking white stringer / balustrade walls + brass top handrails
+    # Flanking white stringer / balustrade walls + birch sloped cap + dark-bronze tubular handrail
+    rail_mat = {**MATERIALS["railing_bronze"], "furniture": True}
     for side in (-1.0, 1.0):
         off = side * (width_ft * 0.5 - 0.12)
         s0 = xy_m((p_top_ft[0] + nx * off, p_top_ft[1] + ny * off))
         s1 = xy_m((p_bot_ft[0] + nx * off, p_bot_ft[1] + ny * off))
         s0_in = xy_m((p_top_ft[0] + nx * (off - side * 0.22), p_top_ft[1] + ny * (off - side * 0.22)))
         s1_in = xy_m((p_bot_ft[0] + nx * (off - side * 0.22), p_bot_ft[1] + ny * (off - side * 0.22)))
+        r_mid0 = xy_m((p_top_ft[0] + nx * (off - side * 0.11), p_top_ft[1] + ny * (off - side * 0.11)))
+        r_mid1 = xy_m((p_bot_ft[0] + nx * (off - side * 0.11), p_bot_ft[1] + ny * (off - side * 0.11)))
 
-        # Sloped solid low parapet/stringer + brass rail
-        h_rail = 0.88
-        for quad_a, quad_b, z_lo_a, z_hi_a, z_lo_b, z_hi_b, mat in [
-            (s0, s1, z_top_m - 0.28, z_top_m + 0.55, z_bot_m - 0.28, z_bot_m + 0.55, MATERIALS["white_plaster"]),
-            (s0, s1, z_top_m + h_rail - 0.06, z_top_m + h_rail, z_bot_m + h_rail - 0.06, z_bot_m + h_rail, MATERIALS["brass"]),
+        for z_lo_a, z_hi_a, z_lo_b, z_hi_b, mat in [
+            (z_top_m - 0.28, z_top_m + 0.54, z_bot_m - 0.28, z_bot_m + 0.54, MATERIALS["white_plaster"]),
+            (z_top_m + 0.54, z_top_m + 0.59, z_bot_m + 0.54, z_bot_m + 0.59, MATERIALS["birch_wood"]),
         ]:
-            # Outer & inner faces + top strip
-            p_a0 = (quad_a[0], quad_a[1], z_lo_a)
-            p_a1 = (quad_a[0], quad_a[1], z_hi_a)
-            p_b0 = (quad_b[0], quad_b[1], z_lo_b)
-            p_b1 = (quad_b[0], quad_b[1], z_hi_b)
+            p_a0 = (s0[0], s0[1], z_lo_a)
+            p_a1 = (s0[0], s0[1], z_hi_a)
+            p_b0 = (s1[0], s1[1], z_lo_b)
+            p_b1 = (s1[0], s1[1], z_hi_b)
             q_a0 = (s0_in[0], s0_in[1], z_lo_a)
             q_a1 = (s0_in[0], s0_in[1], z_hi_a)
             q_b0 = (s1_in[0], s1_in[1], z_lo_b)
@@ -529,3 +535,436 @@ def add_stepped_stair_ft(
                 add_quad(mesh, p_a0, p_b0, q_b0, q_a0, mat)
                 add_quad(mesh, p_a0, q_a0, q_a1, p_a1, mat)
                 add_quad(mesh, q_b0, p_b0, p_b1, q_b1, mat)
+
+        # Tubular dark-bronze handrail on short standoff posts above birch cap
+        add_polytube_m(
+            mesh,
+            [(r_mid0[0], r_mid0[1], z_top_m + 0.89), (r_mid1[0], r_mid1[1], z_bot_m + 0.89)],
+            0.019,
+            rail_mat,
+            sides=8,
+        )
+        n_posts = max(3, int(L / 4.2) + 1)
+        for p_idx in range(n_posts):
+            t_p = 0.06 + 0.88 * (p_idx / max(1, n_posts - 1))
+            px = r_mid0[0] + (r_mid1[0] - r_mid0[0]) * t_p
+            py = r_mid0[1] + (r_mid1[1] - r_mid0[1]) * t_p
+            pz = z_top_m + (z_bot_m - z_top_m) * t_p
+            add_polytube_m(mesh, [(px, py, pz + 0.58), (px, py, pz + 0.89)], 0.011, rail_mat, sides=6)
+
+
+# =============================================================================
+# WATERTIGHT 3D MILLWORK, TUBULAR RAILING, LAMP & SEATING PRIMITIVES
+# =============================================================================
+
+def _v_sub(a: tuple[float, float, float], b: tuple[float, float, float]) -> tuple[float, float, float]:
+    return (a[0] - b[0], a[1] - b[1], a[2] - b[2])
+
+
+def _v_dot(a: tuple[float, float, float], b: tuple[float, float, float]) -> float:
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+
+
+def _v_cross(a: tuple[float, float, float], b: tuple[float, float, float]) -> tuple[float, float, float]:
+    return (
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0],
+    )
+
+
+def _v_norm(a: tuple[float, float, float]) -> tuple[float, float, float]:
+    L = math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2])
+    if L < 1e-9:
+        return (0.0, 0.0, 1.0)
+    return (a[0] / L, a[1] / L, a[2] / L)
+
+
+def _rodrigues_rotate(
+    v: tuple[float, float, float],
+    k_unit: tuple[float, float, float],
+    cos_a: float,
+    sin_a: float,
+) -> tuple[float, float, float]:
+    kv = _v_cross(k_unit, v)
+    dot_kv = _v_dot(k_unit, v)
+    return (
+        v[0] * cos_a + kv[0] * sin_a + k_unit[0] * dot_kv * (1.0 - cos_a),
+        v[1] * cos_a + kv[1] * sin_a + k_unit[1] * dot_kv * (1.0 - cos_a),
+        v[2] * cos_a + kv[2] * sin_a + k_unit[2] * dot_kv * (1.0 - cos_a),
+    )
+
+
+def add_polytube_m(
+    mesh,
+    pts_m: list[tuple[float, float, float]],
+    radius_m: float,
+    attrs: dict,
+    sides: int = 8,
+):
+    """
+    Sweep a 100% closed 2-manifold mitered polygonal tube along 3D polyline `pts_m` (in metres).
+    Uses parallel-transported Rodrigues frames + bisector-plane miter joints + closed end caps.
+    """
+    pts: list[tuple[float, float, float]] = []
+    for p in pts_m:
+        if not pts or math.dist(p, pts[-1]) > 1e-4:
+            pts.append((float(p[0]), float(p[1]), float(p[2])))
+    if len(pts) < 2:
+        return
+
+    tangents = [_v_norm(_v_sub(pts[i + 1], pts[i])) for i in range(len(pts) - 1)]
+    t0 = tangents[0]
+    ref = (0.0, 0.0, 1.0) if abs(t0[2]) < 0.88 else (1.0, 0.0, 0.0)
+    n_cur = _v_norm(_v_cross(ref, t0))
+    b_cur = _v_norm(_v_cross(t0, n_cur))
+    frames = [(n_cur, b_cur)]
+
+    for s in range(1, len(tangents)):
+        t_prev = tangents[s - 1]
+        t_next = tangents[s]
+        ax = _v_cross(t_prev, t_next)
+        sin_a = math.sqrt(_v_dot(ax, ax))
+        cos_a = max(-1.0, min(1.0, _v_dot(t_prev, t_next)))
+        if sin_a > 1e-6:
+            k_u = (ax[0] / sin_a, ax[1] / sin_a, ax[2] / sin_a)
+            n_cur = _v_norm(_rodrigues_rotate(n_cur, k_u, cos_a, sin_a))
+            b_cur = _v_norm(_v_cross(t_next, n_cur))
+        frames.append((n_cur, b_cur))
+
+    angles = [2.0 * math.pi * i / sides for i in range(sides)]
+    rings: list[list[tuple[float, float, float]]] = []
+
+    for v_idx, pv in enumerate(pts):
+        if v_idx == 0:
+            nv, bv = frames[0]
+            rings.append(
+                [
+                    (
+                        pv[0] + radius_m * (math.cos(a) * nv[0] + math.sin(a) * bv[0]),
+                        pv[1] + radius_m * (math.cos(a) * nv[1] + math.sin(a) * bv[1]),
+                        pv[2] + radius_m * (math.cos(a) * nv[2] + math.sin(a) * bv[2]),
+                    )
+                    for a in angles
+                ]
+            )
+        elif v_idx == len(pts) - 1:
+            nv, bv = frames[-1]
+            rings.append(
+                [
+                    (
+                        pv[0] + radius_m * (math.cos(a) * nv[0] + math.sin(a) * bv[0]),
+                        pv[1] + radius_m * (math.cos(a) * nv[1] + math.sin(a) * bv[1]),
+                        pv[2] + radius_m * (math.cos(a) * nv[2] + math.sin(a) * bv[2]),
+                    )
+                    for a in angles
+                ]
+            )
+        else:
+            t_in = tangents[v_idx - 1]
+            t_out = tangents[v_idx]
+            m_sum = (t_in[0] + t_out[0], t_in[1] + t_out[1], t_in[2] + t_out[2])
+            m_plane = _v_norm(m_sum) if _v_dot(m_sum, m_sum) > 1e-6 else t_in
+            denom = max(0.28, _v_dot(t_in, m_plane))
+            nv, bv = frames[v_idx - 1]
+            p_prev = pts[v_idx - 1]
+            ring_v = []
+            for a in angles:
+                ca, sa = math.cos(a), math.sin(a)
+                qx = p_prev[0] + radius_m * (ca * nv[0] + sa * bv[0])
+                qy = p_prev[1] + radius_m * (ca * nv[1] + sa * bv[1])
+                qz = p_prev[2] + radius_m * (ca * nv[2] + sa * bv[2])
+                t_ray = _v_dot((pv[0] - qx, pv[1] - qy, pv[2] - qz), m_plane) / denom
+                ring_v.append((qx + t_ray * t_in[0], qy + t_ray * t_in[1], qz + t_ray * t_in[2]))
+            rings.append(ring_v)
+
+    smooth_attrs = {**attrs, "smooth": True}
+    for s in range(len(rings) - 1):
+        r0 = rings[s]
+        r1 = rings[s + 1]
+        for i in range(sides):
+            j = (i + 1) % sides
+            add_quad(mesh, r0[i], r0[j], r1[j], r1[i], smooth_attrs)
+
+    # Start cap (-T_0 normal) and end cap (+T_{end} normal)
+    p_start = pts[0]
+    p_end = pts[-1]
+    for i in range(sides):
+        j = (i + 1) % sides
+        add_tri(mesh, p_start, rings[0][j], rings[0][i], attrs)
+        add_tri(mesh, p_end, rings[-1][i], rings[-1][j], attrs)
+
+
+def add_lathe_solid_m(
+    mesh,
+    center_m: tuple[float, float, float],
+    profile_rz_m: list[tuple[float, float]],
+    band_attrs: dict | list[dict],
+    bottom_attrs: dict | None = None,
+    top_attrs: dict | None = None,
+    sides: int = 16,
+):
+    """
+    Build a 100% closed 2-manifold solid of revolution around vertical axis through `center_m`.
+    `profile_rz_m` lists `(r_m, z_rel_m)` from bottom cap (`-Z`) to top cap (`+Z`), all `r_m > 0`.
+    """
+    if len(profile_rz_m) < 2:
+        return
+    cx, cy, cz = center_m
+    n_bands = len(profile_rz_m) - 1
+    attrs_list = band_attrs if isinstance(band_attrs, list) else [band_attrs] * n_bands
+    b_cap_attrs = bottom_attrs or attrs_list[0]
+    t_cap_attrs = top_attrs or attrs_list[-1]
+
+    rings: list[list[tuple[float, float, float]]] = []
+    for r_m, z_rel in profile_rz_m:
+        ring = []
+        for i in range(sides):
+            ang = 2.0 * math.pi * i / sides
+            ring.append((cx + r_m * math.cos(ang), cy + r_m * math.sin(ang), cz + z_rel))
+        rings.append(ring)
+
+    for b in range(n_bands):
+        ra, rb = rings[b], rings[b + 1]
+        mat = {**attrs_list[b], "smooth": True}
+        for i in range(sides):
+            j = (i + 1) % sides
+            add_quad(mesh, ra[i], ra[j], rb[j], rb[i], mat)
+
+    bot_c = (cx, cy, cz + profile_rz_m[0][1])
+    top_c = (cx, cy, cz + profile_rz_m[-1][1])
+    for i in range(sides):
+        j = (i + 1) % sides
+        add_tri(mesh, bot_c, rings[0][j], rings[0][i], b_cap_attrs)
+        add_tri(mesh, top_c, rings[-1][i], rings[-1][j], {**t_cap_attrs, "smooth": True})
+
+
+def add_tubular_arc_railing_ft(
+    mesh,
+    center_ft: tuple[float, float],
+    radius_ft: float,
+    deg0: float,
+    deg1: float,
+    z_floor_m: float,
+    post_step_deg: float = 9.6,
+):
+    """
+    Build Alvar Aalto's open 3-rail dark-bronze tubular steel guardrail (`Angel-090508`, `mezzaninestairsweb`):
+    slender vertical posts + heavy top handrail (+0.91 m) + two horizontal mid-rails (+0.61 m, +0.32 m).
+    """
+    if deg0 > deg1:
+        deg0, deg1 = deg1, deg0
+    rail_mat = {**MATERIALS["railing_bronze"], "furniture": True}
+    cx, cy = center_ft
+    n_arc = max(12, int((deg1 - deg0) / 2.5))
+    arc_xy_m = [
+        xy_m((cx + radius_ft * math.cos(math.radians(deg0 + (deg1 - deg0) * k / n_arc)),
+              cy + radius_ft * math.sin(math.radians(deg0 + (deg1 - deg0) * k / n_arc))))
+        for k in range(n_arc + 1)
+    ]
+
+    for z_rel, r_tube in ((0.91, 0.020), (0.61, 0.011), (0.32, 0.011)):
+        pts_3d = [(x, y, z_floor_m + z_rel) for x, y in arc_xy_m]
+        add_polytube_m(mesh, pts_3d, r_tube, rail_mat, sides=8)
+
+    n_posts = max(2, round((deg1 - deg0) / post_step_deg))
+    for k in range(n_posts + 1):
+        deg = deg0 + (deg1 - deg0) * (k / n_posts)
+        px, py = xy_m((cx + radius_ft * math.cos(math.radians(deg)), cy + radius_ft * math.sin(math.radians(deg))))
+        add_polytube_m(mesh, [(px, py, z_floor_m), (px, py, z_floor_m + 0.91)], 0.015, rail_mat, sides=8)
+
+
+def add_aalto_parapet_lamp(
+    mesh,
+    center_ft: tuple[float, float],
+    r_well_face_ft: float,
+    deg: float,
+    z_floor_m: float,
+    inward_sign: int = 1,
+):
+    """
+    Alvar Aalto's custom parapet-wall-mounted workbench reading lamp (`Angel-090508`, `IMG_5143`, `mezzaninestairsweb`):
+      - White steel channel bracket bolted to the well-facing parapet face (`r_well_face_ft`)
+      - White tubular steel arm angling ~55 deg up & across the raised birch curb (`inward_sign = +1` for L3, `-1` for Mezzanine)
+        and bending horizontally into the upper shoulder of the shade
+      - Smooth oblate rounded white spun-aluminum mushroom dome + stepped cylindrical anti-glare collar
+        + recessed warm glowing diffuser + delicate vertical pull-switch stem (leaving the desk 100% clear!).
+    """
+    rad = math.radians(deg)
+    urx, ury = math.cos(rad), math.sin(rad)
+    ix, iy = inward_sign * urx, inward_sign * ury
+
+    cx, cy = center_ft
+    ox, oy = xy_m((cx + r_well_face_ft * urx, cy + r_well_face_ft * ury))
+
+    white_mat = MATERIALS["lamp_white"]
+    glow_mat = {**MATERIALS["lamp_glow"], "furniture": True}
+    brass_mat = {**MATERIALS["brass"], "furniture": True}
+
+    # 1. Wall-mount white rectangular steel channel/box on well-facing parapet face
+    brk_r_ft = r_well_face_ft - inward_sign * (0.014 / FT_TO_M)
+    brk_pt_ft = (cx + brk_r_ft * urx, cy + brk_r_ft * ury)
+    add_oriented_box_ft(
+        mesh,
+        brk_pt_ft,
+        0.028 / FT_TO_M,
+        0.052 / FT_TO_M,
+        deg,
+        z_floor_m + 0.74,
+        z_floor_m + 0.91,
+        white_mat,
+    )
+
+    # 2. Angled white enameled steel tubular arm (r = 10.5 mm)
+    arm_pts = [
+        (ox - 0.014 * ix, oy - 0.014 * iy, z_floor_m + 0.89),
+        (ox - 0.014 * ix, oy - 0.014 * iy, z_floor_m + 1.005),
+        (ox + 0.265 * ix, oy + 0.265 * iy, z_floor_m + 1.375),
+        (ox + 0.350 * ix, oy + 0.350 * iy, z_floor_m + 1.375),
+    ]
+    add_polytube_m(mesh, arm_pts, 0.0105, white_mat, sides=8)
+
+    # 3. Oblate rounded mushroom dome + stepped cylindrical anti-glare collar + recessed warm diffuser
+    s_dome = 0.440
+    dome_center = (ox + s_dome * ix, oy + s_dome * iy, z_floor_m + 1.275)
+    shade_profile = [
+        (0.084, 0.012),  # recessed diffuser rim
+        (0.084, 0.000),  # inner anti-glare collar cavity wall
+        (0.098, 0.000),  # anti-glare collar bottom lip (7.7" dia)
+        (0.098, 0.026),  # vertical stepped cylindrical collar
+        (0.128, 0.034),  # crisp outward step into dome underside
+        (0.148, 0.050),
+        (0.154, 0.068),  # smooth oblate mushroom equator (12.1" dia)
+        (0.146, 0.088),
+        (0.128, 0.108),
+        (0.096, 0.126),
+        (0.052, 0.138),
+        (0.018, 0.143),  # rounded crown
+    ]
+    add_lathe_solid_m(
+        mesh,
+        dome_center,
+        shade_profile,
+        band_attrs=white_mat,
+        bottom_attrs=glow_mat,
+        top_attrs=white_mat,
+        sides=18,
+    )
+
+    # 4. Delicate off-center vertical pull-switch stem below diffuser
+    sw_x = ox + (s_dome - 0.045) * ix
+    sw_y = oy + (s_dome - 0.045) * iy
+    add_polytube_m(mesh, [(sw_x, sw_y, z_floor_m + 1.215), (sw_x, sw_y, z_floor_m + 1.287)], 0.004, brass_mat, sides=6)
+
+
+def add_counter_wall_bracket(
+    mesh,
+    center_ft: tuple[float, float],
+    r_inner_wall_ft: float,
+    deg: float,
+    z_floor_m: float,
+    seat_sign: int = 1,
+):
+    """White painted steel wall T-bracket supporting the cantilevered reading counters (`IMG_5143`, `Angel-090508`)."""
+    rad = math.radians(deg)
+    urx, ury = math.cos(rad), math.sin(rad)
+    sx, sy = seat_sign * urx, seat_sign * ury
+    ox, oy = xy_m((center_ft[0] + r_inner_wall_ft * urx, center_ft[1] + r_inner_wall_ft * ury))
+    white_mat = MATERIALS["lamp_white"]
+
+    # Vertical post + cantilevered horizontal under-counter support arm
+    add_polytube_m(
+        mesh,
+        [
+            (ox + 0.035 * sx, oy + 0.035 * sy, z_floor_m + 0.16),
+            (ox + 0.035 * sx, oy + 0.035 * sy, z_floor_m + 0.685),
+            (ox + 0.480 * sx, oy + 0.480 * sy, z_floor_m + 0.685),
+        ],
+        0.011,
+        white_mat,
+        sides=6,
+    )
+    # Two horizontal wall-mounting lugs bolted to parapet plaster (`IMG_5143`)
+    for z_lug in (0.20, 0.48):
+        add_polytube_m(
+            mesh,
+            [(ox, oy, z_floor_m + z_lug), (ox + 0.038 * sx, oy + 0.038 * sy, z_floor_m + z_lug)],
+            0.009,
+            white_mat,
+            sides=6,
+        )
+
+
+def add_artek_stool_60(mesh, pt_ft: tuple[float, float], z_floor_m: float, rot_deg: float = 0.0):
+    """Alvar Aalto Artek E60 4-legged bent-birch backless reading stool (`Angel-090508` Level 3 counter)."""
+    birch = {**MATERIALS["birch_wood"], "furniture": True}
+    lino = {**MATERIALS["black_linoleum"], "furniture": True}
+
+    add_cylinder_ft(mesh, pt_ft, 0.175 / FT_TO_M, z_floor_m + 0.422, z_floor_m + 0.448, birch, sides=14)
+    add_cylinder_ft(mesh, pt_ft, 0.168 / FT_TO_M, z_floor_m + 0.448, z_floor_m + 0.458, lino, sides=14)
+
+    cx, cy = xy_m(pt_ft)
+    for k in range(4):
+        ang = math.radians(rot_deg + 45.0 + 90.0 * k)
+        ca, sa = math.cos(ang), math.sin(ang)
+        leg_pts = [
+            (cx + 0.178 * ca, cy + 0.178 * sa, z_floor_m),
+            (cx + 0.166 * ca, cy + 0.166 * sa, z_floor_m + 0.390),
+            (cx + 0.132 * ca, cy + 0.132 * sa, z_floor_m + 0.428),
+            (cx + 0.075 * ca, cy + 0.075 * sa, z_floor_m + 0.432),
+        ]
+        add_polytube_m(mesh, leg_pts, 0.015, birch, sides=6)
+
+
+def add_artek_chair_69(mesh, pt_ft: tuple[float, float], facing_deg: float, z_floor_m: float):
+    """
+    Alvar Aalto Artek 69 reading chair (`IMG_5143` Mezzanine outer-arc workstations):
+      - Wide cushioned matte-black circular seat over birch seat ring
+      - 2 front steam-bent birch L-legs
+      - 2 rear splayed birch legs rising continuously into side-bolted backrest uprights
+      - Curved steam-bent birch backrest rail hugging the reader's back.
+    """
+    birch = {**MATERIALS["birch_wood"], "furniture": True}
+    cushion = {**MATERIALS["black_linoleum"], "furniture": True}
+
+    # Seat frame & matte-black upholstered seat cushion
+    add_cylinder_ft(mesh, pt_ft, 0.205 / FT_TO_M, z_floor_m + 0.405, z_floor_m + 0.432, birch, sides=16)
+    add_cylinder_ft(mesh, pt_ft, 0.215 / FT_TO_M, z_floor_m + 0.432, z_floor_m + 0.465, cushion, sides=16)
+
+    cx, cy = xy_m(pt_ft)
+    # 2 Front steam-bent birch L-legs (+/- 42 deg from facing direction)
+    for d_ang in (-42.0, 42.0):
+        ang = math.radians(facing_deg + d_ang)
+        ca, sa = math.cos(ang), math.sin(ang)
+        front_leg = [
+            (cx + 0.218 * ca, cy + 0.218 * sa, z_floor_m),
+            (cx + 0.198 * ca, cy + 0.198 * sa, z_floor_m + 0.392),
+            (cx + 0.135 * ca, cy + 0.135 * sa, z_floor_m + 0.418),
+        ]
+        add_polytube_m(mesh, front_leg, 0.016, birch, sides=6)
+
+    # 2 Rear splayed birch legs + continuous backrest uprights (+/- 145 deg from facing direction)
+    for d_ang in (-145.0, 145.0):
+        ang = math.radians(facing_deg + d_ang)
+        ca, sa = math.cos(ang), math.sin(ang)
+        rear_stile = [
+            (cx + 0.248 * ca, cy + 0.248 * sa, z_floor_m),
+            (cx + 0.208 * ca, cy + 0.208 * sa, z_floor_m + 0.420),
+            (cx + 0.232 * ca, cy + 0.232 * sa, z_floor_m + 0.768),
+        ]
+        add_polytube_m(mesh, rear_stile, 0.017, birch, sides=6)
+
+    # Curved steam-bent birch backrest band spanning 114 deg across rear uprights (`IMG_5143`)
+    add_arc_band_ft(
+        mesh,
+        pt_ft,
+        0.214 / FT_TO_M,
+        0.232 / FT_TO_M,
+        facing_deg + 123.0,
+        facing_deg + 237.0,
+        z_floor_m + 0.665,
+        z_floor_m + 0.772,
+        birch,
+        steps=7,
+    )
+
