@@ -19,7 +19,9 @@ import math
 
 from phiarchitect.mountangel.vectors import (
     AaltoGeometry,
+    get_faceted_curtain_bays_ft,
     get_h_pier_polygons_ft,
+    get_north_perimeter_with_pockets_ft,
     polar_pt,
 )
 
@@ -39,59 +41,91 @@ def _add_faceted_curtain_bay(
     mesh,
     p0_ft: tuple[float, float],
     p1_ft: tuple[float, float],
-    z_base_m: float,
-    z_l1_m: float,
     z_l2_m: float,
     z_l3_m: float,
     z_parapet_m: float,
-    include_l1_windows: bool = True,
+    trim_start_ft: float = 0.0,
+    trim_end_ft: float = 0.0,
 ):
     """
-    Build one faceted North bay (A-B, B-C, C-D, or D-E) with:
-      - Solid buff-brick spandrel bands at base, L1-L2 slab, L2-L3 slab, and tipped North parapet
-      - Ribbon glazing bands at L1, L2, and L3 high clerestory
+    Build one cantilevered Level 2–3 faceted North bay (A-B, B-C, C-D, or D-E)
+    terminating flush against the mitered outer fin tips of H-Columns B, C, D:
+      - Solid buff-brick spandrel bands (`offset_mode="right"` so outer brick face is exact)
+      - Recessed ribbon glazing bands at L2 and L3 high clerestory
       - Vertical bronze mullions & exterior vertical wood sun-shading louvers
     """
     dx, dy = p1_ft[0] - p0_ft[0], p1_ft[1] - p0_ft[1]
     L = math.hypot(dx, dy)
     ux, uy = dx / L, dy / L
-    # Trim 2.6 ft at each end where H-Piers / Corner Jambs sit
-    trim = 2.6
-    q0 = (p0_ft[0] + ux * trim, p0_ft[1] + uy * trim)
-    q1 = (p1_ft[0] - ux * trim, p1_ft[1] - uy * trim)
+    # Inward normal (Southward into fan: rotate clockwise 90 deg -> (uy, -ux))
+    ix, iy = uy, -ux
 
-    # Corner jamb piers if at A or E
+    q0 = (p0_ft[0] + ux * trim_start_ft, p0_ft[1] + uy * trim_start_ft)
+    q1 = (p1_ft[0] - ux * trim_end_ft, p1_ft[1] - uy * trim_end_ft)
+
     spandrels = [
-        (z_base_m, z_l1_m + 0.85),          # Footing & L1 sill spandrel
-        (z_l1_m + 2.65, z_l2_m + 0.85),     # L1 head to L2 sill buff-brick spandrel
-        (z_l2_m + 2.75, z_l3_m + 0.90),     # L2 head to L3 carrel sill buff-brick spandrel
-        (z_parapet_m - 0.95, z_parapet_m),  # Upper North brick parapet fascia
+        (z_l2_m - 0.30, z_l2_m + 0.85),       # Cantilevered L2 slab edge to L2 window sill
+        (z_l2_m + 2.75, z_l3_m + 0.90),       # L2 window head to L3 carrel sill buff-brick spandrel
+        (z_parapet_m - 0.95, z_parapet_m),    # Upper North brick parapet fascia
     ]
-    if not include_l1_windows:
-        spandrels[0] = (z_base_m, z_l2_m + 0.85)
-
     for zb, zt in spandrels:
-        add_wall_strip_ft(mesh, [q0, q1], 1.15, zb, zt, MATERIALS["buff_brick"])
+        add_wall_strip_ft(mesh, [q0, q1], 1.12, zb, zt, MATERIALS["buff_brick"], offset_mode="right")
 
-    # Window Glazing Bands (L1, L2, and tall L3 Clerestory rising into the Tipped North Roof!)
+    # Window Glazing Bands (L2 ribbon and tall L3 Clerestory rising into the Tipped North Roof)
+    g0 = (q0[0] + ix * 0.48, q0[1] + iy * 0.48)
+    g1 = (q1[0] + ix * 0.48, q1[1] + iy * 0.48)
     win_bands = [
         (z_l2_m + 0.85, z_l2_m + 2.75, True),
         (z_l3_m + 0.90, z_parapet_m - 0.95, True),
     ]
-    if include_l1_windows:
-        win_bands.insert(0, (z_l1_m + 0.85, z_l1_m + 2.65, False))
 
     ang_deg = math.degrees(math.atan2(dy, dx))
-    n_mull = max(4, int((L - 2 * trim) / 5.5))
+    eff_L = max(8.0, L - trim_start_ft - trim_end_ft)
+    n_mull = max(4, int(eff_L / 5.2))
     for zb, zt, has_louvers in win_bands:
-        add_wall_strip_ft(mesh, [q0, q1], 0.18, zb, zt, MATERIALS["glass_clear"])
+        add_wall_strip_ft(mesh, [g0, g1], 0.18, zb, zt, MATERIALS["glass_clear"], offset_mode="center")
         for k in range(n_mull + 1):
             t = k / n_mull
-            mx = q0[0] + (q1[0] - q0[0]) * t
-            my = q0[1] + (q1[1] - q0[1]) * t
-            add_oriented_box_ft(mesh, (mx, my), 0.25, 0.55, ang_deg, zb, zt, MATERIALS["mullion_bronze"])
+            mx = g0[0] + (g1[0] - g0[0]) * t
+            my = g0[1] + (g1[1] - g0[1]) * t
+            add_oriented_box_ft(mesh, (mx, my), 0.24, 0.52, ang_deg, zb, zt, MATERIALS["mullion_bronze"])
         if has_louvers:
-            add_louver_bank_ft(mesh, q0, q1, zb + 0.08, zt - 0.08, spacing_ft=2.4, blade_depth_ft=0.95, blade_thick_ft=0.20)
+            add_louver_bank_ft(mesh, q0, q1, zb + 0.08, zt - 0.08, spacing_ft=2.35, blade_depth_ft=0.92, blade_thick_ft=0.19)
+
+
+def _add_stepped_l1_concrete_bay(
+    mesh,
+    p0_ft: tuple[float, float],
+    p1_ft: tuple[float, float],
+    z_base_m: float,
+    z_l1_m: float,
+    z_l2_m: float,
+):
+    """
+    Build the stepped-back Level 1 exposed-concrete foundation wall & high clerestory
+    ribbon windows (`(M)` on North Elevation Sheet 12) flush with the H-column U-channels.
+    """
+    dx, dy = p1_ft[0] - p0_ft[0], p1_ft[1] - p0_ft[1]
+    L = math.hypot(dx, dy)
+    ux, uy = dx / L, dy / L
+    ix, iy = uy, -ux
+
+    z_win_bot = z_l1_m + 2.15
+    z_win_top = z_l2_m - 0.55
+    add_wall_strip_ft(mesh, [p0_ft, p1_ft], 1.15, z_base_m, z_win_bot, MATERIALS["concrete"], offset_mode="right")
+    add_wall_strip_ft(mesh, [p0_ft, p1_ft], 1.15, z_win_top, z_l2_m - 0.30, MATERIALS["concrete"], offset_mode="right")
+
+    g0 = (p0_ft[0] + ix * 0.45, p0_ft[1] + iy * 0.45)
+    g1 = (p1_ft[0] + ix * 0.45, p1_ft[1] + iy * 0.45)
+    add_wall_strip_ft(mesh, [g0, g1], 0.18, z_win_bot, z_win_top, MATERIALS["glass_clear"], offset_mode="center")
+
+    ang_deg = math.degrees(math.atan2(dy, dx))
+    n_mull = max(4, int(L / 6.0))
+    for k in range(n_mull + 1):
+        t = k / n_mull
+        mx = g0[0] + (g1[0] - g0[0]) * t
+        my = g0[1] + (g1[1] - g0[1]) * t
+        add_oriented_box_ft(mesh, (mx, my), 0.22, 0.48, ang_deg, z_win_bot, z_win_top, MATERIALS["mullion_bronze"])
 
 
 def build_envelope_and_south_wing(scene):
@@ -107,7 +141,7 @@ def build_envelope_and_south_wing(scene):
     z_par_n = m_ft(G.Z_FAN_PARAPET_N_FT)    #  +5.33 m
 
     # =========================================================================
-    # LAYER 5: STRUCTURAL COLUMNS, PAIRED COLUMNS & PERIMETER H-PIERS
+    # LAYER 5: STRUCTURAL COLUMNS, PAIRED COLUMNS & 3 IRREGULAR H-COLUMNS
     # =========================================================================
     grp_str = create_scene_group(scene, "5_Structural_Frame")
     ms = grp_str.mesh
@@ -117,7 +151,7 @@ def build_envelope_and_south_wing(scene):
         z_top = z_south_rf - 0.15 if cname != "South_W1" else z_fan_low
         add_cylinder_ft(ms, cpt, 0.78, z_l1, z_top, MATERIALS["white_column"], sides=18)
 
-    # 6 Paired Twin 18"Ø Columns on Radial Axes B, C, D (4'-10" c/c, Level 1 -> Fan Roof!)
+    # 6 Paired Twin 18"Ø Columns straddling WP #3 Radial Axes B, C, D (5'-4" c/c, Sheet 06-a6)
     for _, cpt in G.PAIRED_COLS_FT.items():
         add_cylinder_ft(ms, cpt, 0.75, z_l1, z_fan_low + 0.15, MATERIALS["white_column"], sides=18)
 
@@ -126,16 +160,35 @@ def build_envelope_and_south_wing(scene):
         z_bot = z_l2 if cpt[1] > -29.0 else z_lobby - 0.8
         add_cylinder_ft(ms, cpt, 0.68, z_bot, z_south_rf - 0.20, MATERIALS["white_column"], sides=14)
 
-    # 3 Full-Height Perimeter H-Piers (B, C, D) — Buff-Brick Exterior Flanges + Dark Steel Web Core
-    for hp_poly in get_h_pier_polygons_ft():
-        add_extruded_polygon_ft(ms, hp_poly, z_crawl + 0.8, z_par_n + 0.08, MATERIALS["buff_brick_dark"], MATERIALS["buff_brick"])
-    for hp in G.H_PIERS:
-        add_oriented_box_ft(ms, hp["center"], 3.8, 1.4, hp["angle_deg"], z_crawl + 0.8, z_par_n + 0.12, MATERIALS["steel_pier"])
+    # 3 Distinct Irregular Perimeter H-Columns (B @ WP #5, C @ WP #6/#7, D @ WP #8/#9; Sheets 06-a6 & 45-s14):
+    #   (a) Level 1 Stepped-Back Concrete U-Channel Piers (+1'-6" inner leg extension)
+    for u_poly in get_h_pier_polygons_ft(level=1):
+        add_extruded_polygon_ft(ms, u_poly, z_crawl + 0.6, z_l2 - 0.30, MATERIALS["concrete"], MATERIALS["concrete"])
 
-    # Radial Structural Ceiling Ribs spanning from R = 41.8 ft out to North Curtain Wall
-    for b_deg in (152.0, G.RAY_B_DEG, 118.0, G.RAY_C_DEG, 81.0, G.RAY_D_DEG, 49.0):
-        p_in = polar_pt(G.WP4, 41.5, b_deg)
-        p_out = polar_pt(G.WP4, 80.5, b_deg)
+    #   (b) Levels 2–Roof Splayed Irregular Buff-Brick H-Columns (cantilevering forward at Level 2)
+    for hp_poly in get_h_pier_polygons_ft(level=3):
+        add_extruded_polygon_ft(
+            ms,
+            hp_poly,
+            z_l2 - 0.30,
+            z_par_n + 0.04,
+            MATERIALS["buff_brick_dark"],
+            MATERIALS["buff_brick"],
+            MATERIALS["concrete"],
+        )
+        # Exterior rainwater scupper leader pipe descending inside the recessed H-pocket (Sheet 07-a7)
+        wx = 0.5 * (hp_poly[2][0] + hp_poly[3][0])
+        wy = 0.5 * (hp_poly[2][1] + hp_poly[3][1])
+        tx = 0.5 * (hp_poly[1][0] + hp_poly[4][0]) - wx
+        ty = 0.5 * (hp_poly[1][1] + hp_poly[4][1]) - wy
+        tl = max(1e-4, math.hypot(tx, ty))
+        scup_pt = (wx + (tx / tl) * 0.42, wy + (ty / tl) * 0.42)
+        add_cylinder_ft(ms, scup_pt, 0.18, z_crawl + 0.6, z_par_n - 0.18, MATERIALS["copper_roof"], sides=12)
+
+    # Radial Structural Ceiling Ribs radiating from WP #3 out to North Curtain Wall
+    for b_deg in (152.0, G.RAY_B_DEG, 119.0, G.RAY_C_DEG, 83.0, G.RAY_D_DEG, 49.0):
+        p_in = polar_pt(G.WP3, 45.0, b_deg)
+        p_out = polar_pt(G.WP3, 83.0, b_deg)
         add_wall_strip_ft(ms, [p_in, p_out], 0.65, z_fan_low - 0.38, z_fan_low, MATERIALS["white_soffit"])
 
     # =========================================================================
@@ -144,15 +197,34 @@ def build_envelope_and_south_wing(scene):
     grp_env = create_scene_group(scene, "6_Envelope_And_South_Wing")
     me = grp_env.mesh
 
-    # 4 Faceted North Curtain-Wall Bays (A-B, B-C, C-D, D-E)
-    _add_faceted_curtain_bay(me, G.PT_A, G.PT_B, z_crawl + 1.0, z_l1, z_l2, z_l3, z_par_n, include_l1_windows=True)
-    _add_faceted_curtain_bay(me, G.PT_B, G.PT_C, z_crawl + 0.8, z_l1, z_l2, z_l3, z_par_n, include_l1_windows=True)
-    _add_faceted_curtain_bay(me, G.PT_C, G.PT_D, z_crawl + 0.8, z_l1, z_l2, z_l3, z_par_n, include_l1_windows=True)
-    _add_faceted_curtain_bay(me, G.PT_D, G.PT_E, z_crawl + 1.2, z_l1, z_l2, z_l3, z_par_n, include_l1_windows=True)
+    # 4 Cantilevered Level 2–3 Faceted Curtain-Wall Bays (meeting H-Column fin miters cleanly)
+    curtain_bays = get_faceted_curtain_bays_ft()
+    for b_idx, (bp0, bp1) in enumerate(curtain_bays):
+        t_s = 1.9 if b_idx == 0 else 0.0
+        t_e = 2.1 if b_idx == len(curtain_bays) - 1 else 0.0
+        _add_faceted_curtain_bay(me, bp0, bp1, z_l2, z_l3, z_par_n, trim_start_ft=t_s, trim_end_ft=t_e)
 
-    # Corner Buff-Brick Piers at West Jamb A and East Prow Apex E
-    add_oriented_box_ft(me, G.PT_A, 4.2, 4.2, G.RAY_A_DEG, z_l1 - 1.2, z_par_n + 0.05, MATERIALS["buff_brick"])
-    add_oriented_box_ft(me, G.PT_E, 4.6, 4.2, G.RAY_E_DEG, z_l1 - 1.2, z_par_n + 0.05, MATERIALS["buff_brick"])
+    # Stepped-Back Level 1 Exposed-Concrete Foundation Wall & Clerestory Windows (Sheet 12 & Sheet 45)
+    l1_perim = get_north_perimeter_with_pockets_ft(level=1)
+    l1_bays = [
+        (l1_perim[0], l1_perim[1], z_crawl + 1.0),
+        (l1_perim[2], l1_perim[3], z_crawl + 0.6),
+        (l1_perim[4], l1_perim[5], z_crawl + 0.6),
+        (l1_perim[6], l1_perim[7], z_crawl + 1.1),
+    ]
+    for lp0, lp1, zb_l1 in l1_bays:
+        _add_stepped_l1_concrete_bay(me, lp0, lp1, zb_l1, z_l1, z_l2)
+
+    # Concrete Cantilever Soffit Strip closing the step between Level 1 wall and cantilevered Level 2 facade
+    cantilever_soffit_poly = [
+        *get_north_perimeter_with_pockets_ft(level=3),
+        *reversed(l1_perim),
+    ]
+    add_extruded_polygon_ft(me, cantilever_soffit_poly, z_l2 - 0.34, z_l2 - 0.28, MATERIALS["concrete"], MATERIALS["concrete"])
+
+    # Corner Buff-Brick Piers at West Jamb A (WP #4/A) and East Prow Apex E (WP #10)
+    add_oriented_box_ft(me, G.PT_A, 3.8, 3.6, G.RAY_A_DEG, z_l1 - 1.2, z_par_n + 0.04, MATERIALS["buff_brick"])
+    add_oriented_box_ft(me, G.PT_E, 4.2, 3.8, G.RAY_E_DEG, z_l1 - 1.2, z_par_n + 0.04, MATERIALS["buff_brick"])
 
     # West Fan Throat Wall (PT_A -> PT_A_INNER_JUNC -> Grid 6)
     add_wall_strip_ft(me, [G.PT_A, G.PT_A_INNER_JUNC, (-77.5, 1.5)], 1.25, z_l1 - 1.0, z_par_n - 0.4, MATERIALS["buff_brick"])

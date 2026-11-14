@@ -76,24 +76,25 @@ class AaltoGeometry:
     Z_SCOOP_RIDGE_FT = ft(21, 6)    # +21'-6" (+6.55 m) Curved Central Clerestory Light Scoop Peak
 
     # --- Polycentric Working Points (X_ft, Y_ft) ---
-    WP4: tuple[float, float] = (0.0, 0.0)          # Convergence of Primary Structural Rays B, C, D
+    WP4: tuple[float, float] = (0.0, 0.0)          # Survey Datum on Grid 6
+    WP3: tuple[float, float] = (2.60, -1.80)       # Structural Focus for H-Columns & Twin Columns (Sheet 06-a6)
     WP3A: tuple[float, float] = (1.50, 2.60)       # Center of Mezzanine Well & Skylight Arcs
     WP_DESK: tuple[float, float] = (-1.20, 2.20)   # Center of Control Desk & Slatted Wood Drum
     WP_LOWER: tuple[float, float] = (5.20, -4.80)  # Lower Focus for Outer Boundary Axes A & E
 
     # --- Radial Axes (Degrees CCW from +X East) ---
     RAY_A_DEG = 168.00   # West Fan Throat Boundary (from WP_LOWER through West Jamb A)
-    RAY_B_DEG = 136.80   # Structural Axis B (from WP4 through H-Pier B)
-    RAY_C_DEG = 99.00    # Central Structural Axis C (from WP4 through H-Pier C)
-    RAY_D_DEG = 63.62    # Structural Axis D (from WP4 through H-Pier D)
+    RAY_B_DEG = 137.35   # Structural Axis B (from WP3 through Twin Cols B & H-Column B @ WP #5)
+    RAY_C_DEG = 101.00   # Central Structural Axis C (from WP3 through Twin Cols C & H-Column C @ WP #6/#7)
+    RAY_D_DEG = 65.72    # Structural Axis D (from WP3 through Twin Cols D & H-Column D @ WP #8/#9)
     RAY_E_DEG = 38.60    # East Diagonal Wall Boundary (from WP_LOWER through East Apex E)
 
-    # --- Outer Fan Perimeter Vertices (Outer Face of Brick Wall along Bays A-B-C-D-E) ---
-    PT_A: tuple[float, float] = (-86.5, 14.8)   # WP #6 West Jamb of Curtain Wall
-    PT_B: tuple[float, float] = (-61.8, 56.8)   # WP #7 H-Pier B Outer Brick Line
-    PT_C: tuple[float, float] = (-13.8, 85.4)   # WP #8 H-Pier C Outer Brick Line
-    PT_D: tuple[float, float] = (40.8, 82.5)    # WP #9 H-Pier D Outer Brick Line
-    PT_E: tuple[float, float] = (96.0, 66.5)    # WP #10 East Prow Apex
+    # --- Outer Fan Perimeter Reference Working Points ---
+    PT_A: tuple[float, float] = (-86.45, 14.80)  # WP #4/A West Jamb of Curtain Wall
+    PT_B: tuple[float, float] = (-59.50, 60.20)  # WP #5 H-Column B Exterior Pocket Reference
+    PT_C: tuple[float, float] = (-13.40, 84.50)  # WP #6 & #7 H-Column C Exterior Pocket Reference
+    PT_D: tuple[float, float] = (40.30, 84.10)   # WP #8 & #9 H-Column D Exterior Pocket Reference
+    PT_E: tuple[float, float] = (95.85, 66.50)   # WP #10 East Prow Apex
 
     # Inner West & East Junctions where Fan meets South Wing & Periodical Lounge
     PT_A_INNER_JUNC: tuple[float, float] = (-77.5, 12.8)  # West step down to Elevator/Grid 6
@@ -133,13 +134,14 @@ class AaltoGeometry:
         "South_W1":     (-54.37, 6.87),
     }
 
+    # 6 Paired Twin 18"Ø Columns (2'-8" + 2'-8" = 5'-4" c/c straddling WP #3 Rays B, C, D; Sheet 06-a6)
     PAIRED_COLS_FT = {
-        "Pair_B_L": (-42.30, 36.44),
-        "Pair_B_R": (-39.01, 39.89),
-        "Pair_C_L": (-11.31, 56.15),
-        "Pair_C_R": (-6.65, 57.41),
-        "Pair_D_L": (25.87, 57.53),
-        "Pair_D_R": (30.47, 56.09),
+        "Pair_B_L": (-42.20, 36.60),
+        "Pair_B_R": (-38.60, 40.50),
+        "Pair_C_L": (-11.30, 56.60),
+        "Pair_C_R": (-6.00, 57.50),
+        "Pair_D_L": (25.80, 57.85),
+        "Pair_D_R": (30.55, 56.25),
     }
 
     SOUTH_WING_COLS_FT = [
@@ -149,11 +151,35 @@ class AaltoGeometry:
         (51.8, 0.0), (51.8, 16.0), (51.8, 32.8),
     ]
 
-    # --- 3 Perimeter H-Piers (Centers on Rays B, C, D just inside outer brick line) ---
+    # --- 3 Distinct Irregular Perimeter H-Columns (Sheets 06-a6 & 45-s14) ---
+    # Each H-column has two radially splayed legs (8" outer fin + 1'-0" inner column leg)
+    # mitered flush with adjacent 47'-0" / 50'-11" faceted curtain-wall bays, and a recessed
+    # tangential/skewed web forming an exterior scupper pocket & interior reading alcove.
     H_PIERS = [
-        {"name": "HPier_B", "center": (-58.0, 53.1), "angle_deg": RAY_B_DEG, "depth": 6.2, "width": 5.2},
-        {"name": "HPier_C", "center": (-13.1, 80.5), "angle_deg": RAY_C_DEG, "depth": 6.2, "width": 5.2},
-        {"name": "HPier_D", "center": (38.7, 78.0),  "angle_deg": RAY_D_DEG, "depth": 6.2, "width": 5.2},
+        {
+            "name": "HPier_B",
+            "label": "H-COL B (WP #5)",
+            "ray_deg": RAY_B_DEG,
+            "r_ref": 83.0,
+            "t_L": -3.55, "deg_L": 137.8, "r_tip_L": 87.35, "len_L": 7.85, "web_depth_L": 3.65,
+            "t_R": +4.45, "deg_R": 136.8, "r_tip_R": 87.85, "len_R": 8.15, "web_depth_R": 4.10,
+        },
+        {
+            "name": "HPier_C",
+            "label": "H-COL C (WP #6/#7)",
+            "ray_deg": RAY_C_DEG,
+            "r_ref": 84.6,
+            "t_L": -3.53, "deg_L": 101.5, "r_tip_L": 88.95, "len_L": 7.85, "web_depth_L": 3.95,
+            "t_R": +4.90, "deg_R": 100.3, "r_tip_R": 88.25, "len_R": 7.85, "web_depth_R": 3.25,
+        },
+        {
+            "name": "HPier_D",
+            "label": "H-COL D (WP #8/#9)",
+            "ray_deg": RAY_D_DEG,
+            "r_ref": 91.5,
+            "t_L": -3.65, "deg_L": 66.4, "r_tip_L": 95.05, "len_L": 8.88, "web_depth_L": 3.60,
+            "t_R": +4.75, "deg_R": 65.2, "r_tip_R": 95.85, "len_R": 7.65, "web_depth_R": 3.20,
+        },
     ]
 
     # --- 12 Roof Conical Skylights (X_ft, Y_ft, radius_ft) measured from Drawing 07-a7 ---
@@ -282,15 +308,160 @@ CALIBRATED_SHEETS: dict[int, SheetCalibration] = {
 # 3. CONSTRUCTIVE FLOORPLATE, STAIR, CARREL & STACK GENERATORS (FEET)
 # =============================================================================
 
+def _ray_offset_pt(origin: tuple[float, float], deg: float, r: float, t_off: float = 0.0) -> tuple[float, float]:
+    rad = math.radians(deg)
+    urx, ury = math.cos(rad), math.sin(rad)
+    utx, uty = math.sin(rad), -math.cos(rad)
+    return (origin[0] + r * urx + t_off * utx, origin[1] + r * ury + t_off * uty)
+
+
+def _line_intersect_2d(
+    p1: tuple[float, float],
+    p2: tuple[float, float],
+    p3: tuple[float, float],
+    p4: tuple[float, float],
+) -> tuple[float, float]:
+    x1, y1 = p1
+    x2, y2 = p2
+    x3, y3 = p3
+    x4, y4 = p4
+    den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+    px = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / den
+    py = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / den
+    return (px, py)
+
+
+def _local_leg_pt(p: tuple[float, float], deg: float, s: float, t: float = 0.0) -> tuple[float, float]:
+    rad = math.radians(deg)
+    urx, ury = math.cos(rad), math.sin(rad)
+    utx, uty = math.sin(rad), -math.cos(rad)
+    return (p[0] + s * urx + t * utx, p[1] + s * ury + t * uty)
+
+
+def _raw_curtain_wall_lines_ft() -> list[tuple[tuple[float, float], tuple[float, float]]]:
+    """Reference outer brick face lines for the 4 faceted North Curtain-Wall Bays (A-B, B-C, C-D, D-E)."""
+    G = AaltoGeometry
+    b, c, d = G.H_PIERS
+    return [
+        (G.PT_A, _ray_offset_pt(G.WP3, b["ray_deg"], b["r_tip_L"], b["t_L"])),
+        (_ray_offset_pt(G.WP3, b["ray_deg"], b["r_tip_R"], b["t_R"]), _ray_offset_pt(G.WP3, c["ray_deg"], c["r_tip_L"], c["t_L"])),
+        (_ray_offset_pt(G.WP3, c["ray_deg"], c["r_tip_R"], c["t_R"]), _ray_offset_pt(G.WP3, d["ray_deg"], d["r_tip_L"], d["t_L"])),
+        (_ray_offset_pt(G.WP3, d["ray_deg"], d["r_tip_R"], d["t_R"]), G.PT_E),
+    ]
+
+
+def get_h_pier_polygons_ft(level: int = 3) -> list[list[tuple[float, float]]]:
+    """
+    Construct the 3 distinct irregular Perimeter H-Columns (`B` @ WP #5, `C` @ WP #6/#7, `D` @ WP #8/#9):
+      - `level >= 2` (Levels 2, 3 & Roof): 12-vertex irregular H-polygon with splayed radial legs,
+        stepped leg thickness (9.4" exterior fin outside web -> 12.2" structural column leg inside web),
+        mitered outer tips flush with adjacent 47'-0"/50'-11" faceted bays, and individual staggered/skewed webs.
+      - `level == 1` (Level 1 Foundation Base, Sheet 45 bottom row): 8-vertex U-channel polygon flush with
+        the recessed Level 1 concrete wall ("Outside face of concrete at level 1") and +1'-6" inner leg extensions.
+    """
+    G = AaltoGeometry
+    wall_lines = _raw_curtain_wall_lines_ft()
+    t_web = 0.80
+    t_out = 0.78
+    t_in = 1.02
+    polys: list[list[tuple[float, float]]] = []
+
+    for idx, hp in enumerate(G.H_PIERS):
+        pL_ref = _ray_offset_pt(G.WP3, hp["ray_deg"], hp["r_ref"], hp["t_L"])
+        pR_ref = _ray_offset_pt(G.WP3, hp["ray_deg"], hp["r_ref"], hp["t_R"])
+        deg_L, deg_R = hp["deg_L"], hp["deg_R"]
+        wall_L = wall_lines[idx]
+        wall_R = wall_lines[idx + 1]
+
+        p_L_mid = _line_intersect_2d(_local_leg_pt(pL_ref, deg_L, -30), _local_leg_pt(pL_ref, deg_L, 30), wall_L[0], wall_L[1])
+        p_L_tip_out = _line_intersect_2d(_local_leg_pt(pL_ref, deg_L, -30, -t_in / 2), _local_leg_pt(pL_ref, deg_L, 30, -t_in / 2), wall_L[0], wall_L[1])
+        p_L_tip_in = _line_intersect_2d(_local_leg_pt(pL_ref, deg_L, -30, -t_in / 2 + t_out), _local_leg_pt(pL_ref, deg_L, 30, -t_in / 2 + t_out), wall_L[0], wall_L[1])
+
+        p_R_mid = _line_intersect_2d(_local_leg_pt(pR_ref, deg_R, -30), _local_leg_pt(pR_ref, deg_R, 30), wall_R[0], wall_R[1])
+        p_R_tip_out = _line_intersect_2d(_local_leg_pt(pR_ref, deg_R, -30, +t_in / 2), _local_leg_pt(pR_ref, deg_R, 30, +t_in / 2), wall_R[0], wall_R[1])
+        p_R_tip_in = _line_intersect_2d(_local_leg_pt(pR_ref, deg_R, -30, +t_in / 2 - t_out), _local_leg_pt(pR_ref, deg_R, 30, +t_in / 2 - t_out), wall_R[0], wall_R[1])
+
+        wd_L, wd_R = hp["web_depth_L"], hp["web_depth_R"]
+        w_out_a = _local_leg_pt(p_L_mid, deg_L, -wd_L, 0.0)
+        w_out_b = _local_leg_pt(p_R_mid, deg_R, -wd_R, 0.0)
+        p_wL_out = _line_intersect_2d(_local_leg_pt(p_L_mid, deg_L, -30, -t_in / 2 + t_out), _local_leg_pt(p_L_mid, deg_L, 10, -t_in / 2 + t_out), w_out_a, w_out_b)
+        p_wR_out = _line_intersect_2d(_local_leg_pt(p_R_mid, deg_R, -30, +t_in / 2 - t_out), _local_leg_pt(p_R_mid, deg_R, 10, +t_in / 2 - t_out), w_out_a, w_out_b)
+
+        w_in_a = _local_leg_pt(p_L_mid, deg_L, -(wd_L + t_web), 0.0)
+        w_in_b = _local_leg_pt(p_R_mid, deg_R, -(wd_R + t_web), 0.0)
+        p_wL_in = _line_intersect_2d(_local_leg_pt(p_L_mid, deg_L, -30, +t_in / 2), _local_leg_pt(p_L_mid, deg_L, 10, +t_in / 2), w_in_a, w_in_b)
+        p_wR_in = _line_intersect_2d(_local_leg_pt(p_R_mid, deg_R, -30, -t_in / 2), _local_leg_pt(p_R_mid, deg_R, 10, -t_in / 2), w_in_a, w_in_b)
+
+        extra_in = 1.50 if level == 1 else 0.0
+        len_L = hp["len_L"] + extra_in
+        len_R = hp["len_R"] + extra_in
+        p_L_bot_in = _local_leg_pt(p_L_mid, deg_L, -len_L, +t_in / 2)
+        p_L_bot_out = _local_leg_pt(p_L_mid, deg_L, -len_L, -t_in / 2)
+        p_R_bot_in = _local_leg_pt(p_R_mid, deg_R, -len_R, -t_in / 2)
+        p_R_bot_out = _local_leg_pt(p_R_mid, deg_R, -len_R, +t_in / 2)
+
+        if level == 1:
+            # U-channel at Level 1: flush across outer face of web
+            p_uL_out = _line_intersect_2d(_local_leg_pt(p_L_mid, deg_L, -30, -t_in / 2), _local_leg_pt(p_L_mid, deg_L, 10, -t_in / 2), w_out_a, w_out_b)
+            p_uR_out = _line_intersect_2d(_local_leg_pt(p_R_mid, deg_R, -30, +t_in / 2), _local_leg_pt(p_R_mid, deg_R, 10, +t_in / 2), w_out_a, w_out_b)
+            polys.append([
+                p_uL_out, p_uR_out,
+                p_R_bot_out, p_R_bot_in, p_wR_in,
+                p_wL_in, p_L_bot_in, p_L_bot_out,
+            ])
+        else:
+            polys.append([
+                p_L_tip_out, p_L_tip_in, p_wL_out,
+                p_wR_out, p_R_tip_in, p_R_tip_out,
+                p_R_bot_out, p_R_bot_in, p_wR_in,
+                p_wL_in, p_L_bot_in, p_L_bot_out,
+            ])
+    return polys
+
+
+def get_faceted_curtain_bays_ft() -> list[tuple[tuple[float, float], tuple[float, float]]]:
+    """Return the 4 exact North Curtain-Wall segments (A-B, B-C, C-D, D-E) terminating at the H-Column fin tips."""
+    G = AaltoGeometry
+    pB, pC, pD = get_h_pier_polygons_ft(level=3)
+    return [
+        (G.PT_A, pB[0]),
+        (pB[5], pC[0]),
+        (pC[5], pD[0]),
+        (pD[5], G.PT_E),
+    ]
+
+
+def get_north_perimeter_with_pockets_ft(level: int = 3) -> list[tuple[float, float]]:
+    """
+    Trace the exact North Faceted Perimeter from PT_A to PT_E:
+      - `level >= 2`: steps cleanly INWARD around each of the 3 H-Column exterior scupper pockets (B, C, D).
+      - `level == 1`: traces the stepped-back Level 1 concrete foundation wall ("Outside face of concrete at level 1").
+    """
+    G = AaltoGeometry
+    if level == 1:
+        uB, uC, uD = get_h_pier_polygons_ft(level=1)
+        return [
+            (-83.6, 15.2),
+            uB[0], uB[1],
+            uC[0], uC[1],
+            uD[0], uD[1],
+            (90.0, 68.2),
+        ]
+    pB, pC, pD = get_h_pier_polygons_ft(level=3)
+    return [
+        G.PT_A,
+        *pB[0:6],
+        *pC[0:6],
+        *pD[0:6],
+        G.PT_E,
+    ]
+
+
 def get_level3_envelope_ft() -> list[tuple[float, float]]:
-    """Complete exterior boundary polygon of Level 3 (Fan + Periodical Lounge + South Wing)."""
+    """Complete exterior boundary polygon of Level 3 (with recessed North H-Column pockets)."""
     G = AaltoGeometry
     return [
-        G.PT_A,                  # (-86.5, 14.8) West Fan Jamb A
-        G.PT_B,                  # (-61.8, 56.8) H-Pier B
-        G.PT_C,                  # (-13.8, 85.4) H-Pier C
-        G.PT_D,                  # (+40.8, 82.5) H-Pier D
-        G.PT_E,                  # (+96.0, 66.5) East Prow Apex E
+        *get_north_perimeter_with_pockets_ft(level=3),
         G.PT_LOUNGE_JUNC,        # (+51.8, 32.8) SE Fan wall meets Periodical Lounge
         (51.8, -8.8),            # Periodical Lounge SE corner (Grid 5)
         (61.5, -8.8),            # Rare Book / East Stair NE corner
@@ -307,14 +478,10 @@ def get_level3_envelope_ft() -> list[tuple[float, float]]:
 
 
 def get_level2_envelope_ft() -> list[tuple[float, float]]:
-    """Complete boundary polygon of Level 2 (Fan + Seminar/Benedictina + Mechanical + West Wing)."""
+    """Complete boundary polygon of Level 2 (with recessed North H-Column pockets)."""
     G = AaltoGeometry
     return [
-        G.PT_A,
-        G.PT_B,
-        G.PT_C,
-        G.PT_D,
-        G.PT_E,
+        *get_north_perimeter_with_pockets_ft(level=2),
         G.PT_LOUNGE_JUNC,        # (+51.8, 32.8) Seminar Room NE corner
         (51.8, -8.8),            # Benedictina SE corner (Grid 5)
         (61.5, -8.8),            # Mechanical East step
@@ -329,15 +496,10 @@ def get_level2_envelope_ft() -> list[tuple[float, float]]:
 
 
 def get_level1_envelope_ft() -> list[tuple[float, float]]:
-    """Complete boundary polygon of Level 1 (Downhill Fan Stacks + Pentagonal Core + Elevator/Stair #4)."""
-    G = AaltoGeometry
+    """Complete boundary polygon of Level 1 (stepped-back L1 concrete face + Pentagonal Core + Elevator/Stair #4)."""
     return [
         (-77.5, 12.8),
-        G.PT_A,
-        G.PT_B,                  # H-Pier B
-        G.PT_C,                  # H-Pier C
-        G.PT_D,                  # H-Pier D
-        (90.0, 68.2),            # L1 East corner near E
+        *get_north_perimeter_with_pockets_ft(level=1),
         (43.5, 24.5),            # SE wall step at Stair #2
         (32.57, 18.93),          # Well_4_ENE
         (10.5, 0.5),             # Electronics room SE corner (Grid 6)
@@ -364,51 +526,25 @@ def get_l1_inner_pentagon_ft() -> list[tuple[float, float]]:
     ]
 
 
-def get_h_pier_polygons_ft() -> list[list[tuple[float, float]]]:
-    """Return 12-vertex H-shaped polygons for Perimeter H-Piers B, C, D."""
-    polys = []
-    for hp in AaltoGeometry.H_PIERS:
-        cx, cy = hp["center"]
-        ang = math.radians(hp["angle_deg"] - 90.0)
-        ca, sa = math.cos(ang), math.sin(ang)
-        w, d = hp["width"], hp["depth"]
-        tf, tw = 1.15, 1.15  # flange & web thickness in ft
-        # Local H-shape centered at (0,0), Y along ray
-        hw, hd, htw = w / 2.0, d / 2.0, tw / 2.0
-        local = [
-            (-hw, hd), (hw, hd), (hw, hd - tf), (htw, hd - tf),
-            (htw, -hd + tf), (hw, -hd + tf), (hw, -hd), (-hw, -hd),
-            (-hw, -hd + tf), (-htw, -hd + tf), (-htw, hd - tf), (-hw, hd - tf),
-        ]
-        polys.append([(cx + lx * ca - ly * sa, cy + lx * sa + ly * ca) for lx, ly in local])
-    return polys
-
-
 def get_carrel_alcoves_ft() -> list[list[tuple[float, float]]]:
-    """Perimeter study carrel partitions along Faceted Bays A-B, B-C, C-D, D-E."""
-    G = AaltoGeometry
-    bays = [
-        (G.PT_A, G.PT_B, 5),
-        (G.PT_B, G.PT_C, 5),
-        (G.PT_C, G.PT_D, 5),
-        (G.PT_D, G.PT_E, 5),
-    ]
+    """Perimeter study carrel partitions along the 4 Faceted Bays A-B, B-C, C-D, D-E."""
     boxes = []
-    for p0, p1, n_carrels in bays:
+    for p0, p1 in get_faceted_curtain_bays_ft():
+        n_carrels = 5
         vx, vy = p1[0] - p0[0], p1[1] - p0[1]
         L = math.hypot(vx, vy)
         ux, uy = vx / L, vy / L
         # Inward normal (pointing South/toward fan center: rotate clockwise 90 deg -> (uy, -ux))
         nx, ny = uy, -ux
-        margin = 5.2
+        margin = 1.8
         usable = L - 2 * margin
         cw = usable / n_carrels
-        depth = 5.8
+        depth = 5.6
         for i in range(n_carrels):
-            s0 = margin + i * cw + 0.6
-            s1 = margin + (i + 1) * cw - 0.6
-            q0 = (p0[0] + ux * s0 + nx * 1.2, p0[1] + uy * s0 + ny * 1.2)
-            q1 = (p0[0] + ux * s1 + nx * 1.2, p0[1] + uy * s1 + ny * 1.2)
+            s0 = margin + i * cw + 0.55
+            s1 = margin + (i + 1) * cw - 0.55
+            q0 = (p0[0] + ux * s0 + nx * 1.15, p0[1] + uy * s0 + ny * 1.15)
+            q1 = (p0[0] + ux * s1 + nx * 1.15, p0[1] + uy * s1 + ny * 1.15)
             q2 = (q1[0] + nx * depth, q1[1] + ny * depth)
             q3 = (q0[0] + nx * depth, q0[1] + ny * depth)
             boxes.append([q0, q1, q2, q3])
@@ -550,11 +686,11 @@ def _add_common_regulating_and_structure(svg: SvgOverlayBuilder, cal: SheetCalib
         if cal.sheet_id != 6:
             svg.add_label("regulating", (-133.0, gy), f"GRID ({g_num}) Y={gy:+.0f}'", "#38bdf8", size=10, dx=2, dy=-4)
 
-    # 2. Polycentric Radial Rays B, C, D from WP #4 (0, 0)
-    for label, deg in [("AXIS B (136.8°)", G.RAY_B_DEG), ("AXIS C (99.0°)", G.RAY_C_DEG), ("AXIS D (63.6°)", G.RAY_D_DEG)]:
-        p_end = polar_pt(G.WP4, 98.0, deg)
-        svg.add_line("regulating", G.WP4, p_end, "#00e5ff", width=1.8, dash="8,4")
-        svg.add_label("regulating", polar_pt(G.WP4, 92.5, deg), label, "#00e5ff", size=10)
+    # 2. Polycentric Structural Rays B, C, D from WP #3 (2.60, -1.80)
+    for label, deg in [("AXIS B (137.4°)", G.RAY_B_DEG), ("AXIS C (101.0°)", G.RAY_C_DEG), ("AXIS D (65.7°)", G.RAY_D_DEG)]:
+        p_end = polar_pt(G.WP3, 98.0, deg)
+        svg.add_line("regulating", G.WP3, p_end, "#00e5ff", width=1.8, dash="8,4")
+        svg.add_label("regulating", polar_pt(G.WP3, 93.0, deg), label, "#00e5ff", size=10)
 
     # 3. Outer Boundary Rays A & E from Lower Focus WP_LOWER
     svg.add_line("regulating", G.WP4, G.WP_LOWER, "#f59e0b", width=1.5, dash="3,3")
@@ -570,13 +706,15 @@ def _add_common_regulating_and_structure(svg: SvgOverlayBuilder, cal: SheetCalib
     # Working Point Markers
     for wp_name, wp_pt, col in [
         ("WP #4 (0,0)", G.WP4, "#00e5ff"),
+        ("WP #3", G.WP3, "#38bdf8"),
         ("WP #3A", G.WP3A, "#c084fc"),
     ]:
-        svg.add_circle_world("regulating", wp_pt, 10.0 / sc * 0.45, sc, col, width=2.0, fill=col, fill_opacity=0.35)
+        svg.add_circle_world("regulating", wp_pt, 10.0 / sc * 0.42, sc, col, width=2.0, fill=col, fill_opacity=0.35)
         svg.add_label("regulating", wp_pt, wp_name, col, size=10, dx=6, dy=-4)
 
-    # 5. Structural Columns & Perimeter H-Piers
-    for hp_poly in get_h_pier_polygons_ft():
+    # 5. Structural Columns & Distinct Irregular Perimeter H-Columns (U-channels at Level 1)
+    hp_level = 1 if cal.sheet_id == 3 else 3
+    for hp_poly in get_h_pier_polygons_ft(level=hp_level):
         svg.add_polyline("structure", hp_poly, "#ef4444", width=2.0, closed=True, fill="#ef4444", fill_opacity=0.32)
 
     for c_name, cpt in {**G.WELL_COLS_FT, **G.PAIRED_COLS_FT}.items():
@@ -599,14 +737,20 @@ def build_sheet_svg(sheet_id: int) -> str:
     sc = cal.scale_px_per_ft
 
     if sheet_id == 6:
-        # Drawing 06: Basic Plan Layout (1/4" = 1'-0" master constructive key)
+        # Drawing 06: Basic Plan Layout (1/8" = 1'-0" master constructive H-Column & Twin-Column key)
         _add_common_regulating_and_structure(svg, cal, include_south_cols=False)
-        # Outer faceted brick bays A-B-C-D-E
-        svg.add_polyline("walls", [G.PT_A_INNER_JUNC, G.PT_A, G.PT_B, G.PT_C, G.PT_D, G.PT_E, G.PT_LOUNGE_JUNC], "#10b981", width=2.8)
+        # Dashed Level 1 U-channel inner leg extensions (+1'-6") & stepped-back Level 1 concrete line
+        for u_poly in get_h_pier_polygons_ft(level=1):
+            svg.add_polyline("structure", u_poly, "#fda4af", width=1.4, closed=True, dash="4,3")
+        svg.add_polyline("walls", get_north_perimeter_with_pockets_ft(level=1), "#34d399", width=1.5, dash="6,4")
+        # Outer faceted brick bays A-B, B-C, C-D, D-E stepping into H-Column scupper pockets
+        svg.add_polyline("walls", [G.PT_A_INNER_JUNC, *get_north_perimeter_with_pockets_ft(level=3), G.PT_LOUNGE_JUNC], "#10b981", width=2.6)
         # Level 1 pentagonal concrete retaining wall
         svg.add_polyline("walls", get_l1_inner_pentagon_ft(), "#22c55e", width=2.4)
-        # Paired column callouts
-        svg.add_label("structure", (-40.6, 38.2), "PAIRED 18\"Ø COLS (4'-10\" c/c)", "#fda4af", size=10, dx=8, dy=-8)
+        # Callouts for Paired Twin Columns & the 3 distinct irregular H-Columns
+        svg.add_label("structure", (-38.2, 40.5), "PAIRED 18\"Ø COLS (5'-4\" c/c)", "#fda4af", size=10, dx=8, dy=-6)
+        for hp, hp_poly in zip(G.H_PIERS, get_h_pier_polygons_ft(level=3)):
+            svg.add_label("structure", hp_poly[5], hp["label"], "#fecdd3", size=10, dx=6, dy=-6)
 
     elif sheet_id == 5:
         # Drawing 05: Floor Plan Level #3

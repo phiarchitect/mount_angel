@@ -519,7 +519,13 @@ def add_stepped_stair_ft(
                 add_quad(mesh, p_a0, p_b0, p_b1, p_a1, mat)
                 add_quad(mesh, q_b0, q_a0, q_a1, q_b1, mat)
                 add_quad(mesh, p_a1, p_b1, q_b1, q_a1, mat)
+                add_quad(mesh, q_a0, q_b0, p_b0, p_a0, mat)
+                add_quad(mesh, q_a0, p_a0, p_a1, q_a1, mat)
+                add_quad(mesh, p_b0, q_b0, q_b1, p_b1, mat)
             else:
                 add_quad(mesh, p_b0, p_a0, p_a1, p_b1, mat)
                 add_quad(mesh, q_a0, q_b0, q_b1, q_a1, mat)
                 add_quad(mesh, q_a1, q_b1, p_b1, p_a1, mat)
+                add_quad(mesh, p_a0, p_b0, q_b0, q_a0, mat)
+                add_quad(mesh, p_a0, q_a0, q_a1, p_a1, mat)
+                add_quad(mesh, q_b0, p_b0, p_b1, q_b1, mat)

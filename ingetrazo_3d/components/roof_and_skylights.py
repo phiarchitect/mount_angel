@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import math
 
-from phiarchitect.mountangel.vectors import AaltoGeometry, polar_pt
+from phiarchitect.mountangel.vectors import AaltoGeometry, get_north_perimeter_with_pockets_ft, polar_pt
 
 from .primitives import (
     MATERIALS,
@@ -49,27 +49,28 @@ def _ray_segment_dist_ft(origin: tuple[float, float], deg: float, a: tuple[float
     qpx, qpy = a[0] - origin[0], a[1] - origin[1]
     t = (qpx * sy - qpy * sx) / denom
     u = (qpx * dy - qpy * dx) / denom
-    if t > 1.0 and -0.02 <= u <= 1.02:
+    if t > 1.0 and -0.01 <= u <= 1.01:
         return t
     return None
 
 
-def _fan_outer_radius_at_angle(deg: float) -> float:
-    """Distance from WP3A along `deg` to the faceted outer Fan boundary A-B-C-D-E."""
+def _fan_perimeter_chain_ft() -> list[tuple[float, float]]:
     G = AaltoGeometry
-    segs = [
-        ((-77.5, 1.5), G.PT_A_INNER_JUNC),
-        (G.PT_A_INNER_JUNC, G.PT_A),
-        (G.PT_A, G.PT_B),
-        (G.PT_B, G.PT_C),
-        (G.PT_C, G.PT_D),
-        (G.PT_D, G.PT_E),
-        (G.PT_E, G.PT_LOUNGE_JUNC),
-        (G.PT_LOUNGE_JUNC, (19.0, 4.0)),
+    return [
+        (-77.5, 1.5),
+        G.PT_A_INNER_JUNC,
+        *get_north_perimeter_with_pockets_ft(level=3),
+        G.PT_LOUNGE_JUNC,
+        (19.0, 4.0),
     ]
+
+
+def _fan_outer_radius_at_angle(deg: float, chain: list[tuple[float, float]]) -> float:
+    """Distance from WP3A along `deg` to the pocketed North Fan boundary."""
+    G = AaltoGeometry
     best = None
-    for a, b in segs:
-        d = _ray_segment_dist_ft(G.WP3A, deg, a, b)
+    for idx in range(len(chain) - 1):
+        d = _ray_segment_dist_ft(G.WP3A, deg, chain[idx], chain[idx + 1])
         if d is not None and (best is None or d < best):
             best = d
     return best if best is not None else 82.0
@@ -129,6 +130,15 @@ def build_roof_and_skylights(scene):
                 (*p01_xy, zi_b),
                 MATERIALS["white_plaster"],
             )
+            # Seal outer boundary rims of the curved scoop vault for watertight section capping
+            if k == 0:
+                add_quad(mesh, (*p00_xy, zi_a), (*p00_xy, ze_a), (*p10_xy, ze_a), (*p10_xy, zi_a), MATERIALS["copper_roof"])
+            if k == len(vault_profile) - 2:
+                add_quad(mesh, (*p01_xy, ze_b), (*p01_xy, zi_b), (*p11_xy, zi_b), (*p11_xy, ze_b), MATERIALS["copper_roof"])
+            if i == 0:
+                add_quad(mesh, (*p00_xy, zi_a), (*p01_xy, zi_b), (*p01_xy, ze_b), (*p00_xy, ze_a), MATERIALS["copper_roof"])
+            if i == n_scoop - 1:
+                add_quad(mesh, (*p10_xy, ze_a), (*p11_xy, ze_b), (*p11_xy, zi_b), (*p10_xy, zi_a), MATERIALS["copper_roof"])
 
         # Steep North-Facing Skylight Glazing (from Ridge R = 34.8 ft, Z = +6.55 m down to Curb R = 41.8 ft, Z = +3.92 m)
         pr0 = (*xy_m(polar_pt(G.WP3A, G.R_SCOOP_RIDGE, a0)), z_ridge - 0.04)
@@ -138,21 +148,25 @@ def build_roof_and_skylights(scene):
         add_quad(mesh, pr0, pc0, pc1, pr1, MATERIALS["glass_skylight"])
         add_quad(mesh, pr0, pr1, pc1, pc0, MATERIALS["glass_skylight"])
 
-    # Radial Aluminum Skylight Mullions along North Scoop Glazing
+    # Radial Aluminum Skylight Mullions along North Scoop Glazing (closed 6-face bars)
     for i in range(0, n_scoop + 1, 2):
         ang = angles[i]
         m_top = xy_m(polar_pt(G.WP3A, G.R_SCOOP_RIDGE, ang))
         m_bot = xy_m(polar_pt(G.WP3A, G.R_SCOOP_OUTER, ang))
         rad = math.radians(ang + 90.0)
         ox, oy = 0.045 * math.cos(rad), 0.045 * math.sin(rad)
-        add_quad(
-            mesh,
-            (m_top[0] - ox, m_top[1] - oy, z_ridge + 0.02),
-            (m_bot[0] - ox, m_bot[1] - oy, z_fan_low + 0.16),
-            (m_bot[0] + ox, m_bot[1] + oy, z_fan_low + 0.16),
-            (m_top[0] + ox, m_top[1] + oy, z_ridge + 0.02),
-            MATERIALS["mullion_alum"],
-        )
+        zt0, zt1 = z_ridge - 0.04, z_ridge + 0.03
+        zb0, zb1 = z_fan_low + 0.10, z_fan_low + 0.17
+        t_l0, t_r0 = (m_top[0] - ox, m_top[1] - oy, zt0), (m_top[0] + ox, m_top[1] + oy, zt0)
+        t_l1, t_r1 = (m_top[0] - ox, m_top[1] - oy, zt1), (m_top[0] + ox, m_top[1] + oy, zt1)
+        b_l0, b_r0 = (m_bot[0] - ox, m_bot[1] - oy, zb0), (m_bot[0] + ox, m_bot[1] + oy, zb0)
+        b_l1, b_r1 = (m_bot[0] - ox, m_bot[1] - oy, zb1), (m_bot[0] + ox, m_bot[1] + oy, zb1)
+        add_quad(mesh, t_l1, b_l1, b_r1, t_r1, MATERIALS["mullion_alum"])  # top
+        add_quad(mesh, t_r0, b_r0, b_l0, t_l0, MATERIALS["mullion_alum"])  # bottom
+        add_quad(mesh, t_l0, b_l0, b_l1, t_l1, MATERIALS["mullion_alum"])  # left
+        add_quad(mesh, t_r1, b_r1, b_r0, t_r0, MATERIALS["mullion_alum"])  # right
+        add_quad(mesh, t_r0, t_l0, t_l1, t_r1, MATERIALS["mullion_alum"])  # ridge end
+        add_quad(mesh, b_l0, b_r0, b_r1, b_l1, MATERIALS["mullion_alum"])  # curb end
 
     # Copper End-Cheek Gables closing East (45°) and West (156°) ends of the Daylight Scoop
     for end_ang, flip in ((deg0, False), (deg1, True)):
@@ -183,21 +197,44 @@ def build_roof_and_skylights(scene):
     # =========================================================================
     # 2. TIPPED NORTH PERIMETER FAN ROOF & SWEEPING INTERIOR DAYLIGHT SOFFIT
     # =========================================================================
-    fan_steps = 56
+    chain = _fan_perimeter_chain_ft()
     f_deg0, f_deg1 = 31.0, 170.0
-    f_angles = [f_deg0 + (f_deg1 - f_deg0) * (i / fan_steps) for i in range(fan_steps + 1)]
+    raw_angles = [f_deg0 + (f_deg1 - f_deg0) * (i / 70) for i in range(71)]
+    # Add exact corner angles of every H-column scupper pocket so roof notches cleanly!
+    for vx, vy in chain[1:-1]:
+        vang = math.degrees(math.atan2(vy - G.WP3A[1], vx - G.WP3A[0]))
+        for eps in (-0.06, 0.0, 0.06):
+            cand = vang + eps
+            if f_deg0 <= cand <= f_deg1:
+                raw_angles.append(cand)
+    raw_angles.sort()
+    f_angles: list[float] = []
+    for a in raw_angles:
+        if not f_angles or (a - f_angles[-1]) > 0.03:
+            f_angles.append(a)
 
-    for i in range(fan_steps):
+    raw_slices = []
+    for i in range(len(f_angles) - 1):
         a0, a1 = f_angles[i], f_angles[i + 1]
-        r_out0 = _fan_outer_radius_at_angle(a0)
-        r_out1 = _fan_outer_radius_at_angle(a1)
-        # Inner radius starts outside the Scoop (41.8 ft) for 45°..156°, or from 24.0 ft on the flanks
+        eps = min(0.015, 0.25 * (a1 - a0))
+        r_out0 = _fan_outer_radius_at_angle(a0 + eps, chain)
+        r_out1 = _fan_outer_radius_at_angle(a1 - eps, chain)
         a_mid = 0.5 * (a0 + a1)
         r_in = G.R_SCOOP_OUTER if (deg0 <= a_mid <= deg1) else G.R_SCOOP_INNER
+        raw_slices.append([a0, a1, r_in, r_out0, r_out1])
+
+    # Snap shared radial vertices across smooth joints so adjacent slices share bit-identical edges
+    n_sl = len(raw_slices)
+    for i in range(n_sl - 1):
+        if raw_slices[i][2] == raw_slices[i + 1][2] and abs(raw_slices[i][4] - raw_slices[i + 1][3]) <= 0.12:
+            shared_r = 0.5 * (raw_slices[i][4] + raw_slices[i + 1][3])
+            raw_slices[i][4] = shared_r
+            raw_slices[i + 1][3] = shared_r
+
+    for i, (a0, a1, r_in, r_out0, r_out1) in enumerate(raw_slices):
         r_hinge0 = r_in + 0.72 * (r_out0 - r_in)
         r_hinge1 = r_in + 0.72 * (r_out1 - r_in)
 
-        # Zone A: Flat Roof & Acoustic Soffit from r_in to r_hinge (Z = +3.81 m)
         q_in0 = xy_m(polar_pt(G.WP3A, r_in, a0))
         q_in1 = xy_m(polar_pt(G.WP3A, r_in, a1))
         q_hg1 = xy_m(polar_pt(G.WP3A, r_hinge1, a1))
@@ -205,26 +242,41 @@ def build_roof_and_skylights(scene):
         q_ou1 = xy_m(polar_pt(G.WP3A, r_out1, a1))
         q_ou0 = xy_m(polar_pt(G.WP3A, r_out0, a0))
 
-        # Top gravel roof + bottom white ceiling soffit (Zone A)
+        # Zone A: Flat Roof & Acoustic Soffit from r_in to r_hinge (Z = +3.81 m)
         add_quad(mesh, (*q_in0, z_fan_low), (*q_hg0, z_fan_low), (*q_hg1, z_fan_low), (*q_in1, z_fan_low), MATERIALS["builtup_roof"])
         add_quad(mesh, (*q_in0, z_fan_low - 0.22), (*q_in1, z_fan_low - 0.22), (*q_hg1, z_fan_low - 0.22), (*q_hg0, z_fan_low - 0.22), MATERIALS["white_soffit"])
 
-        # Zone B: Upward-Sweeping Perimeter Daylight Scoop from r_hinge (+3.81 m) to North Curtain Wall (+5.22 m)!
+        # Zone B: Upward-Sweeping Perimeter Daylight Scoop from r_hinge (+3.81 m) to North Curtain Wall (+5.25 m)
         add_quad(mesh, (*q_hg0, z_fan_low), (*q_ou0, z_par_n - 0.08), (*q_ou1, z_par_n - 0.08), (*q_hg1, z_fan_low), MATERIALS["copper_roof"])
         add_quad(mesh, (*q_hg0, z_fan_low - 0.22), (*q_hg1, z_fan_low - 0.22), (*q_ou1, z_par_n - 0.32), (*q_ou0, z_par_n - 0.32), MATERIALS["white_soffit"])
+
+        # Seal inner (-r) and outer (+r) rims of the fan roof slab
+        add_quad(mesh, (*q_in0, z_fan_low - 0.22), (*q_in0, z_fan_low), (*q_in1, z_fan_low), (*q_in1, z_fan_low - 0.22), MATERIALS["white_soffit"])
+        add_quad(mesh, (*q_ou0, z_par_n - 0.08), (*q_ou0, z_par_n - 0.32), (*q_ou1, z_par_n - 0.32), (*q_ou1, z_par_n - 0.08), MATERIALS["copper_roof"])
+
+        # Seal radial cheek rims at outer ends or H-pocket radial steps so the roof shell is watertight
+        cap_east = (i == 0) or (raw_slices[i][2] != raw_slices[i - 1][2]) or (raw_slices[i][3] != raw_slices[i - 1][4])
+        cap_west = (i == n_sl - 1) or (raw_slices[i][2] != raw_slices[i + 1][2]) or (raw_slices[i][4] != raw_slices[i + 1][3])
+        if cap_east:
+            add_quad(mesh, (*q_in0, z_fan_low - 0.22), (*q_hg0, z_fan_low - 0.22), (*q_hg0, z_fan_low), (*q_in0, z_fan_low), MATERIALS["copper_roof"])
+            add_quad(mesh, (*q_hg0, z_fan_low - 0.22), (*q_ou0, z_par_n - 0.32), (*q_ou0, z_par_n - 0.08), (*q_hg0, z_fan_low), MATERIALS["copper_roof"])
+        if cap_west:
+            add_quad(mesh, (*q_in1, z_fan_low), (*q_hg1, z_fan_low), (*q_hg1, z_fan_low - 0.22), (*q_in1, z_fan_low - 0.22), MATERIALS["copper_roof"])
+            add_quad(mesh, (*q_hg1, z_fan_low), (*q_ou1, z_par_n - 0.08), (*q_ou1, z_par_n - 0.32), (*q_hg1, z_fan_low - 0.22), MATERIALS["copper_roof"])
 
     # Clerestory Vertical Fascia closing height step between South Wing Roof (+4.98 m) and Lower Fan Deck (+3.81 m) on flanks
     add_arc_band_ft(mesh, G.WP3A, G.R_SCOOP_INNER - 0.6, G.R_SCOOP_INNER + 0.3, 31.0, 45.2, z_fan_low - 0.22, z_south_rf, MATERIALS["buff_brick"], steps=8)
     add_arc_band_ft(mesh, G.WP3A, G.R_SCOOP_INNER - 0.6, G.R_SCOOP_INNER + 0.3, 155.8, 170.0, z_fan_low - 0.22, z_south_rf, MATERIALS["buff_brick"], steps=8)
 
-    # Weathered Copper Parapet Fascia Cap along North Faceted Bays A-B-C-D-E
+    # Weathered Copper Parapet Fascia Cap stepping around all 3 H-Column scupper pockets (offset_mode="right" = inward)
     add_wall_strip_ft(
         mesh,
-        [G.PT_A_INNER_JUNC, G.PT_A, G.PT_B, G.PT_C, G.PT_D, G.PT_E, G.PT_LOUNGE_JUNC],
-        1.55,
-        z_par_n - 0.14,
-        z_par_n + 0.14,
+        [G.PT_A_INNER_JUNC, *get_north_perimeter_with_pockets_ft(level=3), G.PT_LOUNGE_JUNC],
+        1.05,
+        z_par_n + 0.045,
+        z_par_n + 0.18,
         MATERIALS["copper_roof"],
+        offset_mode="right",
     )
 
     # =========================================================================
@@ -274,11 +326,13 @@ def build_roof_and_skylights(scene):
     add_cylinder_ft(mesh, G.WP_DESK, G.R_WOOD_DRUM, 3.25, 3.65, MATERIALS["hemlock_slat"], sides=36)
 
     # =========================================================================
-    # 4. 12 SIGNATURE AALTO CONICAL ROOF SKYLIGHT LANTERNS
+    # 4. 12 SIGNATURE AALTO CONICAL ROOF SKYLIGHT LANTERNS (WATERTIGHT SHELLS)
     # =========================================================================
+    sides_sky = 20
     for sx, sy, sr in G.CONICAL_SKYLIGHTS:
-        # Exterior Weathered Copper Cylindrical Skylight Drum above Roof
-        add_cylinder_ft(mesh, (sx, sy), sr + 0.25, z_south_rf, z_lantern - 0.22, MATERIALS["copper_roof"], sides=20)
+        # Hollow thick-walled Copper Skylight Drum above Roof (r_in = sr - 0.10, r_out = sr + 0.28)
+        add_arc_band_ft(mesh, (sx, sy), sr - 0.10, sr + 0.28, 0.0, 360.0, z_south_rf, z_lantern - 0.22, MATERIALS["copper_roof"], steps=sides_sky)
+
         # Conical Translucent Skylight Dome Cap
         add_frustum_ft(
             mesh,
@@ -288,21 +342,29 @@ def build_roof_and_skylights(scene):
             z0_m=z_lantern - 0.22,
             z1_m=z_lantern + 0.28,
             attrs=MATERIALS["glass_skylight"],
-            sides=20,
+            sides=sides_sky,
             cap_top=True,
         )
-        # Interior Deep White Plaster Conical Light-Diffusing Throat visible from Control Area & Lobby below!
-        z_ceil = 3.22 if sy > 4.0 else (z_south_rf - 0.30)
-        add_frustum_ft(
-            mesh,
-            (sx, sy),
-            r0_ft=sr + 0.85,
-            r1_ft=sr - 0.15,
-            z0_m=z_ceil,
-            z1_m=z_south_rf + 0.05,
-            attrs=MATERIALS["white_plaster"],
-            sides=20,
-            double_sided=True,
-        )
+
+        # Watertight Thick-Walled White Plaster Conical Light-Diffusing Throat (for Section A-A & B-B poché!)
+        z_ceil = 3.22 if sy > 4.0 else 3.88
+        z_throat_top = z_south_rf - 0.26
+        cx_m, cy_m = xy_m((sx, sy))
+        r0_in, r0_out = m_ft(sr + 0.78), m_ft(sr + 1.14)
+        r1_in, r1_out = m_ft(sr - 0.10), m_ft(sr + 0.26)
+        in0, out0, in1, out1 = [], [], [], []
+        for s_i in range(sides_sky):
+            ang = 2.0 * math.pi * s_i / sides_sky
+            ca, sa = math.cos(ang), math.sin(ang)
+            in0.append((cx_m + r0_in * ca, cy_m + r0_in * sa, z_ceil))
+            out0.append((cx_m + r0_out * ca, cy_m + r0_out * sa, z_ceil))
+            in1.append((cx_m + r1_in * ca, cy_m + r1_in * sa, z_throat_top))
+            out1.append((cx_m + r1_out * ca, cy_m + r1_out * sa, z_throat_top))
+        for s_i in range(sides_sky):
+            s_j = (s_i + 1) % sides_sky
+            add_quad(mesh, out0[s_i], out0[s_j], out1[s_j], out1[s_i], MATERIALS["white_plaster"])
+            add_quad(mesh, in0[s_j], in0[s_i], in1[s_i], in1[s_j], MATERIALS["white_plaster"])
+            add_quad(mesh, in0[s_j], out0[s_j], out0[s_i], in0[s_i], MATERIALS["white_plaster"])
+            add_quad(mesh, in1[s_i], out1[s_i], out1[s_j], in1[s_j], MATERIALS["white_plaster"])
 
     return grp

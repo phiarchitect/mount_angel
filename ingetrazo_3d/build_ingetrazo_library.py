@@ -70,16 +70,20 @@ def export_web_scene_json(scene, out_path: Path):
         return round(float(v), 3)
 
     for grp in scene.groups:
-        opaque_pos: list[float] = []
-        opaque_nrm: list[float] = []
-        opaque_col: list[float] = []
+        struct_pos: list[float] = []
+        struct_nrm: list[float] = []
+        struct_col: list[float] = []
+
+        furn_pos: list[float] = []
+        furn_nrm: list[float] = []
+        furn_col: list[float] = []
 
         trans_pos: list[float] = []
         trans_nrm: list[float] = []
         trans_col: list[float] = []
 
         edge_pos: list[float] = []
-        global_seen_edges: set[tuple[tuple[float, float, float], tuple[float, float, float]]] = set()
+        edge_adj: dict[tuple[tuple[float, float, float], tuple[float, float, float]], list[tuple[float, float, float, tuple[float, float, float], bool]]] = {}
 
         is_terrain = grp.name.startswith("1_")
         is_reg = grp.name.startswith("0_")
@@ -87,8 +91,10 @@ def export_web_scene_json(scene, out_path: Path):
         for face in grp.mesh.faces:
             attrs = face.attrs or {}
             col = attrs.get("color", (0.94, 0.93, 0.90))
+            col_key = (round(col[0], 3), round(col[1], 3), round(col[2], 3))
             opacity = float(attrs.get("opacity", 1.0))
             emissive = 1.0 if attrs.get("emissive", False) else 0.0
+            is_furn = bool(attrs.get("furniture", False))
             n = face.normal()
             nx, ny, nz = r3(n.x()), r3(n.y()), r3(n.z())
 
@@ -97,9 +103,12 @@ def export_web_scene_json(scene, out_path: Path):
                 continue
 
             is_trans = opacity < 0.98
-            t_pos = trans_pos if is_trans else opaque_pos
-            t_nrm = trans_nrm if is_trans else opaque_nrm
-            t_col = trans_col if is_trans else opaque_col
+            if is_trans:
+                t_pos, t_nrm, t_col = trans_pos, trans_nrm, trans_col
+            elif is_furn:
+                t_pos, t_nrm, t_col = furn_pos, furn_nrm, furn_col
+            else:
+                t_pos, t_nrm, t_col = struct_pos, struct_nrm, struct_col
 
             face_edges: Counter = Counter()
             for a, b, c in tris:
@@ -108,7 +117,7 @@ def export_web_scene_json(scene, out_path: Path):
                 pc = (r3(c.x()), r3(c.y()), r3(c.z()))
                 t_pos.extend((*pa, *pb, *pc))
                 t_nrm.extend((nx, ny, nz, nx, ny, nz, nx, ny, nz))
-                rgba = (round(col[0], 3), round(col[1], 3), round(col[2], 3), round(opacity if is_trans else (2.0 if emissive else 1.0), 3))
+                rgba = (*col_key, round(opacity if is_trans else (2.0 if emissive else 1.0), 3))
                 t_col.extend((*rgba, *rgba, *rgba))
 
                 if not is_terrain and not is_reg:
@@ -116,15 +125,29 @@ def export_web_scene_json(scene, out_path: Path):
                         ek = (u, v) if u <= v else (v, u)
                         face_edges[ek] += 1
 
-            # Keep only true outer face boundary edges (count == 1 strips internal quad/polygon diagonals!)
+            # Collect per-face outer boundary edges for layer-wide coplanar crease filtering
             for ek, cnt in face_edges.items():
-                if cnt == 1 and ek not in global_seen_edges:
-                    global_seen_edges.add(ek)
-                    edge_pos.extend((*ek[0], *ek[1]))
+                if cnt == 1:
+                    edge_adj.setdefault(ek, []).append((nx, ny, nz, col_key, is_trans))
+
+        for ek, infos in edge_adj.items():
+            if len(infos) == 2:
+                n0x, n0y, n0z, c0, tr0 = infos[0]
+                n1x, n1y, n1z, c1, tr1 = infos[1]
+                # Suppress coplanar ear-clipping triangulation diagonals sharing identical normal & material
+                if c0 == c1 and tr0 == tr1 and (n0x * n1x + n0y * n1y + n0z * n1z) > 0.985:
+                    continue
+            edge_pos.extend((*ek[0], *ek[1]))
+
+        poche_verts = len(struct_pos) // 3
+        opaque_pos = struct_pos + furn_pos
+        opaque_nrm = struct_nrm + furn_nrm
+        opaque_col = struct_col + furn_col
 
         layers_out.append(
             {
                 "name": grp.name,
+                "poche_verts": poche_verts,
                 "opaque_pos": opaque_pos,
                 "opaque_nrm": opaque_nrm,
                 "opaque_col": opaque_col,
@@ -259,6 +282,11 @@ def capture_web_renders(repo_root: Path):
             ("mezzanine_pov", "studio_04_mezzanine_counter_pov.png"),
             ("sunken_well", "studio_05_sunken_well_scoop.png"),
             ("lounge_mthood", "studio_06_east_mthood_lounge.png"),
+            ("h_columns_north", "studio_07_north_h_columns.png"),
+            ("section_aa", "studio_08_section_aa_ortho.png"),
+            ("section_well", "studio_09_section_well_persp.png"),
+            ("section_bb", "studio_10_section_bb_ortho.png"),
+            ("section_plan_l3", "studio_11_section_plan_l3.png"),
         ]
         if browser_bin:
             for cam_key, fname in shots:
@@ -267,6 +295,7 @@ def capture_web_renders(repo_root: Path):
                 cmd = [
                     browser_bin,
                     "--headless",
+                    "--hide-scrollbars",
                     "--no-sandbox",
                     "--enable-webgl",
                     "--ignore-gpu-blocklist",

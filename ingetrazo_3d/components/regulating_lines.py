@@ -22,9 +22,9 @@ def build_regulating_lines(scene):
     G = AaltoGeometry
     z0, z1 = 0.018, 0.045
 
-    # Primary Structural Rays B, C, D from WP #4 (0, 0)
+    # Primary Structural Rays B, C, D from WP #3 (2.60, -1.80) through Twin Columns & H-Columns
     for deg in (G.RAY_B_DEG, G.RAY_C_DEG, G.RAY_D_DEG):
-        add_wall_strip_ft(mesh, [G.WP4, polar_pt(G.WP4, 98.0, deg)], 0.28, z0, z1, MATERIALS["reg_cyan"])
+        add_wall_strip_ft(mesh, [G.WP3, polar_pt(G.WP3, 98.0, deg)], 0.28, z0, z1, MATERIALS["reg_cyan"])
 
     # Outer Boundary Rays A & E from Lower Focus WP_LOWER
     add_wall_strip_ft(mesh, [G.WP4, G.WP_LOWER], 0.24, z0, z1, MATERIALS["reg_amber"])
@@ -35,7 +35,8 @@ def build_regulating_lines(scene):
     add_wall_strip_ft(mesh, arc_pts(G.WP3A, G.R_WELL_L2_WALL, 38.0, 162.0, 40), 0.24, z0, z1, MATERIALS["reg_purple"])
     add_wall_strip_ft(mesh, [(-132.0, 0.0), (80.0, 0.0)], 0.22, z0, z1, MATERIALS["reg_cyan"])
 
-    # Working Point Cylinders (#4 and #3A)
-    add_cylinder_ft(mesh, G.WP4, 0.9, 0.0, 0.14, MATERIALS["reg_cyan"], sides=16)
+    # Working Point Cylinders (#4, #3, and #3A)
+    add_cylinder_ft(mesh, G.WP4, 0.85, 0.0, 0.14, MATERIALS["reg_cyan"], sides=16)
+    add_cylinder_ft(mesh, G.WP3, 0.75, 0.0, 0.14, MATERIALS["reg_cyan"], sides=16)
     add_cylinder_ft(mesh, G.WP3A, 0.75, 0.0, 0.14, MATERIALS["reg_purple"], sides=16)
     return grp

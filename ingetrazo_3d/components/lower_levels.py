@@ -39,7 +39,9 @@ from .primitives import (
 
 def _add_bookstack_range(mesh, quad_ft: list[tuple[float, float]], z_floor_m: float, height_m: float = 2.15, idx: int = 0):
     """Build an Aalto birch-slat double-faced bookstack range with shelves and book blocks."""
-    add_extruded_polygon_ft(mesh, quad_ft, z_floor_m, z_floor_m + height_m, MATERIALS["birch_wood"], MATERIALS["hemlock_slat"])
+    wood_side = {**MATERIALS["birch_wood"], "furniture": True}
+    wood_top = {**MATERIALS["hemlock_slat"], "furniture": True}
+    add_extruded_polygon_ft(mesh, quad_ft, z_floor_m, z_floor_m + height_m, wood_side, wood_top)
     # Colorful muted book band inset slightly at mid-height
     cx = sum(p[0] for p in quad_ft) * 0.25
     cy = sum(p[1] for p in quad_ft) * 0.25
@@ -50,7 +52,7 @@ def _add_bookstack_range(mesh, quad_ft: list[tuple[float, float]], z_floor_m: fl
         MATERIALS["book_ochre"],
         MATERIALS["book_sage"],
     ]
-    bmat = book_mats[idx % len(book_mats)]
+    bmat = {**book_mats[idx % len(book_mats)], "furniture": True}
     for tier in range(3):
         zb = z_floor_m + 0.32 + tier * 0.58
         add_extruded_polygon_ft(mesh, inset, zb, zb + 0.36, bmat)

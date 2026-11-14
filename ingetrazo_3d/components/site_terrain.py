@@ -12,7 +12,12 @@ from __future__ import annotations
 
 import math
 
-from phiarchitect.mountangel.vectors import AaltoGeometry, get_level2_envelope_ft, get_level3_envelope_ft
+from phiarchitect.mountangel.vectors import (
+    AaltoGeometry,
+    get_level2_envelope_ft,
+    get_level3_envelope_ft,
+    get_north_perimeter_with_pockets_ft,
+)
 
 from .primitives import (
     MATERIALS,
@@ -102,7 +107,7 @@ def build_site_terrain(scene):
             add_quad(mesh, p00, p10, p11, p01, mat)
 
     # Thickened earthen plinth skirt around outer terrain perimeter so model reads as an architectural site maquette
-    base_z = -12.6
+    base_z = -18.5
     # South edge (j = 0)
     for i in range(len(xs) - 1):
         x0, y0 = xy_m((xs[i], ys[0]))
@@ -125,6 +130,10 @@ def build_site_terrain(scene):
         x0, y0 = xy_m((xs[0], ys[j]))
         x1, y1 = xy_m((xs[0], ys[j + 1]))
         add_quad(mesh, (x1, y1, base_z), (x0, y0, base_z), (x0, y0, grid_z[0][j]), (x1, y1, grid_z[0][j + 1]), MATERIALS["hill_earth"])
+    # Bottom cap (-Z normal) sealing terrain maquette block for watertight WebGL2 stencil section capping
+    bx0, by0 = xy_m((xs[0], ys[0]))
+    bx1, by1 = xy_m((xs[ie], ys[jn]))
+    add_quad(mesh, (bx0, by0, base_z), (bx0, by1, base_z), (bx1, by1, base_z), (bx1, by0, base_z), MATERIALS["hill_earth"])
 
     # Exposed-aggregate South Entrance Plaza & Abbey Approach Walk
     plaza_poly = [
@@ -151,11 +160,11 @@ def build_site_terrain(scene):
     add_wall_strip_ft(mesh, [(-126.5, -28.0), (-134.0, -28.0), (-134.0, 1.5), (-126.5, 1.5)], 1.1, -1.2, 0.58, MATERIALS["concrete"])
     add_wall_strip_ft(mesh, [(61.5, -59.5), (68.0, -59.5), (68.0, -8.8), (61.5, -8.8)], 1.1, -1.2, 0.58, MATERIALS["concrete"])
 
-    # North Perimeter Concrete Maintenance Apron at Level 1 Toe
+    # North Perimeter Concrete Maintenance Apron at Level 1 Toe (meeting stepped-back L1 wall)
     apron_pts = [
-        (-89.0, 16.0), (-63.8, 59.0), (-14.2, 88.2), (42.0, 85.2), (98.5, 68.5),
-        (96.0, 66.5), (40.8, 82.5), (-13.8, 85.4), (-61.8, 56.8), (-86.5, 14.8),
+        (-89.5, 16.0), (-62.0, 63.0), (-13.8, 88.8), (41.8, 88.0), (99.0, 68.5),
+        *reversed(get_north_perimeter_with_pockets_ft(level=1)),
     ]
-    add_extruded_polygon_ft(mesh, apron_pts, -9.60, -8.25, MATERIALS["plaza_paving"], MATERIALS["concrete"])
+    add_extruded_polygon_ft(mesh, apron_pts, -9.60, -8.12, MATERIALS["plaza_paving"], MATERIALS["concrete"])
 
     return grp

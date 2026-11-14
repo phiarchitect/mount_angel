@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mount Angel Abbey Library — Alvar Aalto Interactive 3D Reconstruction</title>
+  <title>Mount Angel Abbey Library — Alvar Aalto Interactive 3D &amp; Section Viewer</title>
   <style>
     :root {
       --bg-sky-top: #1a2639;
-      --panel-bg: rgba(12, 18, 29, 0.86);
+      --panel-bg: rgba(12, 18, 29, 0.88);
       --panel-border: rgba(217, 155, 82, 0.35);
       --accent: #eab308;
+      --terracotta: #c25947;
       --cyan: #38bdf8;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
@@ -96,34 +97,41 @@
 
     .side-panel {
       position: fixed;
-      top: 70px;
-      left: 18px;
-      width: 280px;
+      top: 68px;
+      left: 16px;
+      width: 304px;
+      max-height: calc(100vh - 84px);
+      overflow-y: auto;
       background: var(--panel-bg);
       border: 1px solid var(--panel-border);
       border-radius: 10px;
-      padding: 14px;
+      padding: 13px;
       backdrop-filter: blur(12px);
       z-index: 15;
       display: flex;
       flex-direction: column;
       gap: 12px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(251, 191, 36, 0.35) transparent;
     }
 
     .panel-heading {
-      font-size: 0.72rem;
+      font-size: 0.71rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
       color: #fbbf24;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       padding-bottom: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .preset-grid {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 4px;
     }
 
     .cam-btn {
@@ -132,8 +140,8 @@
       color: #e2e8f0;
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 6px;
-      padding: 6px 10px;
-      font-size: 0.78rem;
+      padding: 5px 9px;
+      font-size: 0.76rem;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.15s;
@@ -143,18 +151,121 @@
       border-color: #fbbf24;
       color: #fff;
     }
+    .cam-btn.sec-preset {
+      border-color: rgba(194, 89, 71, 0.38);
+      background: rgba(142, 59, 46, 0.14);
+    }
+    .cam-btn.sec-preset:hover, .cam-btn.sec-preset.active {
+      background: rgba(194, 89, 71, 0.34);
+      border-color: #f87171;
+      color: #fff;
+    }
+
+    /* Section Scrubbing Controls */
+    .sec-box {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 7px;
+      padding: 8px;
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .mode-pills {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+    }
+    .pill-btn {
+      background: rgba(255, 255, 255, 0.06);
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 5px;
+      padding: 4px 2px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.12s;
+    }
+    .pill-btn:hover { border-color: #fbbf24; color: #fff; }
+    .pill-btn.active {
+      background: rgba(194, 89, 71, 0.38);
+      border-color: #f87171;
+      color: #fff;
+    }
+
+    .slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .slider-hdr {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: #cbd5e1;
+    }
+    .slider-val {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: #fde68a;
+      font-size: 0.71rem;
+    }
+    .slider-row input[type=range] {
+      width: 100%;
+      accent-color: #f87171;
+      cursor: pointer;
+    }
+
+    .sec-tools-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 0.74rem;
+      color: #cbd5e1;
+    }
+    .mini-btn {
+      background: rgba(255, 255, 255, 0.08);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 5px;
+      padding: 3px 8px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .mini-btn:hover { border-color: #fbbf24; color: #fff; }
+
+    .swatch-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .swatch-btn {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      cursor: pointer;
+      padding: 0;
+    }
+    .swatch-btn.active {
+      border-color: #fde68a;
+      box-shadow: 0 0 0 1.5px rgba(253, 230, 138, 0.55);
+    }
 
     .layer-list {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 4px;
     }
-
     .layer-item {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.77rem;
+      font-size: 0.76rem;
       color: #cbd5e1;
       cursor: pointer;
     }
@@ -168,7 +279,7 @@
       border: 1px solid var(--panel-border);
       border-radius: 8px;
       padding: 10px 16px;
-      max-width: 480px;
+      max-width: 500px;
       backdrop-filter: blur(10px);
       z-index: 15;
     }
@@ -195,10 +306,11 @@
   <header class="top-bar">
     <div class="title-wrap">
       <h1>Mount Angel Abbey Library</h1>
-      <span>Alvar Aalto (1970) &middot; IngeTrazo 0.6.0 Parametric 3D Model</span>
+      <span>Alvar Aalto (1970) &middot; IngeTrazo 0.6.0 Parametric 3D &amp; Section Viewer</span>
     </div>
     <div class="nav-actions">
-      <button id="roofCutawayBtn" class="cutaway-btn" type="button">&#9698; Toggle Roof Cutaway</button>
+      <button id="orthoToggleBtn" class="cutaway-btn" type="button" title="Switch between Perspective and True Parallel Orthographic Projection">&#9645; Orthographic</button>
+      <button id="roofCutawayBtn" class="cutaway-btn" type="button">&#9698; Roof Cutaway</button>
       <a href="index.html" class="btn-link">&larr; Blueprint &amp; Vector Archive</a>
     </div>
   </header>
@@ -206,13 +318,61 @@
   <aside class="side-panel">
     <div>
       <div class="panel-heading">Architectural Views</div>
-      <div class="preset-grid" id="presetButtons" style="margin-top:7px;"></div>
+      <div class="preset-grid" id="presetButtons" style="margin-top:6px;"></div>
     </div>
+
+    <div>
+      <div class="panel-heading">
+        <span>Architectural Sections</span>
+        <span style="font-size:0.65rem;color:#fca5a5;font-weight:600;">WebGL2 Stencil Poch&eacute;</span>
+      </div>
+      <div class="preset-grid" id="sectionPresetButtons" style="margin-top:6px;"></div>
+
+      <div class="sec-box">
+        <div class="mode-pills" id="secModePills">
+          <button type="button" class="pill-btn active" data-mode="off">Off</button>
+          <button type="button" class="pill-btn" data-mode="x">X (N&ndash;S)</button>
+          <button type="button" class="pill-btn" data-mode="y">Y (E&ndash;W)</button>
+          <button type="button" class="pill-btn" data-mode="z">Z (Plan)</button>
+          <button type="button" class="pill-btn" data-mode="radial">Radial</button>
+        </div>
+
+        <div class="slider-row" id="secPosRow" style="display:none;">
+          <div class="slider-hdr">
+            <span id="secAxisLabel">Cut Plane</span>
+            <span class="slider-val" id="secPosVal">0.00 m</span>
+          </div>
+          <input type="range" id="secPosSlider" min="-42" max="42" step="0.05" value="-3.41" />
+        </div>
+
+        <div class="slider-row" id="secAngRow" style="display:none;">
+          <div class="slider-hdr">
+            <span>WP #3 Ray Angle</span>
+            <span class="slider-val" id="secAngVal">101.0&deg;</span>
+          </div>
+          <input type="range" id="secAngSlider" min="25" max="175" step="0.25" value="101.0" />
+        </div>
+
+        <div class="sec-tools-row" id="secToolsRow" style="display:none;">
+          <button type="button" class="mini-btn" id="secFlipBtn" title="Flip kept half-space">&#8644; Flip</button>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+            <input type="checkbox" id="secPocheCheck" checked style="accent-color:#f87171;" />
+            <span>Poch&eacute;</span>
+          </label>
+          <div class="swatch-group" title="Section Poché Fill Tone">
+            <button type="button" class="swatch-btn active" data-poche="terracotta" style="background:#8e3b2e;" title="Aalto Brick Terracotta Poché"></button>
+            <button type="button" class="swatch-btn" data-poche="ink" style="background:#1c2432;" title="Classic Drafting Ink Poché"></button>
+            <button type="button" class="swatch-btn" data-poche="slate" style="background:#4b5563;" title="Architectural Concrete Poché"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div>
       <div class="panel-heading">IngeTrazo Model Layers</div>
-      <div class="layer-list" id="layerList" style="margin-top:7px;"></div>
+      <div class="layer-list" id="layerList" style="margin-top:6px;"></div>
     </div>
-    <div style="font-size:0.7rem;color:#94a3b8;line-height:1.35;">
+    <div style="font-size:0.69rem;color:#94a3b8;line-height:1.35;">
       <strong>Controls:</strong> Left-drag Orbit &middot; Right/Shift-drag Pan &middot; Scroll Zoom
     </div>
   </aside>
@@ -224,19 +384,32 @@
 
   <script>
   (() => {
+    const M_TO_FT = 1.0 / 0.3048;
+    const WP3_M = [2.60 * 0.3048, -1.80 * 0.3048]; // Structural radial focus in metres
+
+    const POCHE_PALETTE = {
+      terracotta: [0.56, 0.22, 0.17],
+      ink:        [0.11, 0.14, 0.20],
+      slate:      [0.30, 0.34, 0.39]
+    };
+
     const PRESETS = {
       hillside_hero: {
+        group: "view",
         label: "1. North-East Hillside Hero",
         title: "North-East Abbey Bluff Hero View",
-        desc: "Three-story faceted Mount Angel buff-brick curtain wall, H-piers B/C/D, wood sun louvers, and curved copper/glass North Daylight Scoop emerging from the grassy hillside.",
+        desc: "Cantilevered Level 2–3 faceted Mount Angel buff-brick curtain wall over the stepped-back Level 1 concrete base, 3 distinct irregular H-columns (B, C, D) with recessed scupper pockets, wood sun louvers, and curved North Daylight Scoop.",
         target: [2.0, 7.5, -1.8],
         yaw: 0.72,
         pitch: 0.25,
         dist: 66.0,
         fov: 44,
+        ortho: false,
+        section: null,
         hideLayers: ["0_Regulating_Grid"]
       },
       south_entry: {
+        group: "view",
         label: "2. South Entrance & Canopy",
         title: "South Upper Plaza & Entry Portico",
         desc: "Serene one-story upper Abbey courtyard approach with cantilevered copper-and-hemlock marquee, Rare Book auditorium wing, and 12 conical skylight lanterns.",
@@ -245,20 +418,26 @@
         pitch: 0.23,
         dist: 56.0,
         fov: 45,
+        ortho: false,
+        section: null,
         hideLayers: ["0_Regulating_Grid"]
       },
       cutaway_axon: {
+        group: "view",
         label: "3. Roof Cutaway Axonometric",
         title: "Roof-Off Constructive Plan-Axonometric",
-        desc: "Cutaway looking directly into Level 3's asymmetric polycentric fan, WP #4 regulating rays, 15 radiating birch bookstacks, mezzanine reading counter, and sunken Level 2 well.",
+        desc: "Cutaway looking directly into Level 3's asymmetric polycentric fan, WP #3 structural rays through twin 18\"Ø columns and rotated irregular H-columns (B, C, D), 15 radiating birch bookstacks, and sunken Level 2 well.",
         target: [-1.0, 8.5, -0.5],
         yaw: 0.95,
         pitch: 0.78,
         dist: 64.0,
         fov: 42,
+        ortho: false,
+        section: null,
         hideLayers: ["7_Roof_And_Daylight_Scoop"]
       },
       mezzanine_pov: {
+        group: "view",
         label: "4. Mezzanine Reading Counter POV",
         title: "Level 3 Mezzanine Counter & Dome Lamps",
         desc: "Standing in the main reading aisle behind Aalto's continuous matte-black linoleum desk and white dome lamps, looking across the double-height Reading Well toward the Control Desk and curved North Daylight Scoop.",
@@ -267,9 +446,12 @@
         pitch: 0.03,
         dist: 11.4,
         fov: 62,
+        ortho: false,
+        section: null,
         hideLayers: ["0_Regulating_Grid"]
       },
       sunken_well: {
+        group: "view",
         label: "5. Level 2 Well Looking Up",
         title: "Level 2 Reading Well & Concave Light Scoop",
         desc: "Standing in the open double-height Level 2 well (-12'-6\") looking up past the R = 31'-10\" reference bookwall, Semicircular Gallery (-4'-6\"), stepped flanking stairs, and 18\"Ø white columns into the glowing North Light Scoop.",
@@ -278,9 +460,12 @@
         pitch: -0.46,
         dist: 9.2,
         fov: 68,
+        ortho: false,
+        section: null,
         hideLayers: ["0_Regulating_Grid"]
       },
       lounge_mthood: {
+        group: "view",
         label: "6. East Prow & Mt. Hood Window",
         title: "East Prow (Axis E) & Periodical Lounge",
         desc: "Oblique view of the sharp East brick prow, Periodical Lounge floor-to-ceiling Mt. Hood picture window with exterior hemlock louvers, and central daylight monitor.",
@@ -289,6 +474,80 @@
         pitch: 0.24,
         dist: 52.0,
         fov: 45,
+        ortho: false,
+        section: null,
+        hideLayers: ["0_Regulating_Grid"]
+      },
+      h_columns_north: {
+        group: "view",
+        label: "7. North H-Columns & Scupper Pockets",
+        title: "Irregular Perimeter H-Columns (WP #5, #6/#7, #8/#9)",
+        desc: "North-facing elevation view of Aalto's 3 distinct splayed H-columns (Sheets 06-a6 & 45-s14): mitered brick exterior fins, recessed rainwater scupper pockets, and Level 2 cantilever over the stepped-back Level 1 concrete U-channels.",
+        target: [-2.5, 21.5, -1.5],
+        yaw: 1.74,
+        pitch: 0.14,
+        dist: 43.0,
+        fov: 45,
+        ortho: false,
+        section: null,
+        hideLayers: ["0_Regulating_Grid"]
+      },
+
+      // --- Real-Time WebGL2 Architectural Section Presets ---
+      section_aa: {
+        group: "section",
+        label: "\u00a7 A-A \u00b7 Longitudinal N\u2013S (Sheet 13)",
+        title: "Section A-A — Longitudinal North\u2013South Cut (X = -11'-2\")",
+        desc: "True orthographic WebGL2 section matching Alvar Aalto's Sheet 13: slicing through the South Entry Canopy, Lobby conical skylight throats, Control Desk & slatted drum, Curved North Daylight Scoop crescent, Sunken Well, and 3-tier North fan.",
+        target: [-3.41, 4.2, -3.1],
+        yaw: 0.0,
+        pitch: 0.0,
+        dist: 39.5,
+        fov: 42,
+        ortho: true,
+        section: { mode: "x", d: -3.41, flip: 1 },
+        hideLayers: ["0_Regulating_Grid"]
+      },
+      section_well: {
+        group: "section",
+        label: "\u00a7 Well \u00b7 Transverse Reading Well Cut",
+        title: "Transverse Reading Well Section-Perspective (Y = +17'-1\")",
+        desc: "3D architectural section-perspective looking North across the double-height Reading Well (-12'-6\"), Semicircular Gallery (-4'-6\"), flanking radial stairs, Mezzanine reading counter with 16 dome lamps, and Curved North Daylight Scoop.",
+        target: [1.5, 13.5, -2.4],
+        yaw: -Math.PI / 2,
+        pitch: 0.04,
+        dist: 41.5,
+        fov: 46,
+        ortho: false,
+        section: { mode: "y", d: 5.20, flip: -1 },
+        hideLayers: ["0_Regulating_Grid"]
+      },
+      section_bb: {
+        group: "section",
+        label: "\u00a7 B-B \u00b7 South Wing E\u2013W (Sheet 13)",
+        title: "Section B-B — South Wing & Skylight Throats (Y = -21'-8\")",
+        desc: "Orthographic East\u2013West section matching top of Sheet 13 (looking South): slicing cleanly through the Rare Book Vault, Glazed Lobby, 6 flaring conical plaster skylight diffuser throats, and lower Mechanical / Bindery tiers.",
+        target: [-8.5, -6.61, -2.8],
+        yaw: Math.PI / 2,
+        pitch: 0.0,
+        dist: 56.0,
+        fov: 42,
+        ortho: true,
+        section: { mode: "y", d: -6.61, flip: 1 },
+        hideLayers: ["0_Regulating_Grid"]
+      },
+      section_plan_l3: {
+        group: "section",
+        label: "\u00a7 Plan \u00b7 Level 3 Horizontal Cut (+7'-5\")",
+        title: "Level 3 Architectural Plan-Section (Z = +7'-5\")",
+        desc: "True North-up orthographic horizontal cut slicing through all perimeter brick walls, twin 18\"\u00d8 columns, and Aalto's 3 rotated irregular H-columns (B, C, D) in solid poch\u00e9 above the 15 radial birch bookstacks and sunken Reading Well.",
+        target: [-4.5, 4.5, 0.0],
+        yaw: -Math.PI / 2,
+        pitch: 1.565,
+        dist: 75.0,
+        fov: 42,
+        ortho: true,
+        section: { mode: "z", d: 2.25, flip: 1 },
         hideLayers: ["0_Regulating_Grid"]
       }
     };
@@ -299,13 +558,18 @@
     }
 
     const canvas = document.getElementById("glCanvas");
-    const gl = canvas.getContext("webgl2", { antialias: true, alpha: false, preserveDrawingBuffer: true });
+    const gl = canvas.getContext("webgl2", {
+      antialias: true,
+      alpha: false,
+      stencil: true,
+      preserveDrawingBuffer: true
+    });
     if (!gl) {
       document.getElementById("camTitle").textContent = "WebGL2 Not Available";
       return;
     }
 
-    // --- Shaders (Architectural Sun + Hemisphere Sky + Warm Interior Fill + Depth Fog) ---
+    // --- Shaders (Architectural Sun + Hemisphere Sky + Real-Time Clip Plane + Stencil Poché) ---
     const VS_SOLID = `#version 300 es
       layout(location=0) in vec3 aPos;
       layout(location=1) in vec3 aNrm;
@@ -328,29 +592,34 @@
       in vec3 vNrm;
       in vec4 vCol;
       uniform vec3 uEye;
+      uniform int uClipEnabled;
+      uniform vec4 uClipPlane;
+      uniform float uFogScale;
       out vec4 fragColor;
 
       void main() {
+        if (uClipEnabled == 1 && dot(vPos, uClipPlane.xyz) > uClipPlane.w) {
+          discard;
+        }
         vec3 base = vCol.rgb;
         float alpha = vCol.a;
         if (alpha > 1.5) {
-          // Emissive lamp / regulating line
           fragColor = vec4(base * 1.08, 1.0);
           return;
         }
         vec3 N = normalize(vNrm);
         vec3 V = normalize(uEye - vPos);
-        // Flip normal if viewing interior face of glass/vault
-        if (dot(N, V) < 0.0 && alpha < 0.99) N = -N;
+        if (!gl_FrontFacing) {
+          N = -N;
+          if (alpha >= 0.99) base *= 0.62;
+        }
 
-        // Golden Oregon morning/afternoon sun from ENE + soft NW fill + floor-bounced hemisphere sky
         vec3 sunDir = normalize(vec3(0.56, 0.42, 0.71));
         vec3 fillDir = normalize(vec3(-0.62, 0.55, 0.56));
         float ndl = max(dot(N, sunDir), 0.0);
         float ndf = max(dot(N, fillDir), 0.0);
         float hemi = 0.52 + 0.48 * N.z;
 
-        // Luminous North Daylight Scoop & Reading Well indirect bounce (illuminates ceilings & well walls!)
         vec3 wellPos = vec3(0.45, 10.2, 4.4);
         vec3 toWell = wellPos - vPos;
         float wellDist = length(toWell);
@@ -361,18 +630,15 @@
         vec3 fillCol = vec3(0.55, 0.66, 0.82) * (0.22 * ndf);
         vec3 intBounce = vec3(0.97, 0.95, 0.90) * scoopGlow * 0.42;
 
-        // Subtle specular sheen on glass & copper
         vec3 H = normalize(sunDir + V);
         float spec = pow(max(dot(N, H), 0.0), 36.0) * (alpha < 0.95 ? 0.55 : 0.10);
 
         vec3 lit = base * (ambient + sunCol + fillCol + intBounce) + vec3(spec);
 
-        // Subtle atmospheric distance perspective
         float camDist = length(uEye - vPos);
-        float fog = clamp((camDist - 75.0) / 160.0, 0.0, 0.38);
+        float fog = clamp((camDist - 75.0) / 160.0, 0.0, 0.38) * uFogScale;
         lit = mix(lit, vec3(0.76, 0.83, 0.90), fog);
 
-        // Clean ACES-inspired filmic tone curve
         lit = lit / (lit + vec3(0.88)) * 1.62;
         lit = pow(clamp(lit, 0.0, 1.0), vec3(0.94));
         fragColor = vec4(lit, clamp(alpha, 0.0, 1.0));
@@ -382,22 +648,88 @@
     const VS_EDGE = `#version 300 es
       layout(location=0) in vec3 aPos;
       uniform mat4 uMVP;
-      out float vDist;
       uniform vec3 uEye;
+      out vec3 vPos;
+      out float vDist;
       void main() {
+        vPos = aPos;
         vDist = length(uEye - aPos);
         gl_Position = uMVP * vec4(aPos, 1.0);
-        gl_Position.z -= 0.00035 * gl_Position.w;
+        gl_Position.z -= 0.00025 * gl_Position.w;
       }
     `;
 
     const FS_EDGE = `#version 300 es
-      precision mediump float;
+      precision highp float;
+      in vec3 vPos;
       in float vDist;
+      uniform int uClipEnabled;
+      uniform vec4 uClipPlane;
+      uniform float uOrthoEdgeAlpha;
       out vec4 fragColor;
       void main() {
-        float a = clamp(0.34 - vDist * 0.0022, 0.06, 0.30);
+        if (uClipEnabled == 1 && dot(vPos, uClipPlane.xyz) > uClipPlane.w) {
+          discard;
+        }
+        float a = uOrthoEdgeAlpha > 0.0 ? uOrthoEdgeAlpha : clamp(0.34 - vDist * 0.0022, 0.08, 0.30);
         fragColor = vec4(0.10, 0.12, 0.16, a);
+      }
+    `;
+
+    // Minimal Stencil-Volume Shader (discards clipped half-space, writes 0 color)
+    const VS_STENCIL = `#version 300 es
+      layout(location=0) in vec3 aPos;
+      uniform mat4 uMVP;
+      out vec3 vPos;
+      void main() {
+        vPos = aPos;
+        gl_Position = uMVP * vec4(aPos, 1.0);
+      }
+    `;
+
+    const FS_STENCIL = `#version 300 es
+      precision highp float;
+      in vec3 vPos;
+      uniform vec4 uClipPlane;
+      out vec4 fragColor;
+      void main() {
+        if (dot(vPos, uClipPlane.xyz) > uClipPlane.w) {
+          discard;
+        }
+        fragColor = vec4(0.0);
+      }
+    `;
+
+    // Architectural Poché Cap Shader (solid building poché + 45° diagonal earth subgrade hatching)
+    const VS_CAP = `#version 300 es
+      layout(location=0) in vec3 aPos;
+      uniform mat4 uMVP;
+      uniform float uDepthBias;
+      out vec3 vPos;
+      void main() {
+        vPos = aPos;
+        gl_Position = uMVP * vec4(aPos, 1.0);
+        gl_Position.z += uDepthBias * gl_Position.w;
+      }
+    `;
+
+    const FS_CAP = `#version 300 es
+      precision highp float;
+      in vec3 vPos;
+      uniform vec3 uCapColor;
+      uniform int uIsEarth;
+      uniform vec3 uT1;
+      uniform vec3 uT2;
+      out vec4 fragColor;
+      void main() {
+        vec3 col = uCapColor;
+        if (uIsEarth == 1) {
+          // Classic 45° architectural section earth hatching
+          float u = dot(vPos, uT1) + dot(vPos, uT2);
+          float stripe = smoothstep(0.35, 0.55, abs(fract(u * 1.35) - 0.5) * 2.0);
+          col = mix(col * 0.78, col * 1.04, stripe);
+        }
+        fragColor = vec4(col, 1.0);
       }
     `;
 
@@ -415,7 +747,6 @@
       in vec2 vUV;
       out vec4 fragColor;
       void main() {
-        // Soft Willamette Valley architectural sky gradient
         vec3 horizon = vec3(0.83, 0.87, 0.91);
         vec3 zenith  = vec3(0.46, 0.61, 0.79);
         vec3 ground  = vec3(0.66, 0.71, 0.75);
@@ -441,10 +772,22 @@
 
     const progSolid = compileProg(VS_SOLID, FS_SOLID);
     const progEdge = compileProg(VS_EDGE, FS_EDGE);
+    const progStencil = compileProg(VS_STENCIL, FS_STENCIL);
+    const progCap = compileProg(VS_CAP, FS_CAP);
     const progSky = compileProg(VS_SKY, FS_SKY);
     const emptyVao = gl.createVertexArray();
 
-    // --- Minimal 4x4 Matrix Math (Z-Up Camera) ---
+    // Dynamic 2-triangle quad VAO for the section poché cap plane
+    const capVao = gl.createVertexArray();
+    const capBuf = gl.createBuffer();
+    gl.bindVertexArray(capVao);
+    gl.bindBuffer(gl.ARRAY_BUFFER, capBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(18), gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+    gl.bindVertexArray(null);
+
+    // --- Minimal 4x4 Matrix Math (Z-Up Camera, Perspective + Orthographic) ---
     function perspective(fovDeg, aspect, near, far) {
       const f = 1.0 / Math.tan((fovDeg * Math.PI) / 360.0);
       const nf = 1.0 / (near - far);
@@ -456,15 +799,23 @@
       ]);
     }
 
+    function orthographic(halfW, halfH, near, far) {
+      const nf = 1.0 / (near - far);
+      return new Float32Array([
+        1.0 / halfW, 0, 0, 0,
+        0, 1.0 / halfH, 0, 0,
+        0, 0, 2.0 * nf, 0,
+        0, 0, (far + near) * nf, 1
+      ]);
+    }
+
     function lookAtZUp(eye, target) {
       let fx = target[0] - eye[0], fy = target[1] - eye[1], fz = target[2] - eye[2];
       let fl = Math.hypot(fx, fy, fz) || 1;
       fx /= fl; fy /= fl; fz /= fl;
-      // Right = normalize(f x [0,0,1])
       let rx = fy, ry = -fx, rz = 0;
       let rl = Math.hypot(rx, ry, rz);
       if (rl < 1e-4) { rx = 1; ry = 0; rz = 0; } else { rx /= rl; ry /= rl; }
-      // Up = r x f
       const ux = ry * fz - rz * fy;
       const uy = rz * fx - rx * fz;
       const uz = rx * fy - ry * fx;
@@ -493,14 +844,53 @@
       return o;
     }
 
-    // --- Camera & Layer State ---
+    // --- Camera, Section Plane & Layer State ---
     let cam = {
       target: [2.0, 7.5, -1.8],
       yaw: 0.72,
       pitch: 0.25,
       dist: 66.0,
-      fov: 44
+      fov: 44,
+      ortho: false
     };
+
+    let sec = {
+      mode: "off",        // "off" | "x" | "y" | "z" | "radial"
+      d: -3.41,           // signed plane offset along base normal (metres)
+      radialDeg: 101.0,   // WP #3 radial ray angle (deg CCW from +X)
+      flip: 1,            // +1 or -1
+      poche: true,
+      pocheTone: "terracotta"
+    };
+
+    function getClipPlaneVec4() {
+      if (sec.mode === "off") return [0, 0, 1, 1e6];
+      let nx = 0, ny = 0, nz = 0, dBase = sec.d;
+      if (sec.mode === "x") {
+        nx = 1; ny = 0; nz = 0;
+      } else if (sec.mode === "y") {
+        nx = 0; ny = 1; nz = 0;
+      } else if (sec.mode === "z") {
+        nx = 0; ny = 0; nz = 1;
+      } else if (sec.mode === "radial") {
+        const rad = (sec.radialDeg * Math.PI) / 180.0;
+        // Normal perpendicular to WP #3 ray (pointing CCW / Westward across the ray)
+        nx = -Math.sin(rad);
+        ny = Math.cos(rad);
+        nz = 0;
+        dBase = nx * WP3_M[0] + ny * WP3_M[1] + sec.d;
+      }
+      return [nx * sec.flip, ny * sec.flip, nz * sec.flip, dBase * sec.flip];
+    }
+
+    function formatFeetInches(mVal) {
+      const totalIn = Math.round(mVal * M_TO_FT * 12.0);
+      const sign = totalIn < 0 ? "-" : "+";
+      const absIn = Math.abs(totalIn);
+      const ft = Math.floor(absIn / 12);
+      const inch = absIn % 12;
+      return `${sign}${ft}'-${inch}" (${mVal >= 0 ? "+" : ""}${mVal.toFixed(2)} m)`;
+    }
 
     let gpuLayers = [];
     let layerVisible = {};
@@ -545,6 +935,65 @@
       return { vao, count: edgeArr.length / 3 };
     }
 
+    // --- UI Synchronization ---
+    const secPosRow = document.getElementById("secPosRow");
+    const secAngRow = document.getElementById("secAngRow");
+    const secToolsRow = document.getElementById("secToolsRow");
+    const secPosSlider = document.getElementById("secPosSlider");
+    const secPosVal = document.getElementById("secPosVal");
+    const secAxisLabel = document.getElementById("secAxisLabel");
+    const secAngSlider = document.getElementById("secAngSlider");
+    const secAngVal = document.getElementById("secAngVal");
+    const orthoBtn = document.getElementById("orthoToggleBtn");
+
+    function configureSectionSliderRange(mode) {
+      if (mode === "x") {
+        secPosSlider.min = "-40"; secPosSlider.max = "32"; secPosSlider.step = "0.05";
+        secAxisLabel.textContent = "East\u2013West Position (X)";
+      } else if (mode === "y") {
+        secPosSlider.min = "-24"; secPosSlider.max = "30"; secPosSlider.step = "0.05";
+        secAxisLabel.textContent = "South\u2013North Position (Y)";
+      } else if (mode === "z") {
+        secPosSlider.min = "-10.2"; secPosSlider.max = "6.6"; secPosSlider.step = "0.04";
+        secAxisLabel.textContent = "Elevation Cut (Z)";
+      } else if (mode === "radial") {
+        secPosSlider.min = "-15"; secPosSlider.max = "15"; secPosSlider.step = "0.05";
+        secAxisLabel.textContent = "Offset from WP #3 Ray";
+      }
+    }
+
+    function syncSectionUi() {
+      document.querySelectorAll("#secModePills .pill-btn").forEach(b => {
+        b.classList.toggle("active", b.dataset.mode === sec.mode);
+      });
+      const active = sec.mode !== "off";
+      secPosRow.style.display = active ? "flex" : "none";
+      secAngRow.style.display = sec.mode === "radial" ? "flex" : "none";
+      secToolsRow.style.display = active ? "flex" : "none";
+
+      if (active) {
+        configureSectionSliderRange(sec.mode);
+        secPosSlider.value = String(sec.d);
+        secPosVal.textContent = formatFeetInches(sec.d);
+        secAngSlider.value = String(sec.radialDeg);
+        secAngVal.textContent = `${sec.radialDeg.toFixed(1)}\u00b0`;
+      }
+      document.getElementById("secPocheCheck").checked = sec.poche;
+      document.querySelectorAll(".swatch-btn").forEach(s => {
+        s.classList.toggle("active", s.dataset.poche === sec.pocheTone);
+      });
+      orthoBtn.classList.toggle("active", cam.ortho);
+    }
+
+    function syncUiCheckboxes() {
+      document.querySelectorAll("#layerList input[type=checkbox]").forEach(cb => {
+        cb.checked = Boolean(layerVisible[cb.dataset.layer]);
+      });
+      const roofHidden = layerVisible["7_Roof_And_Daylight_Scoop"] === false;
+      document.getElementById("roofCutawayBtn").classList.toggle("active", roofHidden);
+      orthoBtn.classList.toggle("active", cam.ortho);
+    }
+
     function applyPreset(key) {
       const p = PRESETS[key] || PRESETS.hillside_hero;
       cam.target = [...p.target];
@@ -552,11 +1001,22 @@
       cam.pitch = p.pitch;
       cam.dist = p.dist;
       cam.fov = p.fov;
+      cam.ortho = Boolean(p.ortho);
+
+      if (p.section) {
+        sec.mode = p.section.mode;
+        sec.d = p.section.d;
+        sec.flip = p.section.flip ?? 1;
+        if (p.section.radialDeg !== undefined) sec.radialDeg = p.section.radialDeg;
+      } else {
+        sec.mode = "off";
+      }
 
       gpuLayers.forEach(l => {
         layerVisible[l.name] = !(p.hideLayers || []).includes(l.name);
       });
       syncUiCheckboxes();
+      syncSectionUi();
 
       document.querySelectorAll(".cam-btn").forEach(b => {
         b.classList.toggle("active", b.dataset.cam === key);
@@ -566,24 +1026,75 @@
       requestRender();
     }
 
-    function syncUiCheckboxes() {
-      document.querySelectorAll("#layerList input[type=checkbox]").forEach(cb => {
-        cb.checked = Boolean(layerVisible[cb.dataset.layer]);
-      });
-      const roofHidden = layerVisible["7_Roof_And_Daylight_Scoop"] === false;
-      document.getElementById("roofCutawayBtn").classList.toggle("active", roofHidden);
-    }
-
-    // Build Camera Buttons
+    // Build View & Section Preset Buttons
     const presetContainer = document.getElementById("presetButtons");
+    const secPresetContainer = document.getElementById("sectionPresetButtons");
     Object.entries(PRESETS).forEach(([k, v]) => {
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "cam-btn";
+      btn.className = v.group === "section" ? "cam-btn sec-preset" : "cam-btn";
       btn.dataset.cam = k;
       btn.textContent = v.label;
       btn.addEventListener("click", () => applyPreset(k));
-      presetContainer.appendChild(btn);
+      if (v.group === "section") {
+        secPresetContainer.appendChild(btn);
+      } else {
+        presetContainer.appendChild(btn);
+      }
+    });
+
+    // Wire Section Mode Pills & Sliders
+    document.querySelectorAll("#secModePills .pill-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const newMode = btn.dataset.mode;
+        if (newMode !== sec.mode) {
+          sec.mode = newMode;
+          sec.flip = 1;
+          if (newMode === "x") sec.d = -3.41;
+          else if (newMode === "y") { sec.d = 5.20; sec.flip = -1; }
+          else if (newMode === "z") sec.d = 1.50;
+          else if (newMode === "radial") { sec.radialDeg = 101.0; sec.d = 0.0; }
+        }
+        document.querySelectorAll(".cam-btn").forEach(b => b.classList.remove("active"));
+        syncSectionUi();
+        requestRender();
+      });
+    });
+
+    secPosSlider.addEventListener("input", () => {
+      sec.d = parseFloat(secPosSlider.value);
+      secPosVal.textContent = formatFeetInches(sec.d);
+      requestRender();
+    });
+
+    secAngSlider.addEventListener("input", () => {
+      sec.radialDeg = parseFloat(secAngSlider.value);
+      secAngVal.textContent = `${sec.radialDeg.toFixed(1)}\u00b0`;
+      requestRender();
+    });
+
+    document.getElementById("secFlipBtn").addEventListener("click", () => {
+      sec.flip *= -1;
+      requestRender();
+    });
+
+    document.getElementById("secPocheCheck").addEventListener("change", e => {
+      sec.poche = e.target.checked;
+      requestRender();
+    });
+
+    document.querySelectorAll(".swatch-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        sec.pocheTone = btn.dataset.poche;
+        syncSectionUi();
+        requestRender();
+      });
+    });
+
+    orthoBtn.addEventListener("click", () => {
+      cam.ortho = !cam.ortho;
+      syncUiCheckboxes();
+      requestRender();
     });
 
     document.getElementById("roofCutawayBtn").addEventListener("click", () => {
@@ -608,19 +1119,24 @@
       lx = e.clientX; ly = e.clientY;
       if (panMode) {
         const scale = cam.dist * 0.0014;
-        const rx = -Math.sin(cam.yaw), ry = Math.cos(cam.yaw);
-        cam.target[0] -= rx * dx * scale;
-        cam.target[1] -= ry * dx * scale;
-        cam.target[2] += dy * scale;
+        const cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch);
+        const fx = -cp * Math.cos(cam.yaw), fy = -cp * Math.sin(cam.yaw), fz = -sp;
+        let rx = fy, ry = -fx;
+        const rl = Math.hypot(rx, ry) || 1;
+        rx /= rl; ry /= rl;
+        const ux = ry * fz, uy = -rx * fz, uz = rx * fy - ry * fx;
+        cam.target[0] += (-rx * dx + ux * dy) * scale;
+        cam.target[1] += (-ry * dx + uy * dy) * scale;
+        cam.target[2] += (uz * dy) * scale;
       } else {
         cam.yaw -= dx * 0.0065;
-        cam.pitch = Math.max(-1.25, Math.min(1.42, cam.pitch + dy * 0.0065));
+        cam.pitch = Math.max(-1.45, Math.min(1.568, cam.pitch + dy * 0.0065));
       }
       requestRender();
     });
     canvas.addEventListener("wheel", e => {
       e.preventDefault();
-      cam.dist = Math.max(2.5, Math.min(180.0, cam.dist * Math.exp(e.deltaY * 0.001)));
+      cam.dist = Math.max(2.5, Math.min(190.0, cam.dist * Math.exp(e.deltaY * 0.001)));
       requestRender();
     }, { passive: false });
 
@@ -632,6 +1148,100 @@
       }
     }
 
+    function updateCapQuadGeometry(planeVec4, planeShift) {
+      const nx = planeVec4[0], ny = planeVec4[1], nz = planeVec4[2];
+      const d = planeVec4[3] + planeShift;
+
+      // Orthonormal tangent basis (T1, T2) on the section plane with T1 x T2 = +N
+      let ax = 0, ay = 0, az = 1;
+      if (Math.abs(nz) > 0.85) { ax = 1; ay = 0; az = 0; }
+      let t1x = ay * nz - az * ny;
+      let t1y = az * nx - ax * nz;
+      let t1z = ax * ny - ay * nx;
+      const t1l = Math.hypot(t1x, t1y, t1z) || 1;
+      t1x /= t1l; t1y /= t1l; t1z /= t1l;
+
+      const t2x = ny * t1z - nz * t1y;
+      const t2y = nz * t1x - nx * t1z;
+      const t2z = nx * t1y - ny * t1x;
+
+      // Project scene center (0, 5, -2) onto plane
+      const refDot = nx * 0.0 + ny * 5.0 + nz * (-2.0);
+      const cx = 0.0 + (d - refDot) * nx;
+      const cy = 5.0 + (d - refDot) * ny;
+      const cz = -2.0 + (d - refDot) * nz;
+
+      const R = 110.0;
+      const p0 = [cx - R * t1x - R * t2x, cy - R * t1y - R * t2y, cz - R * t1z - R * t2z];
+      const p1 = [cx + R * t1x - R * t2x, cy + R * t1y - R * t2y, cz + R * t1z - R * t2z];
+      const p2 = [cx + R * t1x + R * t2x, cy + R * t1y + R * t2y, cz + R * t1z + R * t2z];
+      const p3 = [cx - R * t1x + R * t2x, cy - R * t1y + R * t2y, cz - R * t1z + R * t2z];
+
+      const verts = new Float32Array([
+        ...p0, ...p1, ...p2,
+        ...p0, ...p2, ...p3
+      ]);
+      gl.bindBuffer(gl.ARRAY_BUFFER, capBuf);
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, verts);
+      return { t1: [t1x, t1y, t1z], t2: [t2x, t2y, t2z] };
+    }
+
+    function drawStencilPochePass(mvp, clipPlane, layersSubset, capColor, isEarth, planeShift, depthBias, sliceMode) {
+      const valid = layersSubset.filter(l => {
+        if (!layerVisible[l.name] || !l.opaque.vao) return false;
+        if (sliceMode === "furn") return (l.opaque.count - l.pocheVerts) > 0;
+        if (sliceMode === "struct") return l.pocheVerts > 0;
+        return l.opaque.count > 0;
+      });
+      if (valid.length === 0) return;
+
+      gl.clear(gl.STENCIL_BUFFER_BIT);
+      gl.enable(gl.STENCIL_TEST);
+      gl.disable(gl.CULL_FACE);
+      gl.disable(gl.DEPTH_TEST);
+      gl.depthMask(false);
+      gl.colorMask(false, false, false, false);
+
+      gl.stencilFunc(gl.ALWAYS, 0, 0xFF);
+      gl.stencilOpSeparate(gl.BACK, gl.KEEP, gl.KEEP, gl.INCR_WRAP);
+      gl.stencilOpSeparate(gl.FRONT, gl.KEEP, gl.KEEP, gl.DECR_WRAP);
+
+      gl.useProgram(progStencil);
+      gl.uniformMatrix4fv(gl.getUniformLocation(progStencil, "uMVP"), false, mvp);
+      gl.uniform4fv(gl.getUniformLocation(progStencil, "uClipPlane"), clipPlane);
+
+      for (const lyr of valid) {
+        gl.bindVertexArray(lyr.opaque.vao);
+        if (sliceMode === "furn") {
+          gl.drawArrays(gl.TRIANGLES, lyr.pocheVerts, lyr.opaque.count - lyr.pocheVerts);
+        } else if (sliceMode === "struct") {
+          gl.drawArrays(gl.TRIANGLES, 0, lyr.pocheVerts);
+        } else {
+          gl.drawArrays(gl.TRIANGLES, 0, lyr.opaque.count);
+        }
+      }
+
+      // Fill section cap wherever signed winding != 0, writing cap depth to occlude interior cavities
+      const basis = updateCapQuadGeometry(clipPlane, planeShift);
+      gl.colorMask(true, true, true, true);
+      gl.enable(gl.DEPTH_TEST);
+      gl.depthMask(true);
+      gl.stencilFunc(gl.NOTEQUAL, 0, 0xFF);
+      gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+
+      gl.useProgram(progCap);
+      gl.uniformMatrix4fv(gl.getUniformLocation(progCap, "uMVP"), false, mvp);
+      gl.uniform3fv(gl.getUniformLocation(progCap, "uCapColor"), capColor);
+      gl.uniform1i(gl.getUniformLocation(progCap, "uIsEarth"), isEarth ? 1 : 0);
+      gl.uniform3fv(gl.getUniformLocation(progCap, "uT1"), basis.t1);
+      gl.uniform3fv(gl.getUniformLocation(progCap, "uT2"), basis.t2);
+      gl.uniform1f(gl.getUniformLocation(progCap, "uDepthBias"), depthBias);
+
+      gl.bindVertexArray(capVao);
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      gl.disable(gl.STENCIL_TEST);
+    }
+
     function drawScene() {
       rafPending = false;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -641,7 +1251,8 @@
         canvas.width = w; canvas.height = h;
       }
       gl.viewport(0, 0, w, h);
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      gl.clearStencil(0);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 
       // 1. Sky Background
       gl.disable(gl.DEPTH_TEST);
@@ -652,22 +1263,49 @@
 
       if (gpuLayers.length === 0) return;
 
+      const aspect = w / Math.max(h, 1);
       const cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch);
-      const eye = [
-        cam.target[0] + cam.dist * cp * Math.cos(cam.yaw),
-        cam.target[1] + cam.dist * cp * Math.sin(cam.yaw),
-        cam.target[2] + cam.dist * sp
+      const dirX = cp * Math.cos(cam.yaw);
+      const dirY = cp * Math.sin(cam.yaw);
+      const dirZ = sp;
+
+      // In orthographic mode, step viewEye well outside the 105m site so near-plane never clips foreground
+      const viewDist = cam.ortho ? 185.0 : cam.dist;
+      const viewEye = [
+        cam.target[0] + viewDist * dirX,
+        cam.target[1] + viewDist * dirY,
+        cam.target[2] + viewDist * dirZ
       ];
-      const proj = perspective(cam.fov, w / Math.max(h, 1), 0.25, 420.0);
-      const view = lookAtZUp(eye, cam.target);
+      const litDist = cam.ortho ? Math.max(cam.dist, 48.0) : cam.dist;
+      const litEye = [
+        cam.target[0] + litDist * dirX,
+        cam.target[1] + litDist * dirY,
+        cam.target[2] + litDist * dirZ
+      ];
+
+      let proj;
+      if (cam.ortho) {
+        const halfH = cam.dist * Math.tan((cam.fov * Math.PI) / 360.0);
+        proj = orthographic(halfH * aspect, halfH, 1.0, 420.0);
+      } else {
+        proj = perspective(cam.fov, aspect, 0.25, 420.0);
+      }
+      const view = lookAtZUp(viewEye, cam.target);
       const mvp = mul4(proj, view);
+
+      const clipEnabled = sec.mode !== "off" ? 1 : 0;
+      const clipPlane = getClipPlaneVec4();
 
       // 2. Opaque Architectural Geometry
       gl.enable(gl.DEPTH_TEST);
       gl.depthMask(true);
+      gl.disable(gl.CULL_FACE);
       gl.useProgram(progSolid);
       gl.uniformMatrix4fv(gl.getUniformLocation(progSolid, "uMVP"), false, mvp);
-      gl.uniform3fv(gl.getUniformLocation(progSolid, "uEye"), eye);
+      gl.uniform3fv(gl.getUniformLocation(progSolid, "uEye"), litEye);
+      gl.uniform1i(gl.getUniformLocation(progSolid, "uClipEnabled"), clipEnabled);
+      gl.uniform4fv(gl.getUniformLocation(progSolid, "uClipPlane"), clipPlane);
+      gl.uniform1f(gl.getUniformLocation(progSolid, "uFogScale"), cam.ortho ? 0.0 : 1.0);
 
       for (const lyr of gpuLayers) {
         if (!layerVisible[lyr.name] || !lyr.opaque.vao) continue;
@@ -675,12 +1313,35 @@
         gl.drawArrays(gl.TRIANGLES, 0, lyr.opaque.count);
       }
 
-      // 3. Crisp Architectural Feature Edges
+      // 2B. WebGL2 Stencil Section Poché Caps (Earth Subgrade Hatch + Birch Millwork + Structural Poché)
+      if (clipEnabled && sec.poche) {
+        const eyeSide =
+          clipPlane[0] * viewEye[0] +
+          clipPlane[1] * viewEye[1] +
+          clipPlane[2] * viewEye[2] -
+          clipPlane[3];
+        if (eyeSide > 0.02) {
+          const terrainLayers = gpuLayers.filter(l => l.name === "1_Abbey_Hillside_Site");
+          const buildingLayers = gpuLayers.filter(
+            l => !l.name.startsWith("0_") && l.name !== "1_Abbey_Hillside_Site"
+          );
+          const bCol = POCHE_PALETTE[sec.pocheTone] || POCHE_PALETTE.terracotta;
+          // 1) 45° diagonal earth subgrade poché, 2) warm birch millwork poché, 3) bold primary structure poché
+          drawStencilPochePass(mvp, clipPlane, terrainLayers, [0.30, 0.27, 0.23], true, -0.004, -0.00050, "all");
+          drawStencilPochePass(mvp, clipPlane, buildingLayers, [0.74, 0.57, 0.37], false, -0.001, -0.00065, "furn");
+          drawStencilPochePass(mvp, clipPlane, buildingLayers, bCol, false, 0.0, -0.00080, "struct");
+        }
+      }
+
+      // 3. Crisp Architectural Feature Edges (occluded behind solid poché caps!)
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
       gl.useProgram(progEdge);
       gl.uniformMatrix4fv(gl.getUniformLocation(progEdge, "uMVP"), false, mvp);
-      gl.uniform3fv(gl.getUniformLocation(progEdge, "uEye"), eye);
+      gl.uniform3fv(gl.getUniformLocation(progEdge, "uEye"), litEye);
+      gl.uniform1i(gl.getUniformLocation(progEdge, "uClipEnabled"), clipEnabled);
+      gl.uniform4fv(gl.getUniformLocation(progEdge, "uClipPlane"), clipPlane);
+      gl.uniform1f(gl.getUniformLocation(progEdge, "uOrthoEdgeAlpha"), cam.ortho ? 0.26 : -1.0);
       for (const lyr of gpuLayers) {
         if (!layerVisible[lyr.name] || !lyr.edges.vao) continue;
         gl.bindVertexArray(lyr.edges.vao);
@@ -718,15 +1379,20 @@
             requestRender();
           });
           listEl.appendChild(lbl);
+          const opaque = makeTriVao(l.opaque_pos, l.opaque_nrm, l.opaque_col);
           return {
             name: l.name,
-            opaque: makeTriVao(l.opaque_pos, l.opaque_nrm, l.opaque_col),
+            pocheVerts: l.poche_verts !== undefined ? l.poche_verts : opaque.count,
+            opaque,
             trans: makeTriVao(l.trans_pos, l.trans_nrm, l.trans_col),
             edges: makeEdgeVao(l.edge_pos),
           };
         });
 
         const initialCam = params.get("cam") || "hillside_hero";
+        if (params.get("poche") && POCHE_PALETTE[params.get("poche")]) {
+          sec.pocheTone = params.get("poche");
+        }
         applyPreset(initialCam);
       })
       .catch(err => {

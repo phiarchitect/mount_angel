@@ -20,6 +20,8 @@ from phiarchitect.mountangel.vectors import (
     AaltoGeometry,
     arc_pts,
     get_carrel_alcoves_ft,
+    get_h_pier_polygons_ft,
+    get_north_perimeter_with_pockets_ft,
     get_radial_bookstacks_ft,
     polar_pt,
 )
@@ -53,6 +55,7 @@ def _add_aalto_dome_lamp(mesh, pt_ft: tuple[float, float], z_desk_m: float):
         attrs=MATERIALS["lamp_shade"],
         sides=14,
         cap_top=True,
+        cap_bottom=True,
     )
     add_cylinder_ft(mesh, pt_ft, 0.48, z_desk_m + 0.33, z_desk_m + 0.35, MATERIALS["lamp_glow"], sides=12)
 
@@ -79,11 +82,7 @@ def build_level3_reading_room(scene):
     well_outer_arc = arc_pts(G.WP3A, G.R_MEZZ_OPENING, 42.0, 161.0, 38)  # East -> West
     fan_mezz_poly = [
         G.PT_A_INNER_JUNC,          # (-77.5, 12.8)
-        G.PT_A,                     # (-86.5, 14.8)
-        G.PT_B,                     # (-61.8, 56.8)
-        G.PT_C,                     # (-13.8, 85.4)
-        G.PT_D,                     # (+40.8, 82.5)
-        G.PT_E,                     # (+96.0, 66.5)
+        *get_north_perimeter_with_pockets_ft(level=3),
         G.PT_LOUNGE_JUNC,           # (+51.8, 32.8)
         (51.8, -8.8),               # Periodical Lounge SE corner
         (19.0, -8.8),
@@ -278,6 +277,16 @@ def build_level3_reading_room(scene):
             (0.55 * c_box[0][0] + 0.45 * c_box[3][0], 0.55 * c_box[0][1] + 0.45 * c_box[3][1]),
         ]
         add_extruded_polygon_ft(mesh, desk_quad, z_l3 + 0.72, z_l3 + 0.78, MATERIALS["birch_wood"])
+
+    # Built-in Birch Counters tucked inside the 3 interior H-Column reading alcoves (Sheet 05-a5)
+    for hp_poly in get_h_pier_polygons_ft(level=3):
+        alcove_desk = [
+            hp_poly[9],
+            hp_poly[8],
+            (0.42 * hp_poly[8][0] + 0.58 * hp_poly[7][0], 0.42 * hp_poly[8][1] + 0.58 * hp_poly[7][1]),
+            (0.42 * hp_poly[9][0] + 0.58 * hp_poly[10][0], 0.42 * hp_poly[9][1] + 0.58 * hp_poly[10][1]),
+        ]
+        add_extruded_polygon_ft(mesh, alcove_desk, z_l3 + 0.72, z_l3 + 0.78, MATERIALS["birch_wood"])
 
     # 8. Periodical Lounge Reading Tables (East Flank facing Mt. Hood Picture Window)
     for py_ft in (4.0, 15.0, 25.0):

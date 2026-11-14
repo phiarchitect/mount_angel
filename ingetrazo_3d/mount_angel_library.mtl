@@ -74,7 +74,7 @@ newmtl mat24
 Kd 0.7000 0.5700 0.4000
 
 newmtl mat25
-Kd 0.2200 0.2300 0.2500
+Kd 0.4500 0.3200 0.2300
 
 newmtl mat26
 Kd 0.9200 0.9100 0.8800
@@ -89,14 +89,11 @@ newmtl mat29
 Kd 0.6700 0.4700 0.2800
 
 newmtl mat30
-Kd 0.4500 0.3200 0.2300
-
-newmtl mat31
 Kd 0.7800 0.9100 0.9800
 
-newmtl mat32
+newmtl mat31
 Kd 0.7800 0.8000 0.8200
 
-newmtl mat33
+newmtl mat32
 Kd 0.7600 0.7400 0.7000
 
