@@ -322,6 +322,8 @@ def capture_web_renders(repo_root: Path):
             ("alcove_mthood", "studio_16_entry_mthood_alcove.png"),
         ]
         if browser_bin:
+            docs_renders_dir = docs_dir / "renders"
+            docs_renders_dir.mkdir(parents=True, exist_ok=True)
             for cam_key, fname in shots:
                 out_file = renders_dir / fname
                 url = f"http://127.0.0.1:{port}/library-3d.html?cam={cam_key}&studio=1"
@@ -340,6 +342,8 @@ def capture_web_renders(repo_root: Path):
                     url,
                 ]
                 subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
+                if out_file.is_file():
+                    shutil.copy2(out_file, docs_renders_dir / fname)
                 print(f"Captured QHD Studio Render: {out_file}")
         else:
             print("Warning: No headless Chromium binary found for WebGL studio capture.")
