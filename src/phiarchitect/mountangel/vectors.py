@@ -759,15 +759,28 @@ def build_sheet_svg(sheet_id: int) -> str:
         # South Entry Canopy
         svg.add_polyline("roof_skylights", [(-22.5, -50.8), (4.5, -50.8), (4.5, -65.5), (-22.5, -65.5)], "#f59e0b", width=2.0, closed=True, dash="5,3")
         svg.add_label("roof_skylights", (-21.5, -64.5), "ENTRY CANOPY", "#fbbf24", size=9, dx=2, dy=11)
-        # Level 3 Mezzanine Opening & Continuous Reading Counter
-        svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, G.R_MEZZ_OPENING, 48.2, 155.3, 40), "#facc15", width=2.2)
-        svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, G.R_MEZZ_DESK, 48.2, 155.3, 40), "#eab308", width=1.6)
+        # Level 3 Mezzanine Opening, Continuous Reading Counter & Radial Stairwell Bookcases
+        svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, G.R_MEZZ_OPENING, 47.9, 155.4, 40), "#facc15", width=2.2)
+        svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, G.R_MEZZ_DESK, 47.9, 155.4, 40), "#eab308", width=1.6)
         svg.add_label("stairs_millwork", polar_pt(G.WP3A, G.R_MEZZ_DESK, 99.0), "L3 WORKBENCH (STOOLS + LAMPS)", "#fde047", size=9, dx=-64, dy=-6)
+        for st_deg, r_sgn in ((41.8, -1.0), (161.5, +1.0)):
+            s_rad = math.radians(st_deg)
+            urx, ury = math.cos(s_rad), math.sin(s_rad)
+            tx, ty = r_sgn * (-ury), r_sgn * urx
+            cx0, cy0 = G.WP3A
+            bk_poly = [
+                (cx0 + 22.8 * urx, cy0 + 22.8 * ury),
+                (cx0 + 44.1 * urx, cy0 + 44.1 * ury),
+                (cx0 + 44.1 * urx + 1.55 * tx, cy0 + 44.1 * ury + 1.55 * ty),
+                (cx0 + 22.8 * urx + 1.55 * tx, cy0 + 22.8 * ury + 1.55 * ty),
+            ]
+            svg.add_polyline("stairs_millwork", bk_poly, "#fde047", width=2.0, closed=True, fill="#facc15", fill_opacity=0.28)
+        svg.add_label("stairs_millwork", polar_pt(G.WP3A, 34.0, 39.0), "COUNTER-HT. BOOKCASE", "#fde047", size=8, dx=4, dy=4)
         # -4'-6" Mezzanine below: Outer-Arc Workbench (R = 29.4..31.83') & Inner Reference Bookwall (R = 22.8')
         svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, G.R_WELL_L2_WALL, 55.8, 147.8, 36), "#fde047", width=1.9)
         svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, 29.42, 55.8, 147.8, 36), "#fbbf24", width=1.4, dash="4,2")
         svg.add_label("stairs_millwork", polar_pt(G.WP3A, 29.42, 100.0), "MEZZ. WORKBENCH (CHAIRS + LAMPS)", "#fde047", size=8, dx=-68, dy=11)
-        svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, G.R_GALLERY_RAIL, 45.0, 158.0, 32), "#38bdf8", width=1.6, dash="4,3")
+        svg.add_polyline("stairs_millwork", arc_pts(G.WP3A, G.R_GALLERY_RAIL, 42.1, 161.2, 32), "#38bdf8", width=1.6, dash="4,3")
         svg.add_polyline("stairs_millwork", arc_pts(G.WP_DESK, G.R_DESK_OUTER, 25.0, 165.0, 32), "#f97316", width=2.2)
         svg.add_polyline("stairs_millwork", arc_pts(G.WP_DESK, G.R_DESK_INNER, 25.0, 165.0, 32), "#f97316", width=1.6)
         # Carrels, Stairs & Radial Bookstacks
@@ -777,6 +790,12 @@ def build_sheet_svg(sheet_id: int) -> str:
             svg.add_polyline("stairs_millwork", st, "#fbbf24", width=1.8, closed=True, fill="#fbbf24", fill_opacity=0.14)
         for stk in get_radial_bookstacks_ft(51.0, 69.0):
             svg.add_polyline("stairs_millwork", stk, "#a3e635", width=1.1, closed=True, fill="#a3e635", fill_opacity=0.12)
+        # Eye-Level Square Mt. Hood Window in H-Column D Alcove (Ray D = 65.72° ENE)
+        hp_d = get_h_pier_polygons_ft(level=3)[2]
+        w_a = (hp_d[2][0] + 0.21 * (hp_d[3][0] - hp_d[2][0]), hp_d[2][1] + 0.21 * (hp_d[3][1] - hp_d[2][1]))
+        w_b = (hp_d[2][0] + 0.79 * (hp_d[3][0] - hp_d[2][0]), hp_d[2][1] + 0.79 * (hp_d[3][1] - hp_d[2][1]))
+        svg.add_line("walls", w_a, w_b, "#38bdf8", width=3.2)
+        svg.add_label("walls", hp_d[3], "EYE-LEVEL MT. HOOD WINDOW", "#7dd3fc", size=8, dx=6, dy=-4)
         svg.add_label("walls", (52.5, 16.0), "MT. HOOD PICTURE WINDOW", "#6ee7b7", size=9, dx=4, dy=0)
 
     elif sheet_id == 4:

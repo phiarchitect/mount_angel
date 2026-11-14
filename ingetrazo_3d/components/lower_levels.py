@@ -218,8 +218,8 @@ def build_lower_levels(scene):
         G.WP3A,
         21.5,
         G.R_WELL_L2_WALL + 0.42,
-        42.0,
-        161.0,
+        41.8,
+        161.5,
         z_gal - 0.22,
         z_gal - 0.02,
         MATERIALS["white_plaster"],
@@ -230,8 +230,8 @@ def build_lower_levels(scene):
         G.WP3A,
         21.5,
         G.R_WELL_L2_WALL + 0.42,
-        42.0,
-        161.0,
+        41.8,
+        161.5,
         z_gal - 0.02,
         z_gal,
         MATERIALS["carpet_blue"],
@@ -240,19 +240,19 @@ def build_lower_levels(scene):
 
     # 2. Inner (-R) Arc: Curved 4-Shelf Birch Reference Bookwall tucked under Control Peninsula (`Angel-090508`)
     birch_furn = {**MATERIALS["birch_wood"], "furniture": True}
-    add_arc_band_ft(m2, G.WP3A, 21.50, 21.85, 48.0, 155.0, z_gal, z_l3 - 0.28, birch_furn, steps=34)
+    add_arc_band_ft(m2, G.WP3A, 21.50, 21.85, 42.2, 161.1, z_gal, z_l3 - 0.28, birch_furn, steps=36)
     for z_sh in (0.04, 0.30, 0.56, 0.81, 1.05):
         add_arc_band_ft(
             m2,
             G.WP3A,
             21.85,
             G.R_GALLERY_RAIL + 0.15,
-            48.0,
-            155.0,
+            42.2,
+            161.1,
             z_gal + z_sh,
             z_gal + z_sh + 0.035,
             birch_furn,
-            steps=34,
+            steps=36,
         )
     ref_book_mats = [
         {**MATERIALS["book_slate"], "furniture": True},
@@ -260,10 +260,10 @@ def build_lower_levels(scene):
         {**MATERIALS["book_terracotta"], "furniture": True},
         {**MATERIALS["book_ochre"], "furniture": True},
     ]
-    n_ref_bays = 16
+    n_ref_bays = 18
     for b_idx in range(n_ref_bays):
-        d0 = 48.5 + b_idx * (106.0 / n_ref_bays)
-        d1 = d0 + (106.0 / n_ref_bays) - 0.6
+        d0 = 42.6 + b_idx * (118.0 / n_ref_bays)
+        d1 = d0 + (118.0 / n_ref_bays) - 0.6
         div_pt = polar_pt(G.WP3A, 22.40, d0 - 0.3)
         add_oriented_box_ft(m2, div_pt, 1.10, 0.12, d0 - 0.3, z_gal, z_l3 - 0.28, birch_furn)
         for s_tier, z_b0 in enumerate((0.08, 0.34, 0.60, 0.85)):
@@ -279,6 +279,48 @@ def build_lower_levels(scene):
                 ref_book_mats[(b_idx + s_tier) % len(ref_book_mats)],
                 steps=2,
             )
+
+    # Straight Radial 4-Shelf End Bookcases closing East (41.8°) & West (161.5°) Mezzanine Ends
+    # (`Sheet 13-a13: EAST @ STAIR #2 / WEST @ STAIR #1` & visible behind columns in `mezzaninewithdictionaryweb2`!)
+    for end_deg, in_sign in ((41.8, 1.0), (161.5, -1.0)):
+        rad_e = math.radians(end_deg)
+        urx, ury = math.cos(rad_e), math.sin(rad_e)
+        itx, ity = in_sign * (-ury), in_sign * urx  # points inward onto Mezzanine carpet
+        cx0, cy0 = G.WP3A
+        # White plaster end backing wall under Level 3 stairwell edge
+        back_quad = [
+            (cx0 + 21.8 * urx - 0.28 * itx, cy0 + 21.8 * ury - 0.28 * ity),
+            (cx0 + 32.1 * urx - 0.28 * itx, cy0 + 32.1 * ury - 0.28 * ity),
+            (cx0 + 32.1 * urx + 0.05 * itx, cy0 + 32.1 * ury + 0.05 * ity),
+            (cx0 + 21.8 * urx + 0.05 * itx, cy0 + 21.8 * ury + 0.05 * ity),
+        ]
+        add_extruded_polygon_ft(m2, back_quad, z_gal - 0.22, z_l3 - 0.28, MATERIALS["white_plaster"])
+        # 4-shelf birch bookcase (R = 22.9..31.5 ft) under plaster spandrel beam
+        sh_quad = [
+            (cx0 + 22.95 * urx + 0.06 * itx, cy0 + 22.95 * ury + 0.06 * ity),
+            (cx0 + 31.45 * urx + 0.06 * itx, cy0 + 31.45 * ury + 0.06 * ity),
+            (cx0 + 31.45 * urx + 1.02 * itx, cy0 + 31.45 * ury + 1.02 * ity),
+            (cx0 + 22.95 * urx + 1.02 * itx, cy0 + 22.95 * ury + 1.02 * ity),
+        ]
+        for z_sh in (0.04, 0.30, 0.56, 0.81, 1.04):
+            add_extruded_polygon_ft(m2, sh_quad, z_gal + z_sh, z_gal + z_sh + 0.032, birch_furn)
+        for eb_i in range(3):
+            r_a = 23.05 + eb_i * 2.75
+            r_b = r_a + 2.60
+            bk_quad = [
+                (cx0 + r_a * urx + 0.10 * itx, cy0 + r_a * ury + 0.10 * ity),
+                (cx0 + r_b * urx + 0.10 * itx, cy0 + r_b * ury + 0.10 * ity),
+                (cx0 + r_b * urx + 0.88 * itx, cy0 + r_b * ury + 0.88 * ity),
+                (cx0 + r_a * urx + 0.88 * itx, cy0 + r_a * ury + 0.88 * ity),
+            ]
+            for s_tier, z_b0 in enumerate((0.08, 0.34, 0.60)):
+                add_extruded_polygon_ft(
+                    m2,
+                    bk_quad,
+                    z_gal + z_b0,
+                    z_gal + z_b0 + 0.19,
+                    ref_book_mats[(eb_i + s_tier) % len(ref_book_mats)],
+                )
 
     # 3. Outer (+R) Arc: Mezzanine Parapet, Matte-Black Linoleum Workbench, Custom Lamps & Artek 69 Chairs (`IMG_5143`)
     mezz_deg0, mezz_deg1 = 55.8, 147.8
@@ -316,9 +358,10 @@ def build_lower_levels(scene):
     # =========================================================================
     # WEST & EAST RADIAL SWITCHBACK (U-TURN) WELL STAIRS + SE STAIR #2
     # =========================================================================
-    # Upper flight (outer lane) descends inward (-R) from Level 3 (R = 43.6) -> Mezzanine (R = 32.2, Z = -1.37 m)
-    # Lower flight (inner lane) descends outward (+R) from Mezzanine (R = 32.3) -> Level 2 (R = 44.6, Z = -3.81 m)
-    for ang_up, ang_dn in ((45.4, 52.2), (158.1, 151.3)):
+    # Upper flight (outer lane) descends inward (-R) from Level 3 (R = 43.6) -> Mezzanine (R = 32.3, Z = -1.37 m)
+    # alongside the Level 3 radial counter-height bookcase / plaster stairwell wall (`wall_side = +1` East, `-1` West).
+    # Lower flight (inner lane) descends outward (+R) from Mezzanine (R = 32.4) -> Level 2 (R = 44.8, Z = -3.81 m).
+    for ang_up, ang_dn, w_side in ((45.1, 52.0, 1), (158.2, 151.3, -1)):
         p_l3_top = polar_pt(G.WP3A, 43.6, ang_up)
         p_mezz_in = polar_pt(G.WP3A, 32.3, ang_up)
         add_stepped_stair_ft(
@@ -330,6 +373,7 @@ def build_lower_levels(scene):
             z_bot_m=z_gal,
             n_steps=9,
             tread_attrs=MATERIALS["carpet_blue"],
+            wall_side=w_side,
         )
 
         p_mezz_out = polar_pt(G.WP3A, 32.4, ang_dn)

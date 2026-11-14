@@ -605,6 +605,7 @@ def add_stepped_stair_ft(
     z_bot_m: float,
     n_steps: int = 16,
     tread_attrs: dict | None = None,
+    wall_side: int = 0,
 ):
     """Build a true 3D stepped architectural stair with treads, white stringers, birch caps, and bronze handrails."""
     dx, dy = p_bot_ft[0] - p_top_ft[0], p_bot_ft[1] - p_top_ft[1]
@@ -637,34 +638,36 @@ def add_stepped_stair_ft(
         r_mid0 = xy_m((p_top_ft[0] + nx * (off - side * 0.11), p_top_ft[1] + ny * (off - side * 0.11)))
         r_mid1 = xy_m((p_bot_ft[0] + nx * (off - side * 0.11), p_bot_ft[1] + ny * (off - side * 0.11)))
 
-        for z_lo_a, z_hi_a, z_lo_b, z_hi_b, mat in [
-            (z_top_m - 0.28, z_top_m + 0.54, z_bot_m - 0.28, z_bot_m + 0.54, MATERIALS["white_plaster"]),
-            (z_top_m + 0.54, z_top_m + 0.59, z_bot_m + 0.54, z_bot_m + 0.59, MATERIALS["birch_wood"]),
-        ]:
-            p_a0 = (s0[0], s0[1], z_lo_a)
-            p_a1 = (s0[0], s0[1], z_hi_a)
-            p_b0 = (s1[0], s1[1], z_lo_b)
-            p_b1 = (s1[0], s1[1], z_hi_b)
-            q_a0 = (s0_in[0], s0_in[1], z_lo_a)
-            q_a1 = (s0_in[0], s0_in[1], z_hi_a)
-            q_b0 = (s1_in[0], s1_in[1], z_lo_b)
-            q_b1 = (s1_in[0], s1_in[1], z_hi_b)
-            if side > 0:
-                add_quad(mesh, p_a0, p_b0, p_b1, p_a1, mat)
-                add_quad(mesh, q_b0, q_a0, q_a1, q_b1, mat)
-                add_quad(mesh, p_a1, p_b1, q_b1, q_a1, mat)
-                add_quad(mesh, q_a0, q_b0, p_b0, p_a0, mat)
-                add_quad(mesh, q_a0, p_a0, p_a1, q_a1, mat)
-                add_quad(mesh, p_b0, q_b0, q_b1, p_b1, mat)
-            else:
-                add_quad(mesh, p_b0, p_a0, p_a1, p_b1, mat)
-                add_quad(mesh, q_a0, q_b0, q_b1, q_a1, mat)
-                add_quad(mesh, q_a1, q_b1, p_b1, p_a1, mat)
-                add_quad(mesh, p_a0, p_b0, q_b0, q_a0, mat)
-                add_quad(mesh, p_a0, q_a0, q_a1, p_a1, mat)
-                add_quad(mesh, q_b0, p_b0, p_b1, q_b1, mat)
+        is_wall = (wall_side < 0 and side < 0) or (wall_side > 0 and side > 0)
+        if not is_wall:
+            for z_lo_a, z_hi_a, z_lo_b, z_hi_b, mat in [
+                (z_top_m - 0.28, z_top_m + 0.54, z_bot_m - 0.28, z_bot_m + 0.54, MATERIALS["white_plaster"]),
+                (z_top_m + 0.54, z_top_m + 0.59, z_bot_m + 0.54, z_bot_m + 0.59, MATERIALS["birch_wood"]),
+            ]:
+                p_a0 = (s0[0], s0[1], z_lo_a)
+                p_a1 = (s0[0], s0[1], z_hi_a)
+                p_b0 = (s1[0], s1[1], z_lo_b)
+                p_b1 = (s1[0], s1[1], z_hi_b)
+                q_a0 = (s0_in[0], s0_in[1], z_lo_a)
+                q_a1 = (s0_in[0], s0_in[1], z_hi_a)
+                q_b0 = (s1_in[0], s1_in[1], z_lo_b)
+                q_b1 = (s1_in[0], s1_in[1], z_hi_b)
+                if side > 0:
+                    add_quad(mesh, p_a0, p_b0, p_b1, p_a1, mat)
+                    add_quad(mesh, q_b0, q_a0, q_a1, q_b1, mat)
+                    add_quad(mesh, p_a1, p_b1, q_b1, q_a1, mat)
+                    add_quad(mesh, q_a0, q_b0, p_b0, p_a0, mat)
+                    add_quad(mesh, q_a0, p_a0, p_a1, q_a1, mat)
+                    add_quad(mesh, p_b0, q_b0, q_b1, p_b1, mat)
+                else:
+                    add_quad(mesh, p_b0, p_a0, p_a1, p_b1, mat)
+                    add_quad(mesh, q_a0, q_b0, q_b1, q_a1, mat)
+                    add_quad(mesh, q_a1, q_b1, p_b1, p_a1, mat)
+                    add_quad(mesh, p_a0, p_b0, q_b0, q_a0, mat)
+                    add_quad(mesh, p_a0, q_a0, q_a1, p_a1, mat)
+                    add_quad(mesh, q_b0, p_b0, p_b1, q_b1, mat)
 
-        # Tubular dark-bronze handrail on short standoff posts above birch cap
+        # Tubular dark-bronze handrail on short standoff posts (or horizontal wall brackets on wall_side)
         add_polytube_m(
             mesh,
             [(r_mid0[0], r_mid0[1], z_top_m + 0.89), (r_mid1[0], r_mid1[1], z_bot_m + 0.89)],
@@ -673,12 +676,22 @@ def add_stepped_stair_ft(
             sides=8,
         )
         n_posts = max(3, int(L / 4.2) + 1)
+        w_nx, w_ny = nx * side, ny * side
         for p_idx in range(n_posts):
             t_p = 0.06 + 0.88 * (p_idx / max(1, n_posts - 1))
             px = r_mid0[0] + (r_mid1[0] - r_mid0[0]) * t_p
             py = r_mid0[1] + (r_mid1[1] - r_mid0[1]) * t_p
             pz = z_top_m + (z_bot_m - z_top_m) * t_p
-            add_polytube_m(mesh, [(px, py, pz + 0.58), (px, py, pz + 0.89)], 0.011, rail_mat, sides=6)
+            if is_wall:
+                add_polytube_m(
+                    mesh,
+                    [(px + 0.055 * w_nx, py + 0.055 * w_ny, pz + 0.80), (px, py, pz + 0.80), (px, py, pz + 0.89)],
+                    0.010,
+                    rail_mat,
+                    sides=6,
+                )
+            else:
+                add_polytube_m(mesh, [(px, py, pz + 0.58), (px, py, pz + 0.89)], 0.011, rail_mat, sides=6)
 
 
 # =============================================================================
@@ -980,6 +993,77 @@ def add_aalto_parapet_lamp(
     )
 
     # 4. Delicate off-center vertical pull-switch stem below diffuser
+    sw_x = ox + (s_dome - 0.045) * ix
+    sw_y = oy + (s_dome - 0.045) * iy
+    add_polytube_m(mesh, [(sw_x, sw_y, z_floor_m + 1.215), (sw_x, sw_y, z_floor_m + 1.287)], 0.004, brass_mat, sides=6)
+
+
+def add_aalto_linear_parapet_lamp(
+    mesh,
+    mount_pt_ft: tuple[float, float],
+    arm_dir_deg: float,
+    z_floor_m: float,
+):
+    """
+    Alvar Aalto's custom parapet-wall-mounted reading lamp along straight radial stairwell bookcases
+    (`mezzaninewithdictionaryweb2` & `Angel-090508`), bolted to `mount_pt_ft` on the stairwell face
+    and angling across the birch cap along `arm_dir_deg` over the counter-height bookcase.
+    """
+    rad = math.radians(arm_dir_deg)
+    ix, iy = math.cos(rad), math.sin(rad)
+    ox, oy = xy_m(mount_pt_ft)
+
+    white_mat = MATERIALS["lamp_white"]
+    glow_mat = {**MATERIALS["lamp_glow"], "furniture": True}
+    brass_mat = {**MATERIALS["brass"], "furniture": True}
+
+    brk_off_ft = 0.014 / FT_TO_M
+    brk_pt_ft = (mount_pt_ft[0] - brk_off_ft * ix, mount_pt_ft[1] - brk_off_ft * iy)
+    add_oriented_box_ft(
+        mesh,
+        brk_pt_ft,
+        0.028 / FT_TO_M,
+        0.052 / FT_TO_M,
+        arm_dir_deg,
+        z_floor_m + 0.74,
+        z_floor_m + 0.91,
+        white_mat,
+    )
+
+    arm_pts = [
+        (ox - 0.014 * ix, oy - 0.014 * iy, z_floor_m + 0.89),
+        (ox - 0.014 * ix, oy - 0.014 * iy, z_floor_m + 1.005),
+        (ox + 0.250 * ix, oy + 0.250 * iy, z_floor_m + 1.375),
+        (ox + 0.335 * ix, oy + 0.335 * iy, z_floor_m + 1.375),
+    ]
+    add_polytube_m(mesh, arm_pts, 0.0105, white_mat, sides=8)
+
+    s_dome = 0.425
+    dome_center = (ox + s_dome * ix, oy + s_dome * iy, z_floor_m + 1.275)
+    shade_profile = [
+        (0.084, 0.012),
+        (0.084, 0.000),
+        (0.098, 0.000),
+        (0.098, 0.026),
+        (0.128, 0.034),
+        (0.148, 0.050),
+        (0.154, 0.068),
+        (0.146, 0.088),
+        (0.128, 0.108),
+        (0.096, 0.126),
+        (0.052, 0.138),
+        (0.018, 0.143),
+    ]
+    add_lathe_solid_m(
+        mesh,
+        dome_center,
+        shade_profile,
+        band_attrs=white_mat,
+        bottom_attrs=glow_mat,
+        top_attrs=white_mat,
+        sides=18,
+    )
+
     sw_x = ox + (s_dome - 0.045) * ix
     sw_y = oy + (s_dome - 0.045) * iy
     add_polytube_m(mesh, [(sw_x, sw_y, z_floor_m + 1.215), (sw_x, sw_y, z_floor_m + 1.287)], 0.004, brass_mat, sides=6)
