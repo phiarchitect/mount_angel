@@ -231,7 +231,14 @@ def triangulate_polygon_2d(poly: list[tuple[float, float]]) -> tuple[list[tuple[
             for j in idxs:
                 if j in (i_prev, i_curr, i_next):
                     continue
-                if _pt_in_tri_2d(cleaned[j], a, b, c):
+                pj = cleaned[j]
+                if (
+                    math.hypot(pj[0] - a[0], pj[1] - a[1]) <= 1e-7
+                    or math.hypot(pj[0] - b[0], pj[1] - b[1]) <= 1e-7
+                    or math.hypot(pj[0] - c[0], pj[1] - c[1]) <= 1e-7
+                ):
+                    continue
+                if _pt_in_tri_2d(pj, a, b, c):
                     inside = True
                     break
             if not inside:
@@ -247,6 +254,79 @@ def triangulate_polygon_2d(poly: list[tuple[float, float]]) -> tuple[list[tuple[
     if len(idxs) == 3:
         tris.append((idxs[0], idxs[1], idxs[2]))
     return cleaned, tris
+
+
+def _clean_ring_2d(poly: list[tuple[float, float]], ccw: bool = True) -> list[tuple[float, float]]:
+    cleaned: list[tuple[float, float]] = []
+    for p in poly:
+        if not cleaned or math.hypot(p[0] - cleaned[-1][0], p[1] - cleaned[-1][1]) > 1e-6:
+            cleaned.append(p)
+    if len(cleaned) > 1 and math.hypot(cleaned[0][0] - cleaned[-1][0], cleaned[0][1] - cleaned[-1][1]) <= 1e-6:
+        cleaned.pop()
+    area = _signed_area_2d(cleaned)
+    if (ccw and area < 0.0) or ((not ccw) and area > 0.0):
+        cleaned.reverse()
+    return cleaned
+
+
+def _merge_holes_into_polygon_2d(
+    outer_ccw: list[tuple[float, float]],
+    holes_cw: list[list[tuple[float, float]]],
+) -> list[tuple[float, float]]:
+    """Merge CW interior holes into a CCW outer polygon via Eberly +X visibility bridges."""
+    ring = list(outer_ccw)
+    ordered_holes = sorted(holes_cw, key=lambda h: max(p[0] for p in h), reverse=True)
+
+    for hole in ordered_holes:
+        if len(hole) < 3:
+            continue
+        m_idx = max(range(len(hole)), key=lambda idx: (hole[idx][0], hole[idx][1]))
+        mx, my = hole[m_idx]
+
+        best_ix = float("inf")
+        best_edge_v = -1
+        nr = len(ring)
+        for i in range(nr):
+            ux, uy = ring[i]
+            vx, vy = ring[(i + 1) % nr]
+            if (uy >= my and vy < my) or (vy >= my and uy < my):
+                if abs(vy - uy) <= 1e-12:
+                    continue
+                t = (my - uy) / (vy - uy)
+                ix = ux + t * (vx - ux)
+                if ix > mx + 1e-9 and ix < best_ix:
+                    best_ix = ix
+                    best_edge_v = i if ux >= vx else (i + 1) % nr
+
+        if best_edge_v < 0:
+            best_edge_v = min(range(nr), key=lambda idx: math.hypot(ring[idx][0] - mx, ring[idx][1] - my))
+        else:
+            px, py = ring[best_edge_v]
+            if abs(py - my) > 1e-8:
+                ix_pt = (best_ix, my)
+                tri_a, tri_b, tri_c = ((mx, my), ix_pt, (px, py)) if py > my else ((mx, my), (px, py), ix_pt)
+                best_ang = float("inf")
+                best_dist = float("inf")
+                for i in range(nr):
+                    rx, ry = ring[i]
+                    if rx <= mx + 1e-9 or math.hypot(rx - px, ry - py) <= 1e-7:
+                        continue
+                    if _pt_in_tri_2d((rx, ry), tri_a, tri_b, tri_c):
+                        ang = math.atan2(abs(ry - my), rx - mx)
+                        dist = math.hypot(rx - mx, ry - my)
+                        if ang < best_ang - 1e-9 or (abs(ang - best_ang) <= 1e-9 and dist < best_dist):
+                            best_ang = ang
+                            best_dist = dist
+                            best_edge_v = i
+
+        hole_rot = [hole[(m_idx + k) % len(hole)] for k in range(len(hole))]
+        ring = (
+            ring[: best_edge_v + 1]
+            + hole_rot
+            + [hole_rot[0], ring[best_edge_v]]
+            + ring[best_edge_v + 1 :]
+        )
+    return ring
 
 
 def add_extruded_polygon_ft(
@@ -290,6 +370,54 @@ def add_extruded_polygon_ft(
             (x0, y0, z1_m),
             s_attrs,
         )
+
+
+def add_extruded_polygon_with_holes_ft(
+    mesh,
+    outer_poly_ft: list[tuple[float, float]],
+    holes_ft: list[list[tuple[float, float]]],
+    z0_m: float,
+    z1_m: float,
+    top_attrs: dict,
+    side_attrs: dict | None = None,
+    hole_side_attrs: dict | None = None,
+    bottom_attrs: dict | None = None,
+):
+    """Extrude a 2D polygon with interior holes (in feet) as a 100% watertight 2-manifold solid."""
+    if not holes_ft:
+        add_extruded_polygon_ft(mesh, outer_poly_ft, z0_m, z1_m, top_attrs, side_attrs, bottom_attrs)
+        return
+    if z0_m > z1_m:
+        z0_m, z1_m = z1_m, z0_m
+    s_attrs = side_attrs or top_attrs
+    h_attrs = hole_side_attrs or s_attrs
+    b_attrs = bottom_attrs or s_attrs
+
+    outer_ccw = _clean_ring_2d([xy_m(p) for p in outer_poly_ft], ccw=True)
+    holes_cw = [_clean_ring_2d([xy_m(p) for p in h], ccw=False) for h in holes_ft if len(h) >= 3]
+    merged = _merge_holes_into_polygon_2d(outer_ccw, holes_cw)
+    pts, tris = triangulate_polygon_2d(merged)
+
+    for i0, i1, i2 in tris:
+        x0, y0 = pts[i0]
+        x1, y1 = pts[i1]
+        x2, y2 = pts[i2]
+        add_tri(mesh, (x0, y0, z1_m), (x1, y1, z1_m), (x2, y2, z1_m), top_attrs)
+        add_tri(mesh, (x0, y0, z0_m), (x2, y2, z0_m), (x1, y1, z0_m), b_attrs)
+
+    for ring_pts, r_attrs in ((outer_ccw, s_attrs), *((hcw, h_attrs) for hcw in holes_cw)):
+        m = len(ring_pts)
+        for i in range(m):
+            x0, y0 = ring_pts[i]
+            x1, y1 = ring_pts[(i + 1) % m]
+            add_quad(
+                mesh,
+                (x0, y0, z0_m),
+                (x1, y1, z0_m),
+                (x1, y1, z1_m),
+                (x0, y0, z1_m),
+                r_attrs,
+            )
 
 
 def add_wall_strip_ft(

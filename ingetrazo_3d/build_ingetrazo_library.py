@@ -315,6 +315,10 @@ def capture_web_renders(repo_root: Path):
             ("section_well", "studio_09_section_well_persp.png"),
             ("section_bb", "studio_10_section_bb_ortho.png"),
             ("section_plan_l3", "studio_11_section_plan_l3.png"),
+            ("sun_summer_noon", "studio_12_sun_summer_noon_section.png"),
+            ("sun_morning_louvers", "studio_13_sun_morning_mthood_louvers.png"),
+            ("sun_summer_west", "studio_14_sun_summer_west_hcolumns.png"),
+            ("sun_winter_heliodon", "studio_15_sun_winter_heliodon.png"),
         ]
         if browser_bin:
             for cam_key, fname in shots:

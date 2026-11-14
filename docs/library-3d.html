@@ -256,6 +256,34 @@
       box-shadow: 0 0 0 1.5px rgba(253, 230, 138, 0.55);
     }
 
+    .cam-btn.sun-preset {
+      border-color: rgba(234, 179, 8, 0.36);
+      background: rgba(161, 98, 7, 0.14);
+    }
+    .cam-btn.sun-preset:hover, .cam-btn.sun-preset.active {
+      background: rgba(234, 179, 8, 0.30);
+      border-color: #fde047;
+      color: #fff;
+    }
+    .pill-btn.sun-pill.active {
+      background: rgba(234, 179, 8, 0.32);
+      border-color: #fde047;
+      color: #fff;
+    }
+    .sun-readout {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.68rem;
+      color: #fde68a;
+      background: rgba(234, 179, 8, 0.12);
+      border: 1px solid rgba(234, 179, 8, 0.28);
+      border-radius: 4px;
+      padding: 2px 6px;
+      text-align: center;
+    }
+    .sun-slider input[type=range] {
+      accent-color: #eab308;
+    }
+
     .layer-list {
       display: flex;
       flex-direction: column;
@@ -279,7 +307,7 @@
       border: 1px solid var(--panel-border);
       border-radius: 8px;
       padding: 10px 16px;
-      max-width: 500px;
+      max-width: 520px;
       backdrop-filter: blur(10px);
       z-index: 15;
     }
@@ -292,6 +320,17 @@
       font-size: 0.76rem;
       color: var(--text-muted);
       line-height: 1.4;
+    }
+    .hud-sun-tag {
+      display: inline-block;
+      margin-top: 5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.69rem;
+      color: #fef08a;
+      background: rgba(234, 179, 8, 0.16);
+      border: 1px solid rgba(234, 179, 8, 0.34);
+      border-radius: 4px;
+      padding: 1px 6px;
     }
 
     body.studio-mode .top-bar,
@@ -306,9 +345,10 @@
   <header class="top-bar">
     <div class="title-wrap">
       <h1>Mount Angel Abbey Library</h1>
-      <span>Alvar Aalto (1970) &middot; IngeTrazo 0.6.0 Parametric 3D &amp; Section Viewer</span>
+      <span>Alvar Aalto (1970) &middot; IngeTrazo 0.6.0 Parametric 3D, Section &amp; Solar Viewer</span>
     </div>
     <div class="nav-actions">
+      <button id="shadowToggleBtn" class="cutaway-btn active" type="button" title="Toggle Real-Time 4096px WebGL2 Solar Shadows">&#9728; Shadows</button>
       <button id="orthoToggleBtn" class="cutaway-btn" type="button" title="Switch between Perspective and True Parallel Orthographic Projection">&#9645; Orthographic</button>
       <button id="roofCutawayBtn" class="cutaway-btn" type="button">&#9698; Roof Cutaway</button>
       <a href="index.html" class="btn-link">&larr; Blueprint &amp; Vector Archive</a>
@@ -319,6 +359,52 @@
     <div>
       <div class="panel-heading">Architectural Views</div>
       <div class="preset-grid" id="presetButtons" style="margin-top:6px;"></div>
+    </div>
+
+    <div>
+      <div class="panel-heading">
+        <span>Sun &amp; Daylight Studies</span>
+        <span style="font-size:0.65rem;color:#fde047;font-weight:600;">45.07&deg; N</span>
+      </div>
+      <div class="preset-grid" id="sunPresetButtons" style="margin-top:6px;"></div>
+
+      <div class="sec-box">
+        <div class="mode-pills" style="grid-template-columns: repeat(3, 1fr);" id="seasonPills">
+          <button type="button" class="pill-btn sun-pill" data-doy="172">Jun 21</button>
+          <button type="button" class="pill-btn sun-pill" data-doy="264">Equinox</button>
+          <button type="button" class="pill-btn sun-pill" data-doy="355">Dec 21</button>
+        </div>
+
+        <div class="slider-row sun-slider">
+          <div class="slider-hdr">
+            <span>Date (Season)</span>
+            <span class="slider-val" id="sunDateVal">Jun 21</span>
+          </div>
+          <input type="range" id="sunDateSlider" min="1" max="365" step="1" value="172" />
+        </div>
+
+        <div class="slider-row sun-slider">
+          <div class="slider-hdr">
+            <span>Solar Time</span>
+            <span class="slider-val" id="sunHourVal">10:15 AM</span>
+          </div>
+          <input type="range" id="sunHourSlider" min="4.5" max="20.5" step="0.05" value="10.25" />
+        </div>
+
+        <div class="sun-readout" id="sunAzAltBadge">Az 118.4&deg; ESE &middot; Alt 57.2&deg;</div>
+
+        <div class="sec-tools-row">
+          <button type="button" class="mini-btn" id="sunPlayBtn" title="Animate diurnal solar sweep">&#9654; Play Day</button>
+          <div style="display:flex;gap:3px;" id="casterModePills" title="Envelope keeps roof/walls sealed for true skylight & window beams; Cutaway lets open roofs & section cuts cast maquette shadows">
+            <button type="button" class="pill-btn sun-pill active" data-caster="envelope" style="padding:3px 6px;">Envelope</button>
+            <button type="button" class="pill-btn sun-pill" data-caster="cutaway" style="padding:3px 6px;">Cutaway</button>
+          </div>
+          <label style="display:flex;align-items:center;gap:4px;cursor:pointer;" title="Show 3D 45.07° N Solar Compass & Sun-Path Dome">
+            <input type="checkbox" id="heliodonCheck" style="accent-color:#eab308;" />
+            <span>Dome</span>
+          </label>
+        </div>
+      </div>
     </div>
 
     <div>
@@ -380,6 +466,7 @@
   <div class="hud-caption" id="hudCaption">
     <h3 id="camTitle">Loading IngeTrazo 3D Scene...</h3>
     <p id="camDesc">Reconstructing Aalto's polycentric fan, dual daylight scoops, and three hillside tiers.</p>
+    <div class="hud-sun-tag" id="hudSunTag">Mount Angel 45.07&deg; N &middot; Jun 21 &middot; 10:15 AM</div>
   </div>
 
   <script>
@@ -406,6 +493,7 @@
         fov: 44,
         ortho: false,
         section: null,
+        sun: { doy: 172, hour: 7.85, caster: "envelope", heliodon: false },
         hideLayers: ["0_Regulating_Grid"]
       },
       south_entry: {
@@ -420,6 +508,7 @@
         fov: 45,
         ortho: false,
         section: null,
+        sun: { doy: 264, hour: 14.25, caster: "envelope", heliodon: false },
         hideLayers: ["0_Regulating_Grid"]
       },
       cutaway_axon: {
@@ -434,6 +523,7 @@
         fov: 42,
         ortho: false,
         section: null,
+        sun: { doy: 264, hour: 14.50, caster: "cutaway", heliodon: false },
         hideLayers: ["7_Roof_And_Daylight_Scoop"]
       },
       mezzanine_pov: {
@@ -448,6 +538,7 @@
         fov: 60,
         ortho: false,
         section: null,
+        sun: { doy: 172, hour: 8.75, caster: "envelope", heliodon: false },
         hideLayers: ["0_Regulating_Grid"]
       },
       sunken_well: {
@@ -462,6 +553,7 @@
         fov: 50,
         ortho: false,
         section: null,
+        sun: { doy: 172, hour: 8.25, caster: "envelope", heliodon: false },
         hideLayers: ["0_Regulating_Grid"]
       },
       lounge_mthood: {
@@ -476,6 +568,7 @@
         fov: 45,
         ortho: false,
         section: null,
+        sun: { doy: 264, hour: 9.25, caster: "envelope", heliodon: false },
         hideLayers: ["0_Regulating_Grid"]
       },
       h_columns_north: {
@@ -490,6 +583,69 @@
         fov: 45,
         ortho: false,
         section: null,
+        sun: { doy: 172, hour: 6.92, caster: "envelope", heliodon: false },
+        hideLayers: ["0_Regulating_Grid"]
+      },
+
+      // --- Curated Mount Angel (45.07° N) Solar & Daylighting Studies ---
+      sun_summer_noon: {
+        group: "sun",
+        label: "\u2600 Jun 21 \u00b7 12:00 \u2014 Conical Skylight Pools",
+        title: "Summer Solstice Solar Noon (Az 180\u00b0 S, Alt 68.4\u00b0) \u2014 Skylight Shafts & Scoop Shielding",
+        desc: "Oblique Section A-A with sealed Envelope shadows at June 21 solar noon: peak 68.4\u00b0 sun pours down the open conical skylight throats onto the Lobby & Control Desk while the South Canopy and North Daylight Scoop prevent direct reading-room glare.",
+        target: [-3.6, 1.5, 0.35],
+        yaw: -0.44,
+        pitch: 0.24,
+        dist: 22.5,
+        fov: 48,
+        ortho: false,
+        section: { mode: "x", d: -3.41, flip: 1 },
+        sun: { doy: 172, hour: 12.00, caster: "envelope", heliodon: false },
+        hideLayers: ["0_Regulating_Grid"]
+      },
+      sun_morning_louvers: {
+        group: "sun",
+        label: "\u2600 Sep 21 \u00b7 08:30 \u2014 Mt. Hood Louver Stripes",
+        title: "Equinox Morning (Az 119\u00b0 ESE, Alt 25.3\u00b0) \u2014 Periodical Lounge Sun Louvers",
+        desc: "Low Eastern morning sun streaming through Aalto's exterior hemlock sun-louver bank on the East Mt. Hood picture window, casting crisp rhythmic shadow stripes across the Periodical Lounge floor and round birch reading tables.",
+        target: [12.6, 4.2, 0.45],
+        yaw: -2.65,
+        pitch: 0.10,
+        dist: 8.8,
+        fov: 56,
+        ortho: false,
+        section: null,
+        sun: { doy: 264, hour: 8.50, caster: "envelope", heliodon: false },
+        hideLayers: ["0_Regulating_Grid"]
+      },
+      sun_summer_west: {
+        group: "sun",
+        label: "\u2600 Jun 21 \u00b7 18:20 \u2014 NW H-Column Sun Rake",
+        title: "Summer Solstice Evening (Az 290\u00b0 WNW, Alt 13.0\u00b0) \u2014 NW Facade & H-Columns",
+        desc: "At 45.07\u00b0 N, golden evening June sun swings 20\u00b0 North of Due West (290\u00b0 WNW), raking obliquely across Bays A\u2013B and B\u2013C so Aalto's splayed irregular H-column fins and wood louvers throw deep shadows across the glazing while Bay C\u2013D stays shaded.",
+        target: [-8.5, 16.5, -1.0],
+        yaw: 1.98,
+        pitch: 0.18,
+        dist: 44.0,
+        fov: 45,
+        ortho: false,
+        section: null,
+        sun: { doy: 172, hour: 18.33, caster: "envelope", heliodon: false },
+        hideLayers: ["0_Regulating_Grid"]
+      },
+      sun_winter_heliodon: {
+        group: "sun",
+        label: "\u2600 Dec 21 \u00b7 14:15 \u2014 45.1\u00b0N Heliodon Dome",
+        title: "Winter Solstice Heliodon Study (Az 212\u00b0 SSW, Alt 14.9\u00b0) \u2014 Seasonal Sun Paths",
+        desc: "Full-site 3D Heliodon showing Mount Angel's Summer Solstice (68.4\u00b0), Equinox (44.9\u00b0), and Winter Solstice (21.5\u00b0) solar trajectories, hourly analemma spokes, and low golden December shadows across the Abbey bluff.",
+        target: [-2.0, 3.0, 4.2],
+        yaw: -1.18,
+        pitch: 0.44,
+        dist: 118.0,
+        fov: 44,
+        ortho: false,
+        section: null,
+        sun: { doy: 355, hour: 14.25, caster: "envelope", heliodon: true },
         hideLayers: ["0_Regulating_Grid"]
       },
 
@@ -506,6 +662,7 @@
         fov: 42,
         ortho: true,
         section: { mode: "x", d: -3.41, flip: 1 },
+        sun: { doy: 172, hour: 12.17, caster: "envelope", heliodon: false },
         hideLayers: ["0_Regulating_Grid"]
       },
       section_well: {
@@ -520,6 +677,7 @@
         fov: 46,
         ortho: false,
         section: { mode: "y", d: 5.20, flip: -1 },
+        sun: { doy: 172, hour: 9.50, caster: "envelope", heliodon: false },
         hideLayers: ["0_Regulating_Grid"]
       },
       section_bb: {
@@ -534,6 +692,7 @@
         fov: 42,
         ortho: true,
         section: { mode: "y", d: -6.61, flip: 1 },
+        sun: { doy: 172, hour: 12.00, caster: "envelope", heliodon: false },
         hideLayers: ["0_Regulating_Grid"]
       },
       section_plan_l3: {
@@ -548,6 +707,7 @@
         fov: 42,
         ortho: true,
         section: { mode: "z", d: 2.25, flip: 1 },
+        sun: { doy: 264, hour: 14.75, caster: "cutaway", heliodon: false },
         hideLayers: ["0_Regulating_Grid"]
       }
     };
@@ -569,7 +729,58 @@
       return;
     }
 
-    // --- Shaders (Architectural Sun + Hemisphere Sky + Real-Time Clip Plane + Stencil Poché) ---
+    const SHADOW_SIZE = Math.min(4096, gl.getParameter(gl.MAX_TEXTURE_SIZE));
+    const shadowTex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, shadowTex);
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.DEPTH_COMPONENT24,
+      SHADOW_SIZE,
+      SHADOW_SIZE,
+      0,
+      gl.DEPTH_COMPONENT,
+      gl.UNSIGNED_INT,
+      null
+    );
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_COMPARE_MODE, gl.COMPARE_REF_TO_TEXTURE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_COMPARE_FUNC, gl.LEQUAL);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+
+    const shadowFbo = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, shadowFbo);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, shadowTex, 0);
+    gl.drawBuffers([gl.NONE]);
+    gl.readBuffer(gl.NONE);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+    // --- Shaders (4096px Poisson PCF Solar Shadows + Dynamic Sky + Clip Plane + Stencil Poché + Heliodon) ---
+    const VS_SHADOW = `#version 300 es
+      layout(location=0) in vec3 aPos;
+      uniform mat4 uLightMVP;
+      out vec3 vPos;
+      void main() {
+        vPos = aPos;
+        gl_Position = uLightMVP * vec4(aPos, 1.0);
+      }
+    `;
+
+    const FS_SHADOW = `#version 300 es
+      precision highp float;
+      in vec3 vPos;
+      uniform int uClipEnabled;
+      uniform vec4 uClipPlane;
+      void main() {
+        if (uClipEnabled == 1 && dot(vPos, uClipPlane.xyz) > uClipPlane.w) {
+          discard;
+        }
+      }
+    `;
+
     const VS_SOLID = `#version 300 es
       layout(location=0) in vec3 aPos;
       layout(location=1) in vec3 aNrm;
@@ -595,7 +806,57 @@
       uniform int uClipEnabled;
       uniform vec4 uClipPlane;
       uniform float uFogScale;
+      uniform vec3 uSunDir;
+      uniform vec3 uSunColor;
+      uniform float uSunUp;
+      uniform int uShadowsEnabled;
+      uniform mat4 uLightMVP;
+      uniform float uShadowTexelWorld;
+      uniform float uShadowFilterUV;
+      uniform highp sampler2DShadow uShadowMap;
       out vec4 fragColor;
+
+      const vec2 POISSON[16] = vec2[16](
+        vec2(-0.94201624, -0.39906216),
+        vec2( 0.94558609, -0.76890725),
+        vec2(-0.09418410, -0.92938870),
+        vec2( 0.34495938,  0.29387760),
+        vec2(-0.91588581,  0.45771432),
+        vec2(-0.81544232, -0.87912464),
+        vec2(-0.38277543,  0.27676845),
+        vec2( 0.97484398,  0.75648379),
+        vec2( 0.44323325, -0.97511554),
+        vec2( 0.53742981, -0.47373420),
+        vec2(-0.26496911, -0.41893023),
+        vec2( 0.79197514,  0.19090188),
+        vec2(-0.24188840,  0.99706507),
+        vec2(-0.81409955,  0.91437590),
+        vec2( 0.19984126,  0.78641367),
+        vec2( 0.14383161, -0.14100790)
+      );
+
+      float sampleSolarShadow(vec3 worldPos, vec3 N, float ndl) {
+        if (uShadowsEnabled == 0 || ndl <= 0.0005 || uSunUp <= 0.001) {
+          return 1.0;
+        }
+        vec3 sWorld = worldPos + N * (uShadowTexelWorld * (0.85 + 1.05 * (1.0 - ndl)));
+        vec4 lClip = uLightMVP * vec4(sWorld, 1.0);
+        vec3 sCoord = (lClip.xyz / lClip.w) * 0.5 + 0.5;
+        if (sCoord.x <= 0.002 || sCoord.x >= 0.998 || sCoord.y <= 0.002 || sCoord.y >= 0.998 || sCoord.z <= 0.0 || sCoord.z >= 0.9995) {
+          return 1.0;
+        }
+        float ign = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715))));
+        float ang = ign * 6.2831853;
+        float ca = cos(ang), sa = sin(ang);
+        mat2 rot = mat2(ca, sa, -sa, ca);
+        float recvBias = 0.00028 + 0.00048 * (1.0 - ndl);
+        float acc = 0.0;
+        for (int i = 0; i < 16; i++) {
+          vec2 off = (rot * POISSON[i]) * uShadowFilterUV;
+          acc += texture(uShadowMap, vec3(sCoord.xy + off, sCoord.z - recvBias));
+        }
+        return acc * 0.0625;
+      }
 
       void main() {
         if (uClipEnabled == 1 && dot(vPos, uClipPlane.xyz) > uClipPlane.w) {
@@ -604,40 +865,44 @@
         vec3 base = vCol.rgb;
         float alpha = vCol.a;
         if (alpha > 1.5) {
-          fragColor = vec4(base * 1.08, 1.0);
+          fragColor = vec4(base * 1.12, 1.0);
           return;
         }
         vec3 N = normalize(vNrm);
         vec3 V = normalize(uEye - vPos);
         if (!gl_FrontFacing) {
           N = -N;
-          if (alpha >= 0.99) base *= 0.62;
+          if (alpha >= 0.99) base *= 0.66;
         }
 
-        vec3 sunDir = normalize(vec3(0.56, 0.42, 0.71));
-        vec3 fillDir = normalize(vec3(-0.62, 0.55, 0.56));
+        vec3 sunDir = normalize(uSunDir);
+        vec3 fillDir = normalize(vec3(-sunDir.x * 0.65, 0.58, 0.58));
         float ndl = max(dot(N, sunDir), 0.0);
         float ndf = max(dot(N, fillDir), 0.0);
-        float hemi = 0.52 + 0.48 * N.z;
+        float hemi = 0.50 + 0.50 * N.z;
+
+        float shadow = (alpha >= 0.96) ? sampleSolarShadow(vPos, N, ndl) : 1.0;
 
         vec3 wellPos = vec3(0.45, 10.2, 4.4);
         vec3 toWell = wellPos - vPos;
         float wellDist = length(toWell);
         float scoopGlow = (26.0 / (16.0 + wellDist * wellDist)) * (0.45 + 0.55 * max(dot(N, normalize(vec3(0.0, 0.35, -0.65))), 0.25));
 
-        vec3 ambient = mix(vec3(0.46, 0.47, 0.50), vec3(0.62, 0.67, 0.76), hemi);
-        vec3 sunCol = vec3(1.02, 0.96, 0.86) * (0.58 * ndl);
-        vec3 fillCol = vec3(0.55, 0.66, 0.82) * (0.22 * ndf);
-        vec3 intBounce = vec3(0.97, 0.95, 0.90) * scoopGlow * 0.42;
+        float daySky = 0.28 + 0.72 * uSunUp;
+        vec3 ambient = mix(vec3(0.39, 0.41, 0.46), vec3(0.55, 0.61, 0.71), hemi) * daySky;
+        vec3 sunCol = uSunColor * (0.76 * ndl * shadow * uSunUp);
+        vec3 fillCol = vec3(0.54, 0.65, 0.82) * (0.20 * ndf * daySky);
+        vec3 intBounce = vec3(0.97, 0.95, 0.90) * scoopGlow * (0.14 + 0.28 * daySky);
 
         vec3 H = normalize(sunDir + V);
-        float spec = pow(max(dot(N, H), 0.0), 36.0) * (alpha < 0.95 ? 0.55 : 0.10);
+        float spec = pow(max(dot(N, H), 0.0), 36.0) * (alpha < 0.95 ? 0.55 : 0.10) * shadow * uSunUp;
 
         vec3 lit = base * (ambient + sunCol + fillCol + intBounce) + vec3(spec);
 
         float camDist = length(uEye - vPos);
         float fog = clamp((camDist - 75.0) / 160.0, 0.0, 0.38) * uFogScale;
-        lit = mix(lit, vec3(0.76, 0.83, 0.90), fog);
+        vec3 fogTint = mix(vec3(0.28, 0.34, 0.46), vec3(0.76, 0.83, 0.90), daySky);
+        lit = mix(lit, fogTint, fog);
 
         lit = lit / (lit + vec3(0.88)) * 1.62;
         lit = pow(clamp(lit, 0.0, 1.0), vec3(0.94));
@@ -649,13 +914,20 @@
       layout(location=0) in vec3 aPos;
       uniform mat4 uMVP;
       uniform vec3 uEye;
+      uniform float uOrthoEdgeAlpha;
       out vec3 vPos;
       out float vDist;
       void main() {
         vPos = aPos;
-        vDist = length(uEye - aPos);
-        gl_Position = uMVP * vec4(aPos, 1.0);
-        gl_Position.z -= 0.00025 * gl_Position.w;
+        vec3 toEye = uEye - aPos;
+        vDist = length(toEye);
+        vec3 pullPos = uOrthoEdgeAlpha > 0.0
+          ? aPos
+          : aPos + (toEye / max(vDist, 0.001)) * clamp(vDist * 0.00045, 0.006, 0.045);
+        gl_Position = uMVP * vec4(pullPos, 1.0);
+        if (uOrthoEdgeAlpha > 0.0) {
+          gl_Position.z -= 0.00008 * gl_Position.w;
+        }
       }
     `;
 
@@ -673,6 +945,27 @@
         }
         float a = uOrthoEdgeAlpha > 0.0 ? uOrthoEdgeAlpha : clamp(0.34 - vDist * 0.0022, 0.08, 0.30);
         fragColor = vec4(0.10, 0.12, 0.16, a);
+      }
+    `;
+
+    const VS_HELIODON = `#version 300 es
+      layout(location=0) in vec3 aPos;
+      layout(location=1) in vec4 aCol;
+      uniform mat4 uMVP;
+      out vec4 vCol;
+      void main() {
+        vCol = aCol;
+        gl_Position = uMVP * vec4(aPos, 1.0);
+        gl_Position.z -= 0.00003 * gl_Position.w;
+      }
+    `;
+
+    const FS_HELIODON = `#version 300 es
+      precision highp float;
+      in vec4 vCol;
+      out vec4 fragColor;
+      void main() {
+        fragColor = vCol;
       }
     `;
 
@@ -745,11 +1038,16 @@
     const FS_SKY = `#version 300 es
       precision mediump float;
       in vec2 vUV;
+      uniform float uSunAltDeg;
       out vec4 fragColor;
       void main() {
-        vec3 horizon = vec3(0.83, 0.87, 0.91);
-        vec3 zenith  = vec3(0.46, 0.61, 0.79);
-        vec3 ground  = vec3(0.66, 0.71, 0.75);
+        float dayT = smoothstep(-5.0, 22.0, uSunAltDeg);
+        float goldT = smoothstep(-2.0, 6.0, uSunAltDeg) * (1.0 - smoothstep(8.0, 26.0, uSunAltDeg));
+        vec3 horizonDay = mix(vec3(0.83, 0.87, 0.91), vec3(0.95, 0.78, 0.62), goldT * 0.65);
+        vec3 zenithDay  = mix(vec3(0.44, 0.59, 0.78), vec3(0.36, 0.50, 0.72), goldT * 0.45);
+        vec3 horizon    = mix(vec3(0.20, 0.25, 0.36), horizonDay, dayT);
+        vec3 zenith     = mix(vec3(0.08, 0.12, 0.21), zenithDay, dayT);
+        vec3 ground     = mix(vec3(0.16, 0.19, 0.25), vec3(0.66, 0.71, 0.75), dayT);
         float t = clamp((vUV.y - 0.35) / 0.65, 0.0, 1.0);
         vec3 col = vUV.y >= 0.35 ? mix(horizon, zenith, pow(t, 0.75)) : mix(ground, horizon, vUV.y / 0.35);
         fragColor = vec4(col, 1.0);
@@ -760,18 +1058,29 @@
       const vs = gl.createShader(gl.VERTEX_SHADER);
       gl.shaderSource(vs, vsSrc);
       gl.compileShader(vs);
+      if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
+        console.error("VS compile error:", gl.getShaderInfoLog(vs));
+      }
       const fs = gl.createShader(gl.FRAGMENT_SHADER);
       gl.shaderSource(fs, fsSrc);
       gl.compileShader(fs);
+      if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
+        console.error("FS compile error:", gl.getShaderInfoLog(fs));
+      }
       const p = gl.createProgram();
       gl.attachShader(p, vs);
       gl.attachShader(p, fs);
       gl.linkProgram(p);
+      if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+        console.error("Program link error:", gl.getProgramInfoLog(p));
+      }
       return p;
     }
 
+    const progShadow = compileProg(VS_SHADOW, FS_SHADOW);
     const progSolid = compileProg(VS_SOLID, FS_SOLID);
     const progEdge = compileProg(VS_EDGE, FS_EDGE);
+    const progHeliodon = compileProg(VS_HELIODON, FS_HELIODON);
     const progStencil = compileProg(VS_STENCIL, FS_STENCIL);
     const progCap = compileProg(VS_CAP, FS_CAP);
     const progSky = compileProg(VS_SKY, FS_SKY);
@@ -785,6 +1094,19 @@
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(18), gl.DYNAMIC_DRAW);
     gl.enableVertexAttribArray(0);
     gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+    gl.bindVertexArray(null);
+
+    // Dynamic VAO for the 3D Mount Angel (45.07° N) Heliodon Sun-Path Dome
+    const heliodonVao = gl.createVertexArray();
+    const heliodonBuf = gl.createBuffer();
+    let heliodonVertCount = 0;
+    gl.bindVertexArray(heliodonVao);
+    gl.bindBuffer(gl.ARRAY_BUFFER, heliodonBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(7 * 4096), gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 28, 0);
+    gl.enableVertexAttribArray(1);
+    gl.vertexAttribPointer(1, 4, gl.FLOAT, false, 28, 12);
     gl.bindVertexArray(null);
 
     // --- Minimal 4x4 Matrix Math (Z-Up Camera, Perspective + Orthographic) ---
@@ -844,7 +1166,58 @@
       return o;
     }
 
-    // --- Camera, Section Plane & Layer State ---
+    // --- Mount Angel Abbey (45.068° N, 122.797° W) Spherical Solar Ephemeris ---
+    const LAT_RAD = (45.068 * Math.PI) / 180.0;
+    const SIN_LAT = Math.sin(LAT_RAD);
+    const COS_LAT = Math.cos(LAT_RAD);
+    const MONTH_DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    function formatDayOfYear(doy) {
+      let d = Math.max(1, Math.min(365, Math.round(doy)));
+      for (let m = 0; m < 12; m++) {
+        if (d <= MONTH_DAYS[m]) return `${MONTH_NAMES[m]} ${d}`;
+        d -= MONTH_DAYS[m];
+      }
+      return "Dec 31";
+    }
+
+    function formatSolarHour(hr) {
+      const totalMin = Math.round(hr * 60);
+      let h24 = Math.floor(totalMin / 60);
+      const mins = totalMin % 60;
+      const ampm = h24 >= 12 && h24 < 24 ? "PM" : "AM";
+      let h12 = h24 % 12;
+      if (h12 === 0) h12 = 12;
+      return `${String(h12).padStart(2, "0")}:${String(mins).padStart(2, "0")} ${ampm}`;
+    }
+
+    function compassOctant(azDeg) {
+      const dirs = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+      return dirs[Math.round(azDeg / 22.5) % 16];
+    }
+
+    function solarVectorAt(doy, solarHour) {
+      const decl = ((23.44 * Math.PI) / 180.0) * Math.sin((2.0 * Math.PI * (doy - 81.0)) / 365.0);
+      const ha = ((solarHour - 12.0) * 15.0 * Math.PI) / 180.0;
+      const sinD = Math.sin(decl), cosD = Math.cos(decl);
+      const sinH = Math.sin(ha), cosH = Math.cos(ha);
+      // Local tangent frame: +X = East, +Y = North, +Z = Up
+      const sx = -cosD * sinH;
+      const sy = COS_LAT * sinD - SIN_LAT * cosD * cosH;
+      const sz = SIN_LAT * sinD + COS_LAT * cosD * cosH;
+      const altDeg = (Math.asin(Math.max(-1.0, Math.min(1.0, sz))) * 180.0) / Math.PI;
+      let azDeg = (Math.atan2(sx, sy) * 180.0) / Math.PI;
+      if (azDeg < 0.0) azDeg += 360.0;
+      return { sx, sy, sz, altDeg, azDeg };
+    }
+
+    function smoothstepJS(e0, e1, x) {
+      const t = Math.max(0.0, Math.min(1.0, (x - e0) / (e1 - e0)));
+      return t * t * (3.0 - 2.0 * t);
+    }
+
+    // --- Camera, Section Plane, Solar & Layer State ---
     let cam = {
       target: [2.0, 7.5, -1.8],
       yaw: 0.72,
@@ -863,6 +1236,143 @@
       pocheTone: "terracotta"
     };
 
+    let sun = {
+      shadows: true,
+      doy: 172,           // Day of year (172 = Jun 21 Summer Solstice)
+      hour: 10.25,        // Local solar time (hours)
+      caster: "envelope", // "envelope" (sealed roof/walls) | "cutaway" (open/clipped model)
+      heliodon: false,
+      playing: false
+    };
+
+    function computeSunState() {
+      const s = solarVectorAt(sun.doy, sun.hour);
+      const sunUp = smoothstepJS(-1.5, 8.5, s.altDeg);
+      const warmth = Math.pow(1.0 - Math.min(1.0, Math.max(0.0, s.altDeg) / 38.0), 1.75);
+      const sunColor = [
+        1.04 + 0.10 * warmth,
+        0.98 - 0.22 * warmth,
+        0.89 - 0.42 * warmth
+      ];
+      // Clamp shadow-caster altitude slightly above horizon so grazing matrix stays well-conditioned
+      const clampedZ = Math.max(0.06, s.sz);
+      const len = Math.hypot(s.sx, s.sy, clampedZ) || 1.0;
+      return {
+        ...s,
+        sunUp,
+        sunColor,
+        dir: [s.sx / len, s.sy / len, clampedZ / len]
+      };
+    }
+
+    function rebuildHeliodonGeometry() {
+      const out = [];
+      const HC = [-2.0, 3.0, 0.06];
+      const HR = 50.0;
+      const pushSeg = (p0, p1, col) => {
+        out.push(p0[0], p0[1], p0[2], col[0], col[1], col[2], col[3]);
+        out.push(p1[0], p1[1], p1[2], col[0], col[1], col[2], col[3]);
+      };
+
+      // 1. Horizon Compass Circle + 15° Azimuth Ticks
+      const nSeg = 144;
+      const cRing = [0.96, 0.78, 0.32, 0.52];
+      for (let i = 0; i < nSeg; i++) {
+        const a0 = (2.0 * Math.PI * i) / nSeg;
+        const a1 = (2.0 * Math.PI * (i + 1)) / nSeg;
+        pushSeg(
+          [HC[0] + HR * Math.sin(a0), HC[1] + HR * Math.cos(a0), HC[2]],
+          [HC[0] + HR * Math.sin(a1), HC[1] + HR * Math.cos(a1), HC[2]],
+          cRing
+        );
+      }
+      for (let deg = 0; deg < 360; deg += 15) {
+        const r = (deg * Math.PI) / 180.0;
+        const isCard = deg % 90 === 0;
+        const rIn = isCard ? HR - 2.6 : HR - 1.1;
+        const col = deg === 0 ? [0.22, 0.78, 0.98, 0.95] : (isCard ? [0.99, 0.86, 0.38, 0.85] : [0.96, 0.78, 0.32, 0.38]);
+        pushSeg(
+          [HC[0] + rIn * Math.sin(r), HC[1] + rIn * Math.cos(r), HC[2]],
+          [HC[0] + (HR + (isCard ? 1.4 : 0.0)) * Math.sin(r), HC[1] + (HR + (isCard ? 1.4 : 0.0)) * Math.cos(r), HC[2]],
+          col
+        );
+      }
+
+      // Crisp 3D vector cardinal glyphs ('N', 'E', 'S', 'W') outside compass ring
+      const drawGlyph = (cx, cy, strokes, col) => {
+        const s = 1.45;
+        for (const [x0, y0, x1, y1] of strokes) {
+          pushSeg([cx + x0 * s, cy + y0 * s, HC[2] + 0.05], [cx + x1 * s, cy + y1 * s, HC[2] + 0.05], col);
+        }
+      };
+      drawGlyph(HC[0], HC[1] + HR + 3.6, [[-0.6, -0.8, -0.6, 0.8], [-0.6, 0.8, 0.6, -0.8], [0.6, -0.8, 0.6, 0.8]], [0.28, 0.84, 1.0, 0.98]);
+      drawGlyph(HC[0] + HR + 3.6, HC[1], [[0.5, 0.8, -0.5, 0.8], [-0.5, 0.8, -0.5, -0.8], [-0.5, 0.0, 0.35, 0.0], [-0.5, -0.8, 0.5, -0.8]], [0.99, 0.86, 0.38, 0.90]);
+      drawGlyph(HC[0], HC[1] - HR - 3.6, [[0.5, 0.8, -0.5, 0.8], [-0.5, 0.8, -0.5, 0.0], [-0.5, 0.0, 0.5, 0.0], [0.5, 0.0, 0.5, -0.8], [0.5, -0.8, -0.5, -0.8]], [0.99, 0.86, 0.38, 0.90]);
+      drawGlyph(HC[0] - HR - 3.6, HC[1], [[-0.7, 0.8, -0.35, -0.8], [-0.35, -0.8, 0.0, 0.2], [0.0, 0.2, 0.35, -0.8], [0.35, -0.8, 0.7, 0.8]], [0.99, 0.86, 0.38, 0.90]);
+
+      // 2. Seasonal Reference Sun-Path Arcs (Summer Solstice, Equinox, Winter Solstice) + Active Date Arc
+      const addSunArc = (doyVal, col) => {
+        let prev = null;
+        for (let h = 4.0; h <= 20.5; h += 0.1) {
+          const sv = solarVectorAt(doyVal, h);
+          if (sv.sz >= 0.0) {
+            const pt = [HC[0] + HR * sv.sx, HC[1] + HR * sv.sy, HC[2] + HR * sv.sz];
+            if (prev) pushSeg(prev, pt, col);
+            prev = pt;
+          } else {
+            prev = null;
+          }
+        }
+      };
+      addSunArc(172, [0.98, 0.56, 0.18, 0.62]); // Summer Solstice (Jun 21, 68.4° peak)
+      addSunArc(80,  [0.92, 0.76, 0.22, 0.52]); // Equinox (Mar/Sep 21, 44.9° peak)
+      addSunArc(355, [0.32, 0.75, 0.98, 0.65]); // Winter Solstice (Dec 21, 21.5° peak)
+      addSunArc(sun.doy, [1.0, 0.95, 0.52, 0.96]); // Active Date Trajectory
+
+      // 3. Hourly Solar Spokes across Declinations (Winter -> Summer)
+      for (let hr = 6; hr <= 18; hr++) {
+        let prev = null;
+        const col = hr === 12 ? [1.0, 0.90, 0.42, 0.56] : [0.94, 0.95, 0.98, 0.22];
+        for (let step = 0; step <= 20; step++) {
+          const d = 355.0 - (183.0 * step) / 20.0;
+          const sv = solarVectorAt(d, hr);
+          if (sv.sz >= 0.0) {
+            const pt = [HC[0] + HR * sv.sx, HC[1] + HR * sv.sy, HC[2] + HR * sv.sz];
+            if (prev) pushSeg(prev, pt, col);
+            prev = pt;
+          }
+        }
+      }
+
+      // 4. Current 3D Sun Marker, Descriptive-Geometry Azimuth/Altitude Triangle & Direct Incidence Ray
+      const cur = solarVectorAt(sun.doy, sun.hour);
+      const szClamped = Math.max(0.0, cur.sz);
+      const sunPt = [HC[0] + HR * cur.sx, HC[1] + HR * cur.sy, HC[2] + HR * szClamped];
+      const groundProj = [sunPt[0], sunPt[1], HC[2]];
+      const wellFocus = [0.45, 2.2, 0.4];
+
+      // Azimuth ground line + vertical altitude plumb line + direct golden solar beam into Reading Well
+      pushSeg(HC, groundProj, [0.98, 0.84, 0.34, 0.44]);
+      pushSeg(groundProj, sunPt, [0.98, 0.84, 0.34, 0.52]);
+      pushSeg(sunPt, wellFocus, [1.0, 0.92, 0.38, 0.92]);
+
+      // 3-ring 3D Sun Orb at sunPt
+      const sr = 1.75;
+      const orbCol = cur.altDeg >= 0 ? [1.0, 0.93, 0.40, 1.0] : [0.55, 0.65, 0.88, 0.75];
+      for (let k = 0; k < 24; k++) {
+        const a0 = (2.0 * Math.PI * k) / 24;
+        const a1 = (2.0 * Math.PI * (k + 1)) / 24;
+        pushSeg([sunPt[0] + sr * Math.cos(a0), sunPt[1] + sr * Math.sin(a0), sunPt[2]], [sunPt[0] + sr * Math.cos(a1), sunPt[1] + sr * Math.sin(a1), sunPt[2]], orbCol);
+        pushSeg([sunPt[0] + sr * Math.cos(a0), sunPt[1], sunPt[2] + sr * Math.sin(a0)], [sunPt[0] + sr * Math.cos(a1), sunPt[1], sunPt[2] + sr * Math.sin(a1)], orbCol);
+        pushSeg([sunPt[0], sunPt[1] + sr * Math.cos(a0), sunPt[2] + sr * Math.sin(a0)], [sunPt[0], sunPt[1] + sr * Math.cos(a1), sunPt[2] + sr * Math.sin(a1)], orbCol);
+      }
+
+      const arr = new Float32Array(out);
+      heliodonVertCount = arr.length / 7;
+      gl.bindBuffer(gl.ARRAY_BUFFER, heliodonBuf);
+      gl.bufferData(gl.ARRAY_BUFFER, arr, gl.DYNAMIC_DRAW);
+    }
+
     function getClipPlaneVec4() {
       if (sec.mode === "off") return [0, 0, 1, 1e6];
       let nx = 0, ny = 0, nz = 0, dBase = sec.d;
@@ -874,7 +1384,6 @@
         nx = 0; ny = 0; nz = 1;
       } else if (sec.mode === "radial") {
         const rad = (sec.radialDeg * Math.PI) / 180.0;
-        // Normal perpendicular to WP #3 ray (pointing CCW / Westward across the ray)
         nx = -Math.sin(rad);
         ny = Math.cos(rad);
         nz = 0;
@@ -945,6 +1454,44 @@
     const secAngSlider = document.getElementById("secAngSlider");
     const secAngVal = document.getElementById("secAngVal");
     const orthoBtn = document.getElementById("orthoToggleBtn");
+    const shadowBtn = document.getElementById("shadowToggleBtn");
+    const sunDateSlider = document.getElementById("sunDateSlider");
+    const sunDateVal = document.getElementById("sunDateVal");
+    const sunHourSlider = document.getElementById("sunHourSlider");
+    const sunHourVal = document.getElementById("sunHourVal");
+    const sunAzAltBadge = document.getElementById("sunAzAltBadge");
+    const hudSunTag = document.getElementById("hudSunTag");
+    const heliodonCheck = document.getElementById("heliodonCheck");
+    const sunPlayBtn = document.getElementById("sunPlayBtn");
+
+    function syncSunUi() {
+      const s = solarVectorAt(sun.doy, sun.hour);
+      const dateStr = formatDayOfYear(sun.doy);
+      const timeStr = formatSolarHour(sun.hour);
+      const oct = compassOctant(s.azDeg);
+      sunDateSlider.value = String(sun.doy);
+      sunDateVal.textContent = dateStr;
+      sunHourSlider.value = String(sun.hour);
+      sunHourVal.textContent = timeStr;
+      const altTxt = s.altDeg >= 0 ? `Alt ${s.altDeg.toFixed(1)}\u00b0` : `Below Horizon (${s.altDeg.toFixed(1)}\u00b0)`;
+      sunAzAltBadge.textContent = `Az ${s.azDeg.toFixed(1)}\u00b0 ${oct} \u00b7 ${altTxt}`;
+      hudSunTag.textContent = `45.07\u00b0 N \u00b7 ${dateStr} \u00b7 ${timeStr} \u00b7 Az ${s.azDeg.toFixed(0)}\u00b0 ${oct}, Alt ${s.altDeg.toFixed(1)}\u00b0`;
+
+      document.querySelectorAll("#seasonPills .pill-btn").forEach(b => {
+        const bd = parseInt(b.dataset.doy, 10);
+        const match = Math.abs(sun.doy - bd) <= 3 || (bd === 264 && Math.abs(sun.doy - 80) <= 3);
+        b.classList.toggle("active", match);
+      });
+      document.querySelectorAll("#casterModePills .pill-btn").forEach(b => {
+        b.classList.toggle("active", b.dataset.caster === sun.caster);
+      });
+      heliodonCheck.checked = sun.heliodon;
+      shadowBtn.classList.toggle("active", sun.shadows);
+      sunPlayBtn.textContent = sun.playing ? "\u23f8 Pause" : "\u25b6 Play Day";
+      if (sun.heliodon) {
+        rebuildHeliodonGeometry();
+      }
+    }
 
     function configureSectionSliderRange(mode) {
       if (mode === "x") {
@@ -1012,11 +1559,19 @@
         sec.mode = "off";
       }
 
+      if (p.sun) {
+        sun.doy = p.sun.doy;
+        sun.hour = p.sun.hour;
+        sun.caster = p.sun.caster || "envelope";
+        sun.heliodon = Boolean(p.sun.heliodon);
+      }
+
       gpuLayers.forEach(l => {
         layerVisible[l.name] = !(p.hideLayers || []).includes(l.name);
       });
       syncUiCheckboxes();
       syncSectionUi();
+      syncSunUi();
 
       document.querySelectorAll(".cam-btn").forEach(b => {
         b.classList.toggle("active", b.dataset.cam === key);
@@ -1026,21 +1581,86 @@
       requestRender();
     }
 
-    // Build View & Section Preset Buttons
+    // Build View, Sun Study & Section Preset Buttons
     const presetContainer = document.getElementById("presetButtons");
+    const sunPresetContainer = document.getElementById("sunPresetButtons");
     const secPresetContainer = document.getElementById("sectionPresetButtons");
     Object.entries(PRESETS).forEach(([k, v]) => {
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = v.group === "section" ? "cam-btn sec-preset" : "cam-btn";
+      btn.className = v.group === "section" ? "cam-btn sec-preset" : (v.group === "sun" ? "cam-btn sun-preset" : "cam-btn");
       btn.dataset.cam = k;
       btn.textContent = v.label;
       btn.addEventListener("click", () => applyPreset(k));
       if (v.group === "section") {
         secPresetContainer.appendChild(btn);
+      } else if (v.group === "sun") {
+        sunPresetContainer.appendChild(btn);
       } else {
         presetContainer.appendChild(btn);
       }
+    });
+
+    // Wire Sun & Daylight Study Controls
+    document.querySelectorAll("#seasonPills .pill-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        sun.doy = parseInt(btn.dataset.doy, 10);
+        syncSunUi();
+        requestRender();
+      });
+    });
+
+    sunDateSlider.addEventListener("input", () => {
+      sun.doy = parseInt(sunDateSlider.value, 10);
+      syncSunUi();
+      requestRender();
+    });
+
+    sunHourSlider.addEventListener("input", () => {
+      sun.hour = parseFloat(sunHourSlider.value);
+      syncSunUi();
+      requestRender();
+    });
+
+    document.querySelectorAll("#casterModePills .pill-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        sun.caster = btn.dataset.caster;
+        syncSunUi();
+        requestRender();
+      });
+    });
+
+    heliodonCheck.addEventListener("change", e => {
+      sun.heliodon = e.target.checked;
+      syncSunUi();
+      requestRender();
+    });
+
+    shadowBtn.addEventListener("click", () => {
+      sun.shadows = !sun.shadows;
+      syncSunUi();
+      requestRender();
+    });
+
+    let lastAnimTs = 0;
+    function stepSunAnimation(ts) {
+      if (!sun.playing) return;
+      if (lastAnimTs > 0) {
+        const dt = Math.min(0.1, (ts - lastAnimTs) / 1000.0);
+        sun.hour += dt * 1.35; // ~1.35 solar hours per real second
+        if (sun.hour > 20.2) sun.hour = 5.0;
+        syncSunUi();
+        drawScene();
+      }
+      lastAnimTs = ts;
+      requestAnimationFrame(stepSunAnimation);
+    }
+
+    sunPlayBtn.addEventListener("click", () => {
+      sun.playing = !sun.playing;
+      lastAnimTs = 0;
+      syncSunUi();
+      if (sun.playing) requestAnimationFrame(stepSunAnimation);
     });
 
     // Wire Section Mode Pills & Sliders
@@ -1152,7 +1772,6 @@
       const nx = planeVec4[0], ny = planeVec4[1], nz = planeVec4[2];
       const d = planeVec4[3] + planeShift;
 
-      // Orthonormal tangent basis (T1, T2) on the section plane with T1 x T2 = +N
       let ax = 0, ay = 0, az = 1;
       if (Math.abs(nz) > 0.85) { ax = 1; ay = 0; az = 0; }
       let t1x = ay * nz - az * ny;
@@ -1165,7 +1784,6 @@
       const t2y = nz * t1x - nx * t1z;
       const t2z = nx * t1y - ny * t1x;
 
-      // Project scene center (0, 5, -2) onto plane
       const refDot = nx * 0.0 + ny * 5.0 + nz * (-2.0);
       const cx = 0.0 + (d - refDot) * nx;
       const cy = 5.0 + (d - refDot) * ny;
@@ -1221,7 +1839,6 @@
         }
       }
 
-      // Fill section cap wherever signed winding != 0, writing cap depth to occlude interior cavities
       const basis = updateCapQuadGeometry(clipPlane, planeShift);
       gl.colorMask(true, true, true, true);
       gl.enable(gl.DEPTH_TEST);
@@ -1242,6 +1859,30 @@
       gl.disable(gl.STENCIL_TEST);
     }
 
+    function computeLightMatrix(sunDir) {
+      const zoomT = Math.min(1.0, Math.max(0.0, (cam.dist - 14.0) / 36.0));
+      const shadowRadius = 16.0 + zoomT * 46.0;
+      const focus = [
+        cam.target[0] * (1.0 - zoomT) + (-1.5) * zoomT,
+        cam.target[1] * (1.0 - zoomT) + 4.5 * zoomT,
+        cam.target[2] * (1.0 - zoomT) + (-1.2) * zoomT
+      ];
+      const lightEye = [
+        focus[0] + sunDir[0] * 115.0,
+        focus[1] + sunDir[1] * 115.0,
+        focus[2] + sunDir[2] * 115.0
+      ];
+      const lView = lookAtZUp(lightEye, focus);
+      const texelWorld = (2.0 * shadowRadius) / SHADOW_SIZE;
+      lView[12] = Math.round(lView[12] / texelWorld) * texelWorld;
+      lView[13] = Math.round(lView[13] / texelWorld) * texelWorld;
+      const lProj = orthographic(shadowRadius, shadowRadius, 10.0, 230.0);
+      return {
+        lightMVP: mul4(lProj, lView),
+        texelWorld
+      };
+    }
+
     function drawScene() {
       rafPending = false;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -1250,14 +1891,50 @@
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w; canvas.height = h;
       }
+
+      const sunState = computeSunState();
+      const clipEnabled = sec.mode !== "off" ? 1 : 0;
+      const clipPlane = getClipPlaneVec4();
+      const { lightMVP, texelWorld } = computeLightMatrix(sunState.dir);
+
+      // 0. 4096x4096 Orthographic Solar Shadow-Map Pass
+      if (gpuLayers.length > 0 && sun.shadows && sunState.sunUp > 0.001) {
+        gl.bindFramebuffer(gl.FRAMEBUFFER, shadowFbo);
+        gl.viewport(0, 0, SHADOW_SIZE, SHADOW_SIZE);
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthMask(true);
+        gl.disable(gl.BLEND);
+        gl.disable(gl.CULL_FACE);
+        gl.enable(gl.POLYGON_OFFSET_FILL);
+        gl.polygonOffset(1.65, 3.2);
+        gl.clear(gl.DEPTH_BUFFER_BIT);
+
+        const shadowClip = (sun.caster === "cutaway" && clipEnabled) ? 1 : 0;
+        gl.useProgram(progShadow);
+        gl.uniformMatrix4fv(gl.getUniformLocation(progShadow, "uLightMVP"), false, lightMVP);
+        gl.uniform1i(gl.getUniformLocation(progShadow, "uClipEnabled"), shadowClip);
+        gl.uniform4fv(gl.getUniformLocation(progShadow, "uClipPlane"), clipPlane);
+
+        for (const lyr of gpuLayers) {
+          if (lyr.name.startsWith("0_") || !lyr.opaque.vao) continue;
+          if (sun.caster === "cutaway" && !layerVisible[lyr.name]) continue;
+          gl.bindVertexArray(lyr.opaque.vao);
+          gl.drawArrays(gl.TRIANGLES, 0, lyr.opaque.count);
+        }
+
+        gl.disable(gl.POLYGON_OFFSET_FILL);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      }
+
       gl.viewport(0, 0, w, h);
       gl.clearStencil(0);
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 
-      // 1. Sky Background
+      // 1. Dynamic Solar Sky Background
       gl.disable(gl.DEPTH_TEST);
       gl.disable(gl.BLEND);
       gl.useProgram(progSky);
+      gl.uniform1f(gl.getUniformLocation(progSky, "uSunAltDeg"), sunState.altDeg);
       gl.bindVertexArray(emptyVao);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
 
@@ -1269,7 +1946,6 @@
       const dirY = cp * Math.sin(cam.yaw);
       const dirZ = sp;
 
-      // In orthographic mode, step viewEye well outside the 105m site so near-plane never clips foreground
       const viewDist = cam.ortho ? 185.0 : cam.dist;
       const viewEye = [
         cam.target[0] + viewDist * dirX,
@@ -1288,24 +1964,33 @@
         const halfH = cam.dist * Math.tan((cam.fov * Math.PI) / 360.0);
         proj = orthographic(halfH * aspect, halfH, 1.0, 420.0);
       } else {
-        proj = perspective(cam.fov, aspect, 0.25, 420.0);
+        const near = Math.max(0.22, Math.min(3.5, cam.dist * 0.04));
+        proj = perspective(cam.fov, aspect, near, 420.0);
       }
       const view = lookAtZUp(viewEye, cam.target);
       const mvp = mul4(proj, view);
 
-      const clipEnabled = sec.mode !== "off" ? 1 : 0;
-      const clipPlane = getClipPlaneVec4();
-
-      // 2. Opaque Architectural Geometry
+      // 2. Opaque Architectural Geometry (with 16-tap Rotated Poisson PCF Solar Shadows)
       gl.enable(gl.DEPTH_TEST);
       gl.depthMask(true);
       gl.disable(gl.CULL_FACE);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, shadowTex);
+
       gl.useProgram(progSolid);
       gl.uniformMatrix4fv(gl.getUniformLocation(progSolid, "uMVP"), false, mvp);
       gl.uniform3fv(gl.getUniformLocation(progSolid, "uEye"), litEye);
       gl.uniform1i(gl.getUniformLocation(progSolid, "uClipEnabled"), clipEnabled);
       gl.uniform4fv(gl.getUniformLocation(progSolid, "uClipPlane"), clipPlane);
       gl.uniform1f(gl.getUniformLocation(progSolid, "uFogScale"), cam.ortho ? 0.0 : 1.0);
+      gl.uniform3fv(gl.getUniformLocation(progSolid, "uSunDir"), sunState.dir);
+      gl.uniform3fv(gl.getUniformLocation(progSolid, "uSunColor"), sunState.sunColor);
+      gl.uniform1f(gl.getUniformLocation(progSolid, "uSunUp"), sunState.sunUp);
+      gl.uniform1i(gl.getUniformLocation(progSolid, "uShadowsEnabled"), sun.shadows ? 1 : 0);
+      gl.uniformMatrix4fv(gl.getUniformLocation(progSolid, "uLightMVP"), false, lightMVP);
+      gl.uniform1f(gl.getUniformLocation(progSolid, "uShadowTexelWorld"), texelWorld);
+      gl.uniform1f(gl.getUniformLocation(progSolid, "uShadowFilterUV"), 1.65 / SHADOW_SIZE);
+      gl.uniform1i(gl.getUniformLocation(progSolid, "uShadowMap"), 0);
 
       for (const lyr of gpuLayers) {
         if (!layerVisible[lyr.name] || !lyr.opaque.vao) continue;
@@ -1326,14 +2011,13 @@
             l => !l.name.startsWith("0_") && l.name !== "1_Abbey_Hillside_Site"
           );
           const bCol = POCHE_PALETTE[sec.pocheTone] || POCHE_PALETTE.terracotta;
-          // 1) 45° diagonal earth subgrade poché, 2) warm birch millwork poché, 3) bold primary structure poché
           drawStencilPochePass(mvp, clipPlane, terrainLayers, [0.30, 0.27, 0.23], true, -0.004, -0.00050, "all");
           drawStencilPochePass(mvp, clipPlane, buildingLayers, [0.74, 0.57, 0.37], false, -0.001, -0.00065, "furn");
           drawStencilPochePass(mvp, clipPlane, buildingLayers, bCol, false, 0.0, -0.00080, "struct");
         }
       }
 
-      // 3. Crisp Architectural Feature Edges (occluded behind solid poché caps!)
+      // 3. Crisp Architectural Feature Edges
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
       gl.useProgram(progEdge);
@@ -1348,6 +2032,14 @@
         gl.drawArrays(gl.LINES, 0, lyr.edges.count);
       }
 
+      // 3B. Optional 3D Mount Angel (45.07° N) Heliodon Sun-Path Dome & Incidence Ray
+      if (sun.heliodon && heliodonVertCount > 0) {
+        gl.useProgram(progHeliodon);
+        gl.uniformMatrix4fv(gl.getUniformLocation(progHeliodon, "uMVP"), false, mvp);
+        gl.bindVertexArray(heliodonVao);
+        gl.drawArrays(gl.LINES, 0, heliodonVertCount);
+      }
+
       // 4. Translucent Windows & Skylight Glazing
       gl.depthMask(false);
       gl.useProgram(progSolid);
@@ -1357,6 +2049,7 @@
         gl.drawArrays(gl.TRIANGLES, 0, lyr.trans.count);
       }
       gl.depthMask(true);
+      gl.bindTexture(gl.TEXTURE_2D, null);
     }
 
     window.addEventListener("resize", requestRender);
@@ -1394,6 +2087,18 @@
           sec.pocheTone = params.get("poche");
         }
         applyPreset(initialCam);
+
+        // Optional URL query overrides (?shadows=0|1&doy=172&hour=12.2&caster=cutaway&heliodon=1)
+        let dirtySun = false;
+        if (params.has("shadows")) { sun.shadows = params.get("shadows") !== "0"; dirtySun = true; }
+        if (params.has("doy"))     { sun.doy = parseInt(params.get("doy"), 10); dirtySun = true; }
+        if (params.has("hour"))    { sun.hour = parseFloat(params.get("hour")); dirtySun = true; }
+        if (params.has("caster"))  { sun.caster = params.get("caster"); dirtySun = true; }
+        if (params.has("heliodon")){ sun.heliodon = params.get("heliodon") === "1"; dirtySun = true; }
+        if (dirtySun) {
+          syncSunUi();
+          requestRender();
+        }
       })
       .catch(err => {
         document.getElementById("camTitle").textContent = "Scene Load Error";

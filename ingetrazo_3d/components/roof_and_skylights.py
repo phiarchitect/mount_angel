@@ -27,6 +27,7 @@ from .primitives import (
     add_arc_band_ft,
     add_cylinder_ft,
     add_extruded_polygon_ft,
+    add_extruded_polygon_with_holes_ft,
     add_frustum_ft,
     add_oriented_box_ft,
     add_quad,
@@ -217,8 +218,8 @@ def build_roof_and_skylights(scene):
     for i in range(len(f_angles) - 1):
         a0, a1 = f_angles[i], f_angles[i + 1]
         eps = min(0.015, 0.25 * (a1 - a0))
-        r_out0 = _fan_outer_radius_at_angle(a0 + eps, chain)
-        r_out1 = _fan_outer_radius_at_angle(a1 - eps, chain)
+        r_out0 = _fan_outer_radius_at_angle(a0 + eps, chain) - 0.35
+        r_out1 = _fan_outer_radius_at_angle(a1 - eps, chain) - 0.35
         a_mid = 0.5 * (a0 + a1)
         r_in = G.R_SCOOP_OUTER if (deg0 <= a_mid <= deg1) else G.R_SCOOP_INNER
         raw_slices.append([a0, a1, r_in, r_out0, r_out1])
@@ -298,13 +299,26 @@ def build_roof_and_skylights(scene):
         (-91.5, -28.0),
         (-126.5, -28.0),
     ]
-    add_extruded_polygon_ft(
+    sides_sky = 20
+    roof_skylight_holes = [
+        [
+            (
+                sx + (sr - 0.10) * math.cos(2.0 * math.pi * k / sides_sky),
+                sy + (sr - 0.10) * math.sin(2.0 * math.pi * k / sides_sky),
+            )
+            for k in range(sides_sky)
+        ]
+        for sx, sy, sr in G.CONICAL_SKYLIGHTS
+    ]
+    add_extruded_polygon_with_holes_ft(
         mesh,
         south_roof_poly,
+        roof_skylight_holes,
         z_south_rf - 0.26,
         z_south_rf,
         MATERIALS["builtup_roof"],
         MATERIALS["buff_brick"],
+        MATERIALS["white_plaster"],
         MATERIALS["white_soffit"],
     )
 
@@ -322,13 +336,41 @@ def build_roof_and_skylights(scene):
         MATERIALS["copper_roof"],
     )
 
-    # Suspended Slatted Birch/Hemlock Acoustic Ceiling Drum above Control Desk (R = 17.5 ft, Z = +3.30 m)
-    add_cylinder_ft(mesh, G.WP_DESK, G.R_WOOD_DRUM, 3.25, 3.65, MATERIALS["hemlock_slat"], sides=36)
+    # Suspended Slatted Birch/Hemlock Acoustic Ceiling Drum above Control Desk (R = 17.5 ft, Z = +3.25..+3.65 m)
+    # Perforated cleanly where the 2 Control Desk conical skylight throats pierce the wood drum!
+    drum_outer = [
+        (
+            G.WP_DESK[0] + G.R_WOOD_DRUM * math.cos(2.0 * math.pi * k / 36),
+            G.WP_DESK[1] + G.R_WOOD_DRUM * math.sin(2.0 * math.pi * k / 36),
+        )
+        for k in range(36)
+    ]
+    drum_holes = [
+        [
+            (
+                sx + (sr + 1.15) * math.cos(2.0 * math.pi * k / sides_sky),
+                sy + (sr + 1.15) * math.sin(2.0 * math.pi * k / sides_sky),
+            )
+            for k in range(sides_sky)
+        ]
+        for sx, sy, sr in G.CONICAL_SKYLIGHTS
+        if math.hypot(sx - G.WP_DESK[0], sy - G.WP_DESK[1]) < G.R_WOOD_DRUM - sr - 1.2
+    ]
+    add_extruded_polygon_with_holes_ft(
+        mesh,
+        drum_outer,
+        drum_holes,
+        3.25,
+        3.65,
+        MATERIALS["hemlock_slat"],
+        MATERIALS["hemlock_slat"],
+        MATERIALS["hemlock_slat"],
+        MATERIALS["hemlock_slat"],
+    )
 
     # =========================================================================
     # 4. 12 SIGNATURE AALTO CONICAL ROOF SKYLIGHT LANTERNS (WATERTIGHT SHELLS)
     # =========================================================================
-    sides_sky = 20
     for sx, sy, sr in G.CONICAL_SKYLIGHTS:
         # Hollow thick-walled Copper Skylight Drum above Roof (r_in = sr - 0.10, r_out = sr + 0.28)
         add_arc_band_ft(mesh, (sx, sy), sr - 0.10, sr + 0.28, 0.0, 360.0, z_south_rf, z_lantern - 0.22, MATERIALS["copper_roof"], steps=sides_sky)
