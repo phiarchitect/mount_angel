@@ -64,7 +64,8 @@ MATERIALS: dict[str, dict] = {
     # Roof & Skylights
     "copper_roof": {"color": (0.45, 0.32, 0.23), "roughness": 0.42, "metallic": 0.76},
     "copper_patina": {"color": (0.37, 0.47, 0.41), "roughness": 0.50, "metallic": 0.62},
-    "builtup_roof": {"color": (0.76, 0.74, 0.70), "roughness": 0.88, "metallic": 0.04},
+    "builtup_roof": {"color": (0.76, 0.48, 0.38), "roughness": 0.85, "metallic": 0.04},
+    "auditorium_roof": {"color": (0.33, 0.35, 0.38), "roughness": 0.82, "metallic": 0.06},
     "mullion_bronze": {"color": (0.28, 0.26, 0.24), "roughness": 0.42, "metallic": 0.74},
     "mullion_alum": {"color": (0.78, 0.80, 0.82), "roughness": 0.34, "metallic": 0.80},
     "glass_clear": {"color": (0.56, 0.77, 0.88), "opacity": 0.30, "roughness": 0.12, "metallic": 0.12},
@@ -420,6 +421,48 @@ def add_extruded_polygon_with_holes_ft(
             )
 
 
+def offset_polyline_right_ft(
+    pts_ft: list[tuple[float, float]],
+    d_inward_ft: float,
+    closed: bool = False,
+) -> list[tuple[float, float]]:
+    """
+    Offset an open or closed 2D polyline inward (to the right of `pts_ft[i] -> pts_ft[i+1]`)
+    using exact 2D line-line intersections at every interior vertex (including acute prows).
+    """
+    n = len(pts_ft)
+    if n < 2 or abs(d_inward_ft) < 1e-9:
+        return list(pts_ft)
+    if closed and n >= 3:
+        return offset_polyline_right_ft([pts_ft[-1], *pts_ft, pts_ft[0]], d_inward_ft, closed=False)[1:-1]
+
+    off_segs: list[tuple[tuple[float, float], tuple[float, float]]] = []
+    for i in range(n - 1):
+        x0, y0 = pts_ft[i]
+        x1, y1 = pts_ft[i + 1]
+        dx, dy = x1 - x0, y1 - y0
+        L = math.hypot(dx, dy)
+        if L < 1e-7:
+            off_segs.append(((x0, y0), (x1, y1)))
+        else:
+            rx, ry = dy / L, -dx / L  # right normal
+            off_segs.append(((x0 + d_inward_ft * rx, y0 + d_inward_ft * ry), (x1 + d_inward_ft * rx, y1 + d_inward_ft * ry)))
+
+    out: list[tuple[float, float]] = [off_segs[0][0]]
+    for i in range(n - 2):
+        (x1, y1), (x2, y2) = off_segs[i]
+        (x3, y3), (x4, y4) = off_segs[i + 1]
+        den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+        if abs(den) < 1e-7:
+            out.append((x2, y2))
+        else:
+            px = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / den
+            py = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / den
+            out.append((px, py))
+    out.append(off_segs[-1][1])
+    return out
+
+
 def add_wall_strip_ft(
     mesh,
     pts_ft: list[tuple[float, float]],
@@ -428,8 +471,9 @@ def add_wall_strip_ft(
     z1_m: float,
     attrs: dict,
     offset_mode: str = "center",  # "center", "left", "right"
+    overhang_left_ft: float = 0.0,
 ):
-    """Extrude a multi-segment wall along `pts_ft` with clean mitered corners."""
+    """Extrude a multi-segment wall along `pts_ft` with exact acute-capable mitered corners."""
     n = len(pts_ft)
     if n < 2:
         return
@@ -438,7 +482,7 @@ def add_wall_strip_ft(
     elif offset_mode == "left":
         d_left, d_right = thickness_ft, 0.0
     else:
-        d_left, d_right = 0.0, -thickness_ft
+        d_left, d_right = overhang_left_ft, overhang_left_ft - thickness_ft
 
     seg_normals = []
     for i in range(n - 1):
@@ -467,7 +511,7 @@ def add_wall_strip_ft(
             else:
                 mx /= ml
                 my /= ml
-                dot = max(0.45, mx * n1x + my * n1y)
+                dot = max(0.20, mx * n1x + my * n1y)
                 nx, ny = mx / dot, my / dot
         px, py = pts_ft[i]
         left_pts.append((px + nx * d_left, py + ny * d_left))

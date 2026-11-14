@@ -351,6 +351,7 @@
       <button id="shadowToggleBtn" class="cutaway-btn active" type="button" title="Toggle Real-Time 4096px WebGL2 Solar Shadows">&#9728; Shadows</button>
       <button id="orthoToggleBtn" class="cutaway-btn" type="button" title="Switch between Perspective and True Parallel Orthographic Projection">&#9645; Orthographic</button>
       <button id="roofCutawayBtn" class="cutaway-btn" type="button">&#9698; Roof Cutaway</button>
+      <a href="photo-compare.html" class="btn-link">&#9680; Photo vs. Model</a>
       <a href="making-of.html" class="btn-link">&#10022; Making the Model</a>
       <a href="index.html" class="btn-link">&larr; Blueprint Archive</a>
     </div>
@@ -499,13 +500,13 @@
       },
       south_entry: {
         group: "view",
-        label: "2. South Entrance & Canopy",
-        title: "South Upper Plaza & Entry Portico",
-        desc: "Serene one-story upper Abbey courtyard approach with cantilevered copper-and-hemlock marquee, Rare Book auditorium wing, and 12 conical skylight lanterns.",
-        target: [-4.5, -7.0, 1.8],
-        yaw: -2.42,
-        pitch: 0.23,
-        dist: 56.0,
+        label: "2. South Entrance, Canopy & Auditorium",
+        title: "South Upper Plaza, Pergola Marquee & Taller Auditorium Wing",
+        desc: "Serene upper Abbey courtyard approach: central copper-and-hemlock marquee flanked by open white pergola trellises over the glazed Vestibule, lower terracotta Lobby roof with conical skylights, higher Main Fan roof, and taller dark-roofed SE Auditorium.",
+        target: [-1.5, -8.5, 2.0],
+        yaw: -2.35,
+        pitch: 0.24,
+        dist: 62.0,
         fov: 45,
         ortho: false,
         section: null,
@@ -516,11 +517,11 @@
         group: "view",
         label: "3. Roof Cutaway Axonometric",
         title: "Roof-Off Constructive Plan-Axonometric",
-        desc: "Cutaway looking directly into Level 3's unified fan floorplate, counter-height stairwell bookcases flanking both Mezzanine stairs, tall +7'-2\" white-plaster perimeter wall, eye-level Mt. Hood window in H-Column D, and 15 radiating birch bookstacks.",
-        target: [-1.0, 8.5, -0.5],
+        desc: "Cutaway looking into Level 3's parameterized variable-length Aalto birch bookcases, 14-bay birch-framed glass wall for the Director's Office & Media Room, West squiggle walls, wooden bathroom screen, and undulating Auditorium.",
+        target: [-1.0, 4.5, -0.5],
         yaw: 0.95,
         pitch: 0.78,
-        dist: 64.0,
+        dist: 68.0,
         fov: 42,
         ortho: false,
         section: null,
@@ -531,7 +532,7 @@
         group: "view",
         label: "4. Level 3 Workbench & Well POV",
         title: "Level 3 Reading Workbench, Stairwell Bookcase & Mezzanine Well",
-        desc: "Standing behind Aalto's Level 3 matte-black linoleum workbench with Artek 60 stools and parapet-mounted mushroom lamps, looking across the open well to the counter-height stairwell bookcase & its 4 radial lamps, -4'-6\" Mezzanine workstations, and open bronze Control Peninsula railing.",
+        desc: "Standing behind Aalto's Level 3 matte-black linoleum workbench with Artek 60 stools and parapet-mounted mushroom lamps, looking across the open well to the counter-height stairwell bookcase, radial wood-slatted ceiling sector, and glazed Director/Media partition.",
         target: [1.20, 6.80, 0.22],
         yaw: 2.95,
         pitch: 0.11,
@@ -546,7 +547,7 @@
         group: "view",
         label: "5. Mezzanine Workstations (-4'-6\")",
         title: "Mezzanine Outer-Arc Workstations, Artek 69 Chairs & Lamps",
-        desc: "Elevated vantage looking down onto the -4'-6\" Mezzanine's slate-blue wool carpet, Aalto Artek 69 backrest chairs, cantilevered matte-black linoleum workbench on white steel T-brackets, parapet-mounted angled-arm mushroom reading lamps, and slate-grey-topped Level 2 radial bookstacks.",
+        desc: "Elevated vantage looking down onto the -4'-6\" Mezzanine's slate-blue wool carpet, Aalto Artek 69 backrest chairs, cantilevered matte-black linoleum workbench, curved Aalto Reference Bookwall, and slate-grey-topped Level 2 radial bookcases.",
         target: [2.68, 9.72, -0.85],
         yaw: -2.79,
         pitch: 0.27,
@@ -560,12 +561,12 @@
       lounge_mthood: {
         group: "view",
         label: "6. East Prow & Mt. Hood Window",
-        title: "East Prow (Axis E) & Periodical Lounge",
-        desc: "Oblique view of the sharp East brick prow, Periodical Lounge floor-to-ceiling Mt. Hood picture window with exterior hemlock louvers, and central daylight monitor.",
-        target: [10.0, 7.0, -0.5],
+        title: "East Prow (Axis E), Higher Fan Roof & Taller Auditorium",
+        desc: "Oblique view of the razor-sharp 56.5° East buff-brick prow, Periodical Lounge Mt. Hood picture window with hemlock louvers, radial step-up to the higher Fan roof, and taller SE Auditorium block.",
+        target: [10.0, 5.0, -0.2],
         yaw: 0.22,
-        pitch: 0.24,
-        dist: 52.0,
+        pitch: 0.25,
+        dist: 55.0,
         fov: 45,
         ortho: false,
         section: null,
@@ -591,7 +592,7 @@
         group: "view",
         label: "8. Entry Vista \u2192 H-Alcove Window",
         title: "Top-Floor Entry Vista \u2014 Stairwell Bookcase, +7'-2\" Clerestory & Mt. Hood Alcove Window",
-        desc: "Entering Level 3 beside the Control Desk: looking past the counter-height birch stairwell bookcase (replacing a railing along the Mezzanine stairs) straight down the Ray D radial aisle to H-Column D's eye-level square window framing Mt. Hood beneath the +7'-2\" clerestory wall.",
+        desc: "Entering Level 3 beside the Control Desk: looking past the counter-height birch stairwell bookcase and slatted radial bookcases straight down the Ray D radial aisle to H-Column D's eye-level square window framing Mt. Hood.",
         target: [7.77, 13.69, 1.54],
         yaw: -1.9675,
         pitch: 0.002,
@@ -601,6 +602,66 @@
         section: null,
         sun: { doy: 172, hour: 6.75, caster: "envelope", heliodon: false },
         hideLayers: ["0_Regulating_Grid"]
+      },
+      blockout_match: {
+        group: "view",
+        label: "9. SE Isometric Overview",
+        title: "South-East Orthographic Isometric Overview",
+        desc: "True parallel SE\u2192NW architectural isometric matching the original blockout orientation: taller SE Auditorium, lower terracotta Lobby roof, upward radial step to the higher Main Fan roof, sealed North Daylight Scoop, and Abbey hilltop campus.",
+        target: [-1.85, 7.05, 0.00],
+        yaw: -Math.PI / 4,
+        pitch: Math.atan(1.0 / Math.SQRT2),
+        dist: 82.5,
+        fov: 42,
+        ortho: true,
+        section: null,
+        sun: { doy: 264, hour: 13.85, caster: "envelope", heliodon: false },
+        hideLayers: ["0_Regulating_Grid"]
+      },
+      campus_aerial: {
+        group: "view",
+        label: "10. Abbey Hilltop Campus Aerial",
+        title: "Mount Angel Abbey Hilltop Campus Context (Sheets 1 & 2)",
+        desc: "Wide monastic hilltop view looking East along the Abbey Quad: Aquinas Hall / Minor Seminary immediately West, Aalto's terraced Library fanning out over curving Abbey Drive, Seminary academic halls South, and the Abbey Church & 118-ft Bell Tower anchoring the East bluff.",
+        target: [12.0, -14.0, 2.0],
+        yaw: -2.68,
+        pitch: 0.42,
+        dist: 178.0,
+        fov: 44,
+        ortho: false,
+        section: null,
+        sun: { doy: 264, hour: 15.25, caster: "envelope", heliodon: false },
+        hideLayers: ["0_Regulating_Grid"]
+      },
+      control_glass_wall: {
+        group: "view",
+        label: "11. Control Desk, Slatted Ceiling & Glass Wall",
+        title: "Radial Slatted Ceiling, Control Desk & Glazed Director/Media Wall",
+        desc: "Interior view looking East across Aalto's slatted-end radial birch bookcase and curved Control Desk beneath the 1\"\u00d71\" radial wood-slatted ceiling sector toward the 14-bay birch-framed glass wall separating the Reading Room from the Director's Office & Media Room.",
+        target: [6.65, 2.35, 1.74],
+        yaw: 2.905,
+        pitch: -0.036,
+        dist: 11.12,
+        fov: 56,
+        ortho: false,
+        section: null,
+        sun: { doy: 172, hour: 9.25, caster: "envelope", heliodon: false },
+        hideLayers: ["0_Regulating_Grid"]
+      },
+      auditorium_cutaway: {
+        group: "view",
+        label: "12. Lobby Screen, Squiggle Walls & Auditorium",
+        title: "South Wing Cutaway — Bathroom Wood Screen, Squiggle Walls & Auditorium",
+        desc: "Plan-oblique cutaway revealing the Lobby's freestanding vertical wooden privacy screen in front of the restroom doors, Aalto's West serpentine & canted-fin squiggle walls, glazed Director/Media offices, and the Rare Book Auditorium's quarter-circle stage & curved AV booth.",
+        target: [2.5, -8.5, 0.8],
+        yaw: -1.85,
+        pitch: 0.76,
+        dist: 46.0,
+        fov: 44,
+        ortho: false,
+        section: { mode: "z", d: 2.55, flip: 1 },
+        sun: { doy: 264, hour: 13.50, caster: "cutaway", heliodon: false },
+        hideLayers: ["0_Regulating_Grid", "7_Roof_And_Daylight_Scoop"]
       },
 
       // --- Curated Mount Angel (45.07° N) Solar & Daylighting Studies ---
@@ -916,7 +977,7 @@
         vec3 lit = base * (ambient + sunCol + fillCol + intBounce) + vec3(spec);
 
         float camDist = length(uEye - vPos);
-        float fog = clamp((camDist - 75.0) / 160.0, 0.0, 0.38) * uFogScale;
+        float fog = clamp((camDist - 125.0) / 260.0, 0.0, 0.30) * uFogScale;
         vec3 fogTint = mix(vec3(0.28, 0.34, 0.46), vec3(0.76, 0.83, 0.90), daySky);
         lit = mix(lit, fogTint, fog);
 
@@ -1805,7 +1866,7 @@
       const cy = 5.0 + (d - refDot) * ny;
       const cz = -2.0 + (d - refDot) * nz;
 
-      const R = 110.0;
+      const R = 185.0;
       const p0 = [cx - R * t1x - R * t2x, cy - R * t1y - R * t2y, cz - R * t1z - R * t2z];
       const p1 = [cx + R * t1x - R * t2x, cy + R * t1y - R * t2y, cz + R * t1z - R * t2z];
       const p2 = [cx + R * t1x + R * t2x, cy + R * t1y + R * t2y, cz + R * t1z + R * t2z];
@@ -1877,22 +1938,23 @@
 
     function computeLightMatrix(sunDir) {
       const zoomT = Math.min(1.0, Math.max(0.0, (cam.dist - 14.0) / 36.0));
-      const shadowRadius = 16.0 + zoomT * 46.0;
+      const wideT = Math.min(1.0, Math.max(0.0, (cam.dist - 95.0) / 110.0));
+      const shadowRadius = 16.0 + zoomT * 48.0 + wideT * 102.0;
       const focus = [
-        cam.target[0] * (1.0 - zoomT) + (-1.5) * zoomT,
-        cam.target[1] * (1.0 - zoomT) + 4.5 * zoomT,
-        cam.target[2] * (1.0 - zoomT) + (-1.2) * zoomT
+        (cam.target[0] * (1.0 - zoomT) + (-1.5) * zoomT) * (1.0 - wideT) + 8.0 * wideT,
+        (cam.target[1] * (1.0 - zoomT) + 4.5 * zoomT) * (1.0 - wideT) + (-10.0) * wideT,
+        (cam.target[2] * (1.0 - zoomT) + (-1.2) * zoomT) * (1.0 - wideT) + 0.0 * wideT
       ];
       const lightEye = [
-        focus[0] + sunDir[0] * 115.0,
-        focus[1] + sunDir[1] * 115.0,
-        focus[2] + sunDir[2] * 115.0
+        focus[0] + sunDir[0] * 175.0,
+        focus[1] + sunDir[1] * 175.0,
+        focus[2] + sunDir[2] * 175.0
       ];
       const lView = lookAtZUp(lightEye, focus);
       const texelWorld = (2.0 * shadowRadius) / SHADOW_SIZE;
       lView[12] = Math.round(lView[12] / texelWorld) * texelWorld;
       lView[13] = Math.round(lView[13] / texelWorld) * texelWorld;
-      const lProj = orthographic(shadowRadius, shadowRadius, 10.0, 230.0);
+      const lProj = orthographic(shadowRadius, shadowRadius, 10.0, 380.0);
       return {
         lightMVP: mul4(lProj, lView),
         texelWorld
@@ -1962,7 +2024,7 @@
       const dirY = cp * Math.sin(cam.yaw);
       const dirZ = sp;
 
-      const viewDist = cam.ortho ? 185.0 : cam.dist;
+      const viewDist = cam.ortho ? 260.0 : cam.dist;
       const viewEye = [
         cam.target[0] + viewDist * dirX,
         cam.target[1] + viewDist * dirY,
@@ -1978,10 +2040,10 @@
       let proj;
       if (cam.ortho) {
         const halfH = cam.dist * Math.tan((cam.fov * Math.PI) / 360.0);
-        proj = orthographic(halfH * aspect, halfH, 1.0, 420.0);
+        proj = orthographic(halfH * aspect, halfH, 1.0, 750.0);
       } else {
         const near = Math.max(0.22, Math.min(3.5, cam.dist * 0.04));
-        proj = perspective(cam.fov, aspect, near, 420.0);
+        proj = perspective(cam.fov, aspect, near, 750.0);
       }
       const view = lookAtZUp(viewEye, cam.target);
       const mvp = mul4(proj, view);
@@ -2104,14 +2166,37 @@
         }
         applyPreset(initialCam);
 
-        // Optional URL query overrides (?shadows=0|1&doy=172&hour=12.2&caster=cutaway&heliodon=1)
+        // Optional URL query overrides (?shadows=0|1&doy=172&hour=12.2&caster=cutaway&heliodon=1&yaw=...&pitch=...&dist=...&tx=...&ty=...&tz=...&ortho=0|1)
         let dirtySun = false;
         if (params.has("shadows")) { sun.shadows = params.get("shadows") !== "0"; dirtySun = true; }
         if (params.has("doy"))     { sun.doy = parseInt(params.get("doy"), 10); dirtySun = true; }
         if (params.has("hour"))    { sun.hour = parseFloat(params.get("hour")); dirtySun = true; }
         if (params.has("caster"))  { sun.caster = params.get("caster"); dirtySun = true; }
         if (params.has("heliodon")){ sun.heliodon = params.get("heliodon") === "1"; dirtySun = true; }
+        if (params.has("yaw"))     { cam.yaw = parseFloat(params.get("yaw")); dirtySun = true; }
+        if (params.has("pitch"))   { cam.pitch = parseFloat(params.get("pitch")); dirtySun = true; }
+        if (params.has("dist"))    { cam.dist = parseFloat(params.get("dist")); dirtySun = true; }
+        if (params.has("fov"))     { cam.fov = parseFloat(params.get("fov")); dirtySun = true; }
+        if (params.has("ortho"))   { cam.ortho = params.get("ortho") === "1"; dirtySun = true; }
+        if (params.has("tx"))      { cam.target[0] = parseFloat(params.get("tx")); dirtySun = true; }
+        if (params.has("ty"))      { cam.target[1] = parseFloat(params.get("ty")); dirtySun = true; }
+        if (params.has("tz"))      { cam.target[2] = parseFloat(params.get("tz")); dirtySun = true; }
+        if (params.has("hide")) {
+          const hides = params.get("hide").split(",");
+          hides.forEach(h => { if (h) layerVisible[h] = false; });
+          syncUiCheckboxes();
+          dirtySun = true;
+        }
+        if (!params.has("cam") && (params.has("tx") || params.has("yaw"))) {
+          document.getElementById("camTitle").textContent = params.get("title") || "Registered Photo-Match Viewpoint";
+          document.getElementById("camDesc").textContent = params.get("desc") || "Perspective camera calibrated to archival photography — drag to orbit, section, or scrub solar time.";
+          document.querySelectorAll(".cam-btn").forEach(b => b.classList.remove("active"));
+        }
+        if (params.get("hud") === "0") {
+          document.getElementById("hudCaption").style.display = "none";
+        }
         if (dirtySun) {
+          syncUiCheckboxes();
           syncSunUi();
           requestRender();
         }

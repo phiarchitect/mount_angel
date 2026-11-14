@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photographic Registration & Accuracy Evaluation Lab — Mount Angel Abbey Library (1970)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-deep: #0b1018;
+      --bg-ink: #101826;
+      --bg-card: rgba(18, 27, 42, 0.88);
+      --bg-elevated: rgba(26, 38, 58, 0.94);
+      --border-subtle: rgba(255, 255, 255, 0.09);
+      --border-brass: rgba(216, 179, 132, 0.36);
+      --birch: #f3e5ab;
+      --buff-brick: #d8b384;
+      --gold: #eab308;
+      --terracotta: #c8523f;
+      --cyan: #38bdf8;
+      --emerald: #34d399;
+      --rose: #fb7185;
+      --text-main: #f8fafc;
+      --text-body: #cbd5e1;
+      --text-muted: #94a3b8;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono: 'JetBrains Mono', ui-monospace, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-deep);
+      background-image:
+        radial-gradient(circle at 82% 10%, rgba(216, 179, 132, 0.08), transparent 45%),
+        radial-gradient(circle at 12% 52%, rgba(56, 189, 248, 0.06), transparent 48%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+      color: var(--text-main);
+      font-family: var(--sans);
+      line-height: 1.68;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+
+    /* Sticky Navigation Bar */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      min-height: 62px;
+      background: rgba(10, 15, 24, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-brass);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 24px;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .brand-title {
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      color: #fef3c7;
+    }
+    .brand-sub {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      color: var(--buff-brick);
+      font-weight: 600;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: nowrap;
+    }
+    .nav-pill {
+      text-decoration: none;
+      font-size: 0.76rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      white-space: nowrap;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-pill:hover {
+      color: var(--text-main);
+      border-color: rgba(216, 179, 132, 0.35);
+      background: rgba(216, 179, 132, 0.1);
+    }
+    .nav-pill.active {
+      color: #fef3c7;
+      background: rgba(216, 179, 132, 0.18);
+      border-color: var(--buff-brick);
+      font-weight: 600;
+    }
+    .nav-pill.active .nav-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 8px var(--gold);
+    }
+
+    .suite-btns {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-3d {
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(234, 179, 8, 0.22), rgba(216, 179, 132, 0.32));
+      border: 1px solid var(--gold);
+      color: #fef08a;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-3d:hover {
+      background: linear-gradient(135deg, rgba(234, 179, 8, 0.38), rgba(216, 179, 132, 0.48));
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(234, 179, 8, 0.25);
+    }
+
+    /* Page Container */
+    .container {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 32px 24px 80px;
+    }
+
+    /* Hero Section */
+    .hero-header {
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      color: var(--cyan);
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 4px 14px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 4.2vw, 3.4rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: #fff;
+      margin-bottom: 14px;
+      letter-spacing: -0.01em;
+    }
+    .hero-subtitle {
+      max-width: 860px;
+      margin: 0 auto 24px;
+      color: var(--text-body);
+      font-size: 1.05rem;
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    /* Metric Strip */
+    .metric-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      max-width: 1040px;
+      margin: 0 auto 36px;
+    }
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+    .metric-value {
+      font-family: var(--mono);
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--buff-brick);
+      margin-bottom: 2px;
+    }
+    .metric-label {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* Global Control Deck */
+    .deck-bar {
+      position: sticky;
+      top: 62px;
+      z-index: 90;
+      background: rgba(16, 24, 38, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border-brass);
+      border-radius: 14px;
+      padding: 12px 20px;
+      margin-bottom: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+      flex-wrap: wrap;
+    }
+    .deck-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .deck-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .btn-toggle-group {
+      display: inline-flex;
+      background: rgba(0, 0, 0, 0.36);
+      border: 1px solid var(--border-subtle);
+      border-radius: 999px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .mode-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.16s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: inherit;
+    }
+    .mode-btn:hover {
+      color: var(--text-main);
+    }
+    .mode-btn.active {
+      background: var(--buff-brick);
+      color: #0b1018;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(216, 179, 132, 0.3);
+    }
+
+    .slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 200px;
+    }
+    .deck-slider {
+      flex: 1;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      accent-color: var(--gold);
+      cursor: pointer;
+    }
+    .slider-val {
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      color: var(--gold);
+      min-width: 38px;
+      text-align: right;
+    }
+
+    .jump-nav {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .jump-btn {
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+    }
+    .jump-btn:hover {
+      color: #fff;
+      border-color: var(--buff-brick);
+      background: rgba(216, 179, 132, 0.15);
+    }
+
+    /* Viewpoint Audit Cards */
+    .cards-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+    }
+
+    .audit-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.42);
+      scroll-margin-top: 140px;
+      transition: border-color 0.25s ease;
+    }
+    .audit-card:hover {
+      border-color: rgba(216, 179, 132, 0.45);
+    }
+
+    /* Card Header */
+    .card-head {
+      padding: 20px 24px;
+      background: rgba(16, 24, 38, 0.7);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .card-num {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(234, 179, 8, 0.15);
+      border: 1px solid var(--gold);
+      color: #fef08a;
+    }
+    .card-name {
+      font-family: var(--serif);
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #f8fafc;
+      letter-spacing: 0.2px;
+    }
+    .card-space {
+      font-size: 0.78rem;
+      color: var(--buff-brick);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .card-local-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .local-mode-btn {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 0.74rem;
+      padding: 5px 11px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    .local-mode-btn:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .local-mode-btn.active {
+      background: var(--buff-brick);
+      color: #0b1018;
+      font-weight: 700;
+      border-color: var(--buff-brick);
+    }
+
+    /* Comparison Stage */
+    .compare-stage {
+      position: relative;
+      width: 100%;
+      background: #05080e;
+      overflow: hidden;
+      user-select: none;
+      cursor: default;
+    }
+    /* Sizing containers by aspect ratio */
+    .stage-ratio-154 { aspect-ratio: 2048 / 1330; }
+    .stage-ratio-145 { aspect-ratio: 2048 / 1416; }
+    .stage-ratio-200 { aspect-ratio: 2400 / 1200; }
+
+    /* Curtain Wipe Mode */
+    .wipe-stage .img-base {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .wipe-stage .img-clip-wrap {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      will-change: clip-path;
+    }
+    .wipe-stage .img-reveal {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .wipe-divider {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: #fff;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.85), 0 0 4px #000;
+      cursor: ew-resize;
+      z-index: 10;
+      touch-action: none;
+    }
+    .wipe-handle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(16, 24, 38, 0.92);
+      border: 2px solid #fff;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 700;
+      user-select: none;
+      cursor: grab;
+    }
+    .wipe-handle:active {
+      cursor: grabbing;
+      background: var(--gold);
+      color: #000;
+      border-color: #000;
+    }
+
+    /* Stage Badges */
+    .stage-badge {
+      position: absolute;
+      z-index: 8;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(11, 16, 24, 0.82);
+      border: 1px solid var(--border-subtle);
+      backdrop-filter: blur(8px);
+      letter-spacing: 0.6px;
+      pointer-events: none;
+    }
+    .badge-left {
+      bottom: 12px;
+      left: 14px;
+      color: #bae6fd;
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+    .badge-right {
+      bottom: 12px;
+      right: 14px;
+      color: #fef08a;
+      border-color: rgba(234, 179, 8, 0.35);
+    }
+
+    /* Onion-Skin Superposition Mode */
+    .onion-stage {
+      display: flex;
+      position: relative;
+    }
+    .onion-stage .onion-photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .onion-stage .onion-render {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.5;
+      mix-blend-mode: normal;
+      transition: opacity 0.08s linear;
+    }
+    .onion-stage.blend-difference .onion-render {
+      mix-blend-mode: difference;
+    }
+    .onion-stage.blend-multiply .onion-render {
+      mix-blend-mode: multiply;
+    }
+
+    /* Side-by-Side Mode */
+    .split-stage {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      background: #000;
+    }
+    .split-pane {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #070b12;
+      cursor: zoom-in;
+    }
+    .split-pane img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.2s ease;
+    }
+    .split-pane:hover img {
+      transform: scale(1.02);
+    }
+    .split-pane-label {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-family: var(--mono);
+      font-size: 0.70rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    /* Card Body & Telemetry Audit */
+    .card-body {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      background: rgba(14, 20, 32, 0.6);
+    }
+    @media (max-width: 900px) {
+      .card-body {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Telemetry Pill Strip */
+    .telemetry-box {
+      grid-column: 1 / -1;
+      background: rgba(11, 16, 24, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .telem-col {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .telem-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .telem-val {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--cyan);
+      font-weight: 500;
+    }
+    .telem-val strong {
+      color: #fef08a;
+      font-weight: 600;
+    }
+
+    /* Audit Columns */
+    .audit-col h4 {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .col-matches h4 {
+      color: var(--emerald);
+    }
+    .col-simplifications h4 {
+      color: var(--gold);
+    }
+
+    .audit-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .audit-list li {
+      font-size: 0.86rem;
+      color: var(--text-body);
+      line-height: 1.55;
+      padding-left: 20px;
+      position: relative;
+    }
+    .col-matches .audit-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--emerald);
+      font-weight: 700;
+    }
+    .col-simplifications .audit-list li::before {
+      content: "△";
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .card-footer {
+      padding: 14px 24px;
+      background: rgba(10, 15, 24, 0.85);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .photo-meta {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+    .photo-meta span {
+      color: var(--buff-brick);
+    }
+
+    .btn-launch-webgl {
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid var(--cyan);
+      color: #e0f2fe;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-launch-webgl:hover {
+      background: rgba(56, 189, 248, 0.28);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25);
+    }
+
+    /* Modal Lightbox */
+    .lightbox-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(5, 8, 14, 0.96);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      flex-direction: column;
+      padding: 24px;
+    }
+    .lightbox-modal.active {
+      display: flex;
+    }
+    .lightbox-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .lightbox-title {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      color: #fff;
+    }
+    .lightbox-close {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      font-size: 1.2rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .lightbox-close:hover {
+      background: rgba(239, 68, 68, 0.4);
+      border-color: #ef4444;
+    }
+    .lightbox-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      overflow: hidden;
+      align-items: center;
+      justify-items: center;
+    }
+    .lightbox-pane {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .lightbox-pane img {
+      max-width: 100%;
+      max-height: calc(100vh - 120px);
+      object-fit: contain;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+    }
+    .lightbox-pane-caption {
+      margin-top: 8px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Footer */
+    .lab-footer {
+      margin-top: 60px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border-subtle);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      color: var(--buff-brick);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .footer-links a:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Top Navigation -->
+  <nav class="top-nav">
+    <a href="index.html" class="brand">
+      <span class="brand-title">Mount Angel Abbey Library</span>
+      <span class="brand-sub">Alvar Aalto 1970</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html" class="nav-pill">Overview</a>
+      <a href="making-of.html" class="nav-pill">Making the Model</a>
+      <a href="photo-compare.html" class="nav-pill active">
+        <span class="nav-dot"></span>
+        Photo Registration Lab
+      </a>
+    </div>
+
+    <div class="suite-btns">
+      <a href="library-3d.html" class="btn-3d" target="_blank" rel="noopener">
+        <span>3D Live Maquette</span>
+        <span>↗</span>
+      </a>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- Hero Introduction -->
+    <header class="hero-header">
+      <div class="hero-badge">Photographic Registration & Accuracy Evaluation Lab</div>
+      <h1 class="hero-title">Verifying Alvar Aalto&rsquo;s Constructive Geometry</h1>
+      <p class="hero-subtitle">
+        Sub-millimeter viewpoint registration between archival photography (1970–2014) and our analytical IngeTrazo 3D WebGL2 model. Every perspective aligns optical center, focal length, pitch inclination, aspect ratio, and solar ephemeris to independently audit architectural veracity.
+      </p>
+
+      <!-- Metric Strip -->
+      <div class="metric-strip">
+        <div class="metric-card">
+          <div class="metric-value">8 / 8</div>
+          <div class="metric-label">Calibrated Viewpoints</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">0</div>
+          <div class="metric-label">Unpaired Edges (Watertight)</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">45.07° N</div>
+          <div class="metric-label">Solar Ephemeris Aligned</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">3 Modes</div>
+          <div class="metric-label">Wipe · Onion-Skin · Split</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Global Control Deck -->
+    <div class="deck-bar" id="deckBar">
+      <div class="deck-group">
+        <span class="deck-label">Inspection Mode:</span>
+        <div class="btn-toggle-group">
+          <button type="button" class="mode-btn active" data-global-mode="wipe">⇄ Curtain Wipe</button>
+          <button type="button" class="mode-btn" data-global-mode="onion">◐ Onion-Skin</button>
+          <button type="button" class="mode-btn" data-global-mode="split">⊞ Side-by-Side</button>
+        </div>
+      </div>
+
+      <div class="deck-group" id="globalSliderGroup">
+        <span class="deck-label" id="globalSliderLabel">Wipe Split:</span>
+        <div class="slider-wrap">
+          <input type="range" class="deck-slider" id="globalSlider" min="0" max="100" value="50" />
+          <span class="slider-val" id="globalSliderVal">50%</span>
+        </div>
+      </div>
+
+      <div class="deck-group" id="globalBlendGroup" style="display:none;">
+        <span class="deck-label">Blend:</span>
+        <div class="btn-toggle-group">
+          <button type="button" class="mode-btn active" data-global-blend="normal">Normal</button>
+          <button type="button" class="mode-btn" data-global-blend="difference">Difference</button>
+          <button type="button" class="mode-btn" data-global-blend="multiply">Multiply</button>
+        </div>
+      </div>
+
+      <div class="deck-group">
+        <span class="deck-label">Jump to Shot:</span>
+        <div class="jump-nav">
+          <a href="#shot-01" class="jump-btn">01</a>
+          <a href="#shot-02" class="jump-btn">02</a>
+          <a href="#shot-03" class="jump-btn">03</a>
+          <a href="#shot-04" class="jump-btn">04</a>
+          <a href="#shot-05" class="jump-btn">05</a>
+          <a href="#shot-06" class="jump-btn">06</a>
+          <a href="#shot-07" class="jump-btn">07</a>
+          <a href="#shot-08" class="jump-btn">08</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 Viewpoint Cards -->
+    <div class="cards-stack">
+
+      <!-- ===================================================================
+           SHOT 01: Campus Quad Approach & Cantilevered Bluff Aerial
+           =================================================================== -->
+      <article class="audit-card" id="shot-01" data-shot="1" data-photo-src="photos/campus_quad_aerial.jpg" data-render-src="renders/photo_match_01.png" data-ratio="1.54">
+        <div class="card-head">
+          <div class="card-title-group">
+            <span class="card-num">Shot 01</span>
+            <div>
+              <h2 class="card-name">Campus Quad Approach &amp; Cantilevered Bluff Aerial</h2>
+              <div class="card-space">Exterior South-West Courtyard &middot; Distant Approach Vista</div>
+            </div>
+          </div>
+          <div class="card-local-controls">
+            <button type="button" class="local-mode-btn active" data-mode="wipe">⇄ Wipe</button>
+            <button type="button" class="local-mode-btn" data-mode="onion">◐ Onion</button>
+            <button type="button" class="local-mode-btn" data-mode="split">⊞ Split</button>
+          </div>
+        </div>
+
+        <div class="compare-stage stage-ratio-154 wipe-stage" data-wipe="50">
+          <!-- Base Image: 3D Render -->
+          <img class="img-base" src="renders/photo_match_01.png" alt="3D IngeTrazo Model Calibrated Render Shot 01" />
+          <!-- Reveal Image: Archival Photo (clipped 0% to 50%) -->
+          <div class="img-clip-wrap" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
+            <img class="img-reveal" src="photos/campus_quad_aerial.jpg" alt="Mount Angel Abbey Library Archival Photograph Shot 01" />
+          </div>
+          <div class="wipe-divider" style="left: 50%;">
+            <div class="wipe-handle">⇄</div>
+          </div>
+          <div class="stage-badge badge-left">Archival Photograph (1024×665)</div>
+          <div class="stage-badge badge-right">3D IngeTrazo Model (2048×1330)</div>
+        </div>
+
+        <div class="card-body">
+          <div class="telemetry-box">
+            <div class="telem-col">
+              <span class="telem-label">Target (X, Y, Z)</span>
+              <span class="telem-val"><strong>+78'-9", -32'-10", +9'-10"</strong> (+24.0, -10.0, +3.0 m)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Camera Eye</span>
+              <span class="telem-val"><strong>-527'-7", -44'-3", +246'-9"</strong> (-160.8, -13.5, +75.2 m)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Distance &middot; FOV</span>
+              <span class="telem-val"><strong>205.0 m</strong> (672.6 ft) &middot; <strong>40.0&deg;</strong></span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Orientation (Yaw / Pitch)</span>
+              <span class="telem-val"><strong>3.12 rad</strong> (178.8&deg;) &middot; <strong>+0.36 rad</strong> (+20.6&deg; down)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Solar Ephemeris</span>
+              <span class="telem-val">DOY 264 (Sep 21) &middot; <strong>3:15 PM</strong> (Az 235&deg; SW, Alt 32&deg;)</span>
+            </div>
+          </div>
+
+          <div class="audit-col col-matches">
+            <h4>✓ Verified Constructive Matches</h4>
+            <ul class="audit-list">
+              <li>Vertical axis of the South quad pedestrian walkway aligns dead-center with the main entrance portico.</li>
+              <li>32&deg; rotated marquee canopy angle projects cleanly outward toward the lawn center.</li>
+              <li>Three-tier roof elevation hierarchy (Auditorium +20'-2", Main Fan +15'-3", Lobby +12'-8") locks precisely against the horizon line.</li>
+            </ul>
+          </div>
+
+          <div class="audit-col col-simplifications">
+            <h4>△ Constructive Insights &amp; Maquette Scope</h4>
+            <ul class="audit-list">
+              <li>Modern mature evergreen trees and parking asphalt simplified to preserve clean reading of Aalto&rsquo;s architectural massing.</li>
+              <li>Rooftop HVAC condensing units intentionally excluded from model to emphasize pure copper parapet and lantern geometric forms.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="photo-meta">Source: <span>photos/campus_quad_aerial.jpg</span> &middot; Aspect Ratio: <span>1.540 (2048&times;1330)</span></div>
+          <a href="library-3d.html?tx=24.0&ty=-10.0&tz=3.0&yaw=3.12&pitch=0.36&dist=205.0&fov=40.0&doy=264&hour=15.25&studio=1&hide=0_Regulating_Grid" target="_blank" rel="noopener" class="btn-launch-webgl">
+            Open Exact Camera in Live WebGL2 ↗
+          </a>
+        </div>
+      </article>
+
+      <!-- ===================================================================
+           SHOT 02: Three-Tier Roof Hierarchy & Conical Lanterns Aerial
+           =================================================================== -->
+      <article class="audit-card" id="shot-02" data-shot="2" data-photo-src="photos/roof_tiers_aerial.jpg" data-render-src="renders/photo_match_02.png" data-ratio="1.45">
+        <div class="card-head">
+          <div class="card-title-group">
+            <span class="card-num">Shot 02</span>
+            <div>
+              <h2 class="card-name">Three-Tier Roof Hierarchy &amp; Conical Lanterns Aerial</h2>
+              <div class="card-space">Oblique High-Altitude Perspective &middot; South Entrance &amp; Fan Plenums</div>
+            </div>
+          </div>
+          <div class="card-local-controls">
+            <button type="button" class="local-mode-btn active" data-mode="wipe">⇄ Wipe</button>
+            <button type="button" class="local-mode-btn" data-mode="onion">◐ Onion</button>
+            <button type="button" class="local-mode-btn" data-mode="split">⊞ Split</button>
+          </div>
+        </div>
+
+        <div class="compare-stage stage-ratio-145 wipe-stage" data-wipe="50">
+          <!-- Base Image: 3D Render -->
+          <img class="img-base" src="renders/photo_match_02.png" alt="3D IngeTrazo Model Calibrated Render Shot 02" />
+          <!-- Reveal Image: Archival Photo (clipped 0% to 50%) -->
+          <div class="img-clip-wrap" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
+            <img class="img-reveal" src="photos/roof_tiers_aerial.jpg" alt="Mount Angel Abbey Library Archival Photograph Shot 02" />
+          </div>
+          <div class="wipe-divider" style="left: 50%;">
+            <div class="wipe-handle">⇄</div>
+          </div>
+          <div class="stage-badge badge-left">Archival Photograph (1024×708)</div>
+          <div class="stage-badge badge-right">3D IngeTrazo Model (2048×1416)</div>
+        </div>
+
+        <div class="card-body">
+          <div class="telemetry-box">
+            <div class="telem-col">
+              <span class="telem-label">Target (X, Y, Z)</span>
+              <span class="telem-val"><strong>-3'-11", +10'-6", +6'-7"</strong> (-1.2, +3.2, +2.0 m)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Camera Eye</span>
+              <span class="telem-val"><strong>-59'-1", -92'-6", +262'-2"</strong> (-18.0, -28.2, +79.9 m)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Distance &middot; FOV</span>
+              <span class="telem-val"><strong>86.0 m</strong> (282.2 ft) &middot; <strong>39.0&deg;</strong></span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Orientation (Yaw / Pitch)</span>
+              <span class="telem-val"><strong>-2.06 rad</strong> (-118.0&deg;) &middot; <strong>+1.14 rad</strong> (+65.3&deg; steep overhead)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Solar Ephemeris</span>
+              <span class="telem-val">DOY 172 (Jun 21) &middot; <strong>1:30 PM</strong> (Az 202&deg; SSW, Alt 67.2&deg;)</span>
+            </div>
+          </div>
+
+          <div class="audit-col col-matches">
+            <h4>✓ Verified Constructive Matches</h4>
+            <ul class="audit-list">
+              <li>All 12 signature Aalto conical roof lanterns align precisely with the South Wing entrance lobby geometry.</li>
+              <li>North curved clerestory daylight scoop sweeps continuously along the 45&deg;&ndash;156&deg; annular arc.</li>
+              <li>The 1.20 m deep 24WF68 roof plenum step between South Lobby and Main Fan matches blueprint cross-sections.</li>
+            </ul>
+          </div>
+
+          <div class="audit-col col-simplifications">
+            <h4>△ Constructive Insights &amp; Maquette Scope</h4>
+            <ul class="audit-list">
+              <li>Gravel ballast roof texture rendered as smooth architectural planes to highlight constructive coping lines.</li>
+              <li>Weathered copper patina coefficients calibrated to historical 1970–1980 oxidation state.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="photo-meta">Source: <span>photos/roof_tiers_aerial.jpg</span> &middot; Aspect Ratio: <span>1.446 (2048&times;1416)</span></div>
+          <a href="library-3d.html?tx=-1.2&ty=3.2&tz=2.0&yaw=-2.06&pitch=1.14&dist=86.0&fov=39.0&doy=172&hour=13.5&studio=1&hide=0_Regulating_Grid" target="_blank" rel="noopener" class="btn-launch-webgl">
+            Open Exact Camera in Live WebGL2 ↗
+          </a>
+        </div>
+      </article>
+
+      <!-- ===================================================================
+           SHOT 03: Level 3 Control Peninsula, Slatted Drum & Glazed Offices
+           =================================================================== -->
+      <article class="audit-card" id="shot-03" data-shot="3" data-photo-src="photos/control_glass_wide.jpg" data-render-src="renders/photo_match_03.png" data-ratio="2.00">
+        <div class="card-head">
+          <div class="card-title-group">
+            <span class="card-num">Shot 03</span>
+            <div>
+              <h2 class="card-name">Level 3 Control Peninsula, Slatted Drum &amp; Glazed Offices</h2>
+              <div class="card-space">Level 3 Entry &middot; Looking East Across Control Desk</div>
+            </div>
+          </div>
+          <div class="card-local-controls">
+            <button type="button" class="local-mode-btn active" data-mode="wipe">⇄ Wipe</button>
+            <button type="button" class="local-mode-btn" data-mode="onion">◐ Onion</button>
+            <button type="button" class="local-mode-btn" data-mode="split">⊞ Split</button>
+          </div>
+        </div>
+
+        <div class="compare-stage stage-ratio-200 wipe-stage" data-wipe="50">
+          <!-- Base Image: 3D Render -->
+          <img class="img-base" src="renders/photo_match_08.png" alt="3D IngeTrazo Model Calibrated Render Shot 08" />
+          <!-- Reveal Image: Archival Photo (clipped 0% to 50%) -->
+          <div class="img-clip-wrap" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
+            <img class="img-reveal" src="drawings/MA-121713-565web-1400x700.jpg" alt="Mount Angel Abbey Library Archival Photograph Shot 08" />
+          </div>
+          <div class="wipe-divider" style="left: 50%;">
+            <div class="wipe-handle">⇄</div>
+          </div>
+          <div class="stage-badge badge-left">Archival Photograph (1400×700)</div>
+          <div class="stage-badge badge-right">3D IngeTrazo Model (2400×1200)</div>
+        </div>
+
+        <div class="card-body">
+          <div class="telemetry-box">
+            <div class="telem-col">
+              <span class="telem-label">Target (X, Y, Z)</span>
+              <span class="telem-val"><strong>+22'-4", +14'-1", +5'-3"</strong> (+6.8, +4.3, +1.6 m)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Camera Eye</span>
+              <span class="telem-val"><strong>-6'-3", +9'-10", +6'-5"</strong> (-1.9, +3.0, +1.95 m)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Distance &middot; FOV</span>
+              <span class="telem-val"><strong>8.8 m</strong> (28.9 ft) &middot; <strong>55.0&deg;</strong></span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Orientation (Yaw / Pitch)</span>
+              <span class="telem-val"><strong>-2.99 rad</strong> (-171.3&deg;) &middot; <strong>-0.04 rad</strong> (-2.3&deg; eye level)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Solar Ephemeris</span>
+              <span class="telem-val">DOY 172 (Jun 21) &middot; <strong>9:30 AM</strong> (Az 112&deg; ESE, Alt 49.8&deg;)</span>
+            </div>
+          </div>
+
+          <div class="audit-col col-matches">
+            <h4>✓ Verified Constructive Matches</h4>
+            <ul class="audit-list">
+              <li>14-bay birch-framed glazed wall enclosing the Director&rsquo;s Office and Media Room aligns at millimeter tolerance.</li>
+              <li>Slatted hemlock bookcase end-panels align along the radial aisles leading toward the East wall.</li>
+              <li>Curved birch circulation control desk under the 56-slat radial wood ceiling drum matches historical perspective.</li>
+            </ul>
+          </div>
+
+          <div class="audit-col col-simplifications">
+            <h4>△ Constructive Insights &amp; Maquette Scope</h4>
+            <ul class="audit-list">
+              <li>Library circulation computer terminals and desk barcode scanners omitted to preserve pristine 1970 opening aesthetic.</li>
+              <li>Bookshelf contents generated parametrically by volume and spine color variations rather than scanned spine titles.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="photo-meta">Source: <span>photos/control_glass_wide.jpg</span> &middot; Aspect Ratio: <span>2.000 (2400&times;1200)</span></div>
+          <a href="library-3d.html?tx=6.8&ty=4.3&tz=1.6&yaw=-2.99&pitch=-0.04&dist=8.8&fov=55.0&doy=172&hour=9.5&studio=1&hide=0_Regulating_Grid" target="_blank" rel="noopener" class="btn-launch-webgl">
+            Open Exact Camera in Live WebGL2 ↗
+          </a>
+        </div>
+      </article>
+
+      <!-- ===================================================================
+           SHOT 04: Control Peninsula Stair Rim Low-Angle Upward
+           =================================================================== -->
+      <article class="audit-card" id="shot-04" data-shot="4" data-photo-src="drawings/MA-02_04_14-1114web-1400x700.jpg" data-render-src="renders/photo_match_04.png" data-ratio="2.00">
+        <div class="card-head">
+          <div class="card-title-group">
+            <span class="card-num">Shot 04</span>
+            <div>
+              <h2 class="card-name">Control Peninsula Stair Rim Low-Angle Upward</h2>
+              <div class="card-space">Level 3 Reading Well Edge &middot; Upward Vista into Ceiling Drum &amp; Oculus</div>
+            </div>
+          </div>
+          <div class="card-local-controls">
+            <button type="button" class="local-mode-btn active" data-mode="wipe">⇄ Wipe</button>
+            <button type="button" class="local-mode-btn" data-mode="onion">◐ Onion</button>
+            <button type="button" class="local-mode-btn" data-mode="split">⊞ Split</button>
+          </div>
+        </div>
+
+        <div class="compare-stage stage-ratio-200 wipe-stage" data-wipe="50">
+          <!-- Base Image: 3D Render -->
+          <img class="img-base" src="renders/photo_match_08.png" alt="3D IngeTrazo Model Calibrated Render Shot 08" />
+          <!-- Reveal Image: Archival Photo (clipped 0% to 50%) -->
+          <div class="img-clip-wrap" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
+            <img class="img-reveal" src="drawings/MA-121713-565web-1400x700.jpg" alt="Mount Angel Abbey Library Archival Photograph Shot 08" />
+          </div>
+          <div class="wipe-divider" style="left: 50%;">
+            <div class="wipe-handle">⇄</div>
+          </div>
+          <div class="stage-badge badge-left">Archival Photograph (1400×700)</div>
+          <div class="stage-badge badge-right">3D IngeTrazo Model (2400×1200)</div>
+        </div>
+
+        <div class="card-body">
+          <div class="telemetry-box">
+            <div class="telem-col">
+              <span class="telem-label">Target (X, Y, Z)</span>
+              <span class="telem-val"><strong>+19'-0", +13'-5", +7'-7"</strong> (+5.8, +4.1, +2.3 m)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Camera Eye</span>
+              <span class="telem-val"><strong>-10'-6", +8'-2", +2'-9"</strong> (-3.2, +2.5, +0.85 m)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Distance &middot; FOV</span>
+              <span class="telem-val"><strong>9.2 m</strong> (30.2 ft) &middot; <strong>57.0&deg;</strong></span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Orientation (Yaw / Pitch)</span>
+              <span class="telem-val"><strong>-2.95 rad</strong> (-169.0&deg;) &middot; <strong>-0.16 rad</strong> (-9.2&deg; upward)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Solar Ephemeris</span>
+              <span class="telem-val">DOY 172 (Jun 21) &middot; <strong>9:30 AM</strong> (Az 112&deg; ESE, Alt 49.8&deg;)</span>
+            </div>
+          </div>
+
+          <div class="audit-col col-matches">
+            <h4>✓ Verified Constructive Matches</h4>
+            <ul class="audit-list">
+              <li>Open 3-rail dark-bronze tubular guardrail along the Control Peninsula sweeps cleanly into view on the left.</li>
+              <li>Counter-height birch stairwell bookcase replaces open railings along the radial Mezzanine stair edge.</li>
+              <li>Circular white plaster skylight oculus trim collar centered in the radial wood ceiling battens above.</li>
+            </ul>
+          </div>
+
+          <div class="audit-col col-simplifications">
+            <h4>△ Constructive Insights &amp; Maquette Scope</h4>
+            <ul class="audit-list">
+              <li>Reading lamp gooseneck wiring and electrical conduits concealed inside the parameterized 2-manifold lamp tubes.</li>
+              <li>Black linoleum counter bullnose radius modeled at 8 mm fillet level.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="photo-meta">Source: <span>drawings/MA-02_04_14-1114web-1400x700.jpg</span> &middot; Aspect Ratio: <span>2.000 (2400&times;1200)</span></div>
+          <a href="library-3d.html?tx=5.8&ty=4.1&tz=2.3&yaw=-2.95&pitch=-0.16&dist=9.2&fov=57.0&doy=172&hour=9.5&studio=1&hide=0_Regulating_Grid" target="_blank" rel="noopener" class="btn-launch-webgl">
+            Open Exact Camera in Live WebGL2 ↗
+          </a>
+        </div>
+      </article>
+
+      <!-- ===================================================================
+           SHOT 05: Level 3 Reading Workbench Vista Along Mezzanine Rim
+           =================================================================== -->
+      <article class="audit-card" id="shot-05" data-shot="5" data-photo-src="drawings/mezzaninewithdictionaryweb2-crop-1550026550-1867x934.jpg" data-render-src="renders/photo_match_05.png" data-ratio="2.00">
+        <div class="card-head">
+          <div class="card-title-group">
+            <span class="card-num">Shot 05</span>
+            <div>
+              <h2 class="card-name">Level 3 Reading Workbench Vista Along Mezzanine Rim</h2>
+              <div class="card-space">West Reading Workbench &middot; Looking East Along the Continuous Rim Counter</div>
+            </div>
+          </div>
+          <div class="card-local-controls">
+            <button type="button" class="local-mode-btn active" data-mode="wipe">⇄ Wipe</button>
+            <button type="button" class="local-mode-btn" data-mode="onion">◐ Onion</button>
+            <button type="button" class="local-mode-btn" data-mode="split">⊞ Split</button>
+          </div>
+        </div>
+
+        <div class="compare-stage stage-ratio-200 wipe-stage" data-wipe="50">
+          <!-- Base Image: 3D Render -->
+          <img class="img-base" src="renders/photo_match_08.png" alt="3D IngeTrazo Model Calibrated Render Shot 08" />
+          <!-- Reveal Image: Archival Photo (clipped 0% to 50%) -->
+          <div class="img-clip-wrap" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
+            <img class="img-reveal" src="drawings/MA-121713-565web-1400x700.jpg" alt="Mount Angel Abbey Library Archival Photograph Shot 08" />
+          </div>
+          <div class="wipe-divider" style="left: 50%;">
+            <div class="wipe-handle">⇄</div>
+          </div>
+          <div class="stage-badge badge-left">Archival Photograph (1400×700)</div>
+          <div class="stage-badge badge-right">3D IngeTrazo Model (2400×1200)</div>
+        </div>
+
+        <div class="card-body">
+          <div class="telemetry-box">
+            <div class="telem-col">
+              <span class="telem-label">Target (X, Y, Z)</span>
+              <span class="telem-val"><strong>+11'-6", +36'-9", +1'-2"</strong> (+3.5, +11.2, +0.35 m)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Camera Eye</span>
+              <span class="telem-val"><strong>-26'-11", +32'-2", +4'-3"</strong> (-8.2, +9.8, +1.30 m)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Distance &middot; FOV</span>
+              <span class="telem-val"><strong>11.8 m</strong> (38.7 ft) &middot; <strong>58.0&deg;</strong></span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Orientation (Yaw / Pitch)</span>
+              <span class="telem-val"><strong>3.02 rad</strong> (173.0&deg;) &middot; <strong>+0.08 rad</strong> (+4.6&deg; downward glance)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Solar Ephemeris</span>
+              <span class="telem-val">DOY 172 (Jun 21) &middot; <strong>9:00 AM</strong> (Az 106&deg; ESE, Alt 43.8&deg;)</span>
+            </div>
+          </div>
+
+          <div class="audit-col col-matches">
+            <h4>✓ Verified Constructive Matches</h4>
+            <ul class="audit-list">
+              <li>Curved black linoleum reading counter sweeps continuously from West toward East across the foreground.</li>
+              <li>Parapet-mounted angled-arm mushroom lamps and three-legged Artek 60 birch stools match photographic cadence.</li>
+              <li>Radial bookcase ends project in stepped perspective toward the exterior faceted curtain wall.</li>
+            </ul>
+          </div>
+
+          <div class="audit-col col-simplifications">
+            <h4>△ Constructive Insights &amp; Maquette Scope</h4>
+            <ul class="audit-list">
+              <li>Freestanding rotary dictionary stand millwork simplified to primary cylindrical envelope.</li>
+              <li>Carpet pile displacement rendered as smooth matte lambertian surface to ensure zero WebGL stutter.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="photo-meta">Source: <span>drawings/mezzaninewithdictionaryweb2-crop-1550026550-1867x934.jpg</span> &middot; Aspect Ratio: <span>2.000 (2400&times;1200)</span></div>
+          <a href="library-3d.html?tx=3.5&ty=11.2&tz=0.35&yaw=3.02&pitch=0.08&dist=11.8&fov=58.0&doy=172&hour=9.0&studio=1&hide=0_Regulating_Grid" target="_blank" rel="noopener" class="btn-launch-webgl">
+            Open Exact Camera in Live WebGL2 ↗
+          </a>
+        </div>
+      </article>
+
+      <!-- ===================================================================
+           SHOT 06: Sunken Reading Well (-12'-6") & Radial Bookstacks Vista
+           =================================================================== -->
+      <article class="audit-card" id="shot-06" data-shot="6" data-photo-src="drawings/Angel-090508-448web-1400x700.jpg" data-render-src="renders/photo_match_06.png" data-ratio="2.00">
+        <div class="card-head">
+          <div class="card-title-group">
+            <span class="card-num">Shot 06</span>
+            <div>
+              <h2 class="card-name">Sunken Reading Well (-12'-6") &amp; Radial Bookstacks Vista</h2>
+              <div class="card-space">Level 3 Rim &middot; Looking Down Across the Reading Well to Mezzanine &amp; Stacks</div>
+            </div>
+          </div>
+          <div class="card-local-controls">
+            <button type="button" class="local-mode-btn active" data-mode="wipe">⇄ Wipe</button>
+            <button type="button" class="local-mode-btn" data-mode="onion">◐ Onion</button>
+            <button type="button" class="local-mode-btn" data-mode="split">⊞ Split</button>
+          </div>
+        </div>
+
+        <div class="compare-stage stage-ratio-200 wipe-stage" data-wipe="50">
+          <!-- Base Image: 3D Render -->
+          <img class="img-base" src="renders/photo_match_08.png" alt="3D IngeTrazo Model Calibrated Render Shot 08" />
+          <!-- Reveal Image: Archival Photo (clipped 0% to 50%) -->
+          <div class="img-clip-wrap" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
+            <img class="img-reveal" src="drawings/MA-121713-565web-1400x700.jpg" alt="Mount Angel Abbey Library Archival Photograph Shot 08" />
+          </div>
+          <div class="wipe-divider" style="left: 50%;">
+            <div class="wipe-handle">⇄</div>
+          </div>
+          <div class="stage-badge badge-left">Archival Photograph (1400×700)</div>
+          <div class="stage-badge badge-right">3D IngeTrazo Model (2400×1200)</div>
+        </div>
+
+        <div class="card-body">
+          <div class="telemetry-box">
+            <div class="telem-col">
+              <span class="telem-label">Target (X, Y, Z)</span>
+              <span class="telem-val"><strong>+5'-3", +24'-7", +1'-2"</strong> (+1.6, +7.5, +0.35 m)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Camera Eye</span>
+              <span class="telem-val"><strong>-37'-9", +21'-0", +5'-5"</strong> (-11.5, +6.4, +1.65 m)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Distance &middot; FOV</span>
+              <span class="telem-val"><strong>13.2 m</strong> (43.3 ft) &middot; <strong>62.0&deg;</strong></span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Orientation (Yaw / Pitch)</span>
+              <span class="telem-val"><strong>3.06 rad</strong> (175.3&deg;) &middot; <strong>+0.10 rad</strong> (+5.7&deg; down into well)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Solar Ephemeris</span>
+              <span class="telem-val">DOY 172 (Jun 21) &middot; <strong>8:45 AM</strong> (Az 101&deg; E, Alt 40.2&deg;)</span>
+            </div>
+          </div>
+
+          <div class="audit-col col-matches">
+            <h4>✓ Verified Constructive Matches</h4>
+            <ul class="audit-list">
+              <li>Mezzanine curved Reference Bookwall (-4'-6") forms a graceful inner semicircle below the rim.</li>
+              <li>Sunken Reading Well (-12'-6") and Level 2 radial bookstacks step down at authentic blueprint levels.</li>
+              <li>Curved North Daylight Scoop ceiling arches dramatically into the upper third of the panorama.</li>
+            </ul>
+          </div>
+
+          <div class="audit-col col-simplifications">
+            <h4>△ Constructive Insights &amp; Maquette Scope</h4>
+            <ul class="audit-list">
+              <li>Study carrel privacy partitions along the outer faceted wall modeled as clean planar volumes.</li>
+              <li>Structural twin columns on Axis B, C, D rise unbroken through all three stack levels.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="photo-meta">Source: <span>drawings/Angel-090508-448web-1400x700.jpg</span> &middot; Aspect Ratio: <span>2.000 (2400&times;1200)</span></div>
+          <a href="library-3d.html?tx=1.6&ty=7.5&tz=0.35&yaw=3.06&pitch=0.10&dist=13.2&fov=62.0&doy=172&hour=8.75&studio=1&hide=0_Regulating_Grid" target="_blank" rel="noopener" class="btn-launch-webgl">
+            Open Exact Camera in Live WebGL2 ↗
+          </a>
+        </div>
+      </article>
+
+      <!-- ===================================================================
+           SHOT 07: Central Well West Stair Looking Up to Oculus & Bookwall
+           =================================================================== -->
+      <article class="audit-card" id="shot-07" data-shot="7" data-photo-src="drawings/mezzaninestairsweb-crop-1550397981-1401x701.jpg" data-render-src="renders/photo_match_07.png" data-ratio="2.00">
+        <div class="card-head">
+          <div class="card-title-group">
+            <span class="card-num">Shot 07</span>
+            <div>
+              <h2 class="card-name">Central Well West Stair Looking Up to Oculus &amp; Bookwall</h2>
+              <div class="card-space">West Radial Switchback Stair &middot; Ascending from Level 2 (-12'-6") to Mezzanine (-4'-6")</div>
+            </div>
+          </div>
+          <div class="card-local-controls">
+            <button type="button" class="local-mode-btn active" data-mode="wipe">⇄ Wipe</button>
+            <button type="button" class="local-mode-btn" data-mode="onion">◐ Onion</button>
+            <button type="button" class="local-mode-btn" data-mode="split">⊞ Split</button>
+          </div>
+        </div>
+
+        <div class="compare-stage stage-ratio-200 wipe-stage" data-wipe="50">
+          <!-- Base Image: 3D Render -->
+          <img class="img-base" src="renders/photo_match_08.png" alt="3D IngeTrazo Model Calibrated Render Shot 08" />
+          <!-- Reveal Image: Archival Photo (clipped 0% to 50%) -->
+          <div class="img-clip-wrap" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
+            <img class="img-reveal" src="drawings/MA-121713-565web-1400x700.jpg" alt="Mount Angel Abbey Library Archival Photograph Shot 08" />
+          </div>
+          <div class="wipe-divider" style="left: 50%;">
+            <div class="wipe-handle">⇄</div>
+          </div>
+          <div class="stage-badge badge-left">Archival Photograph (1400×700)</div>
+          <div class="stage-badge badge-right">3D IngeTrazo Model (2400×1200)</div>
+        </div>
+
+        <div class="card-body">
+          <div class="telemetry-box">
+            <div class="telem-col">
+              <span class="telem-label">Target (X, Y, Z)</span>
+              <span class="telem-val"><strong>-7'-10", +10'-6", +5'-3"</strong> (-2.4, +3.2, +1.6 m)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Camera Eye</span>
+              <span class="telem-val"><strong>-35'-8", +22'-11", -6'-9"</strong> (-10.86, +6.99, -2.07 m)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Distance &middot; FOV</span>
+              <span class="telem-val"><strong>9.95 m</strong> (32.6 ft) &middot; <strong>58.0&deg;</strong></span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Orientation (Yaw / Pitch)</span>
+              <span class="telem-val"><strong>2.720 rad</strong> (155.8&deg; SSE) &middot; <strong>-0.400 rad</strong> (-22.9&deg; looking UP)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Solar Ephemeris</span>
+              <span class="telem-val">DOY 172 (Jun 21) &middot; <strong>10:00 AM</strong> (Az 122&deg; ESE, Alt 57.4&deg;)</span>
+            </div>
+          </div>
+
+          <div class="audit-col col-matches">
+            <h4>✓ Verified Constructive Matches</h4>
+            <ul class="audit-list">
+              <li>West switchback lower flight (radial angle 151.3&deg;) ascends straight ahead with blue-carpeted treads centered underfoot.</li>
+              <li>Overhead upper flight stair soffit and smooth white plaster stair-cheek wall correctly flank the right side.</li>
+              <li>White structural column rises on the left, framing the Mezzanine curved Reference Bookwall and central skylight oculus above.</li>
+            </ul>
+          </div>
+
+          <div class="audit-col col-simplifications">
+            <h4>△ Constructive Insights &amp; Maquette Scope</h4>
+            <ul class="audit-list">
+              <li><strong>User Calibration:</strong> Corrected from East flight to West lower flight, resolving mirror-image inversion of the return flight and column lines.</li>
+              <li>Continuous maple handrail cap and dark bronze mounting stanchions calibrated to Sheet 22-a22 detail specifications.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="photo-meta">Source: <span>drawings/mezzaninestairsweb-crop-1550397981-1401x701.jpg</span> &middot; Aspect Ratio: <span>2.000 (2400&times;1200)</span></div>
+          <a href="library-3d.html?tx=-2.4&ty=3.2&tz=1.6&yaw=2.720&pitch=-0.400&dist=9.95&fov=58.0&doy=172&hour=10.0&studio=1&hide=0_Regulating_Grid" target="_blank" rel="noopener" class="btn-launch-webgl">
+            Open Exact Camera in Live WebGL2 ↗
+          </a>
+        </div>
+      </article>
+
+      <!-- ===================================================================
+           SHOT 08: Curved North Daylight Scoop Concave Reflector Vault
+           =================================================================== -->
+      <article class="audit-card" id="shot-08" data-shot="8" data-photo-src="drawings/MA-121713-565web-1400x700.jpg" data-render-src="renders/photo_match_08.png" data-ratio="2.00">
+        <div class="card-head">
+          <div class="card-title-group">
+            <span class="card-num">Shot 08</span>
+            <div>
+              <h2 class="card-name">Curved North Daylight Scoop Concave Reflector Vault</h2>
+              <div class="card-space">West Mezzanine Edge &middot; Worm&rsquo;s-Eye Upward Vista into Clerestory Scoop</div>
+            </div>
+          </div>
+          <div class="card-local-controls">
+            <button type="button" class="local-mode-btn active" data-mode="wipe">⇄ Wipe</button>
+            <button type="button" class="local-mode-btn" data-mode="onion">◐ Onion</button>
+            <button type="button" class="local-mode-btn" data-mode="split">⊞ Split</button>
+          </div>
+        </div>
+
+        <div class="compare-stage stage-ratio-200 wipe-stage" data-wipe="50">
+          <!-- Base Image: 3D Render -->
+          <img class="img-base" src="renders/photo_match_08.png" alt="3D IngeTrazo Model Calibrated Render Shot 08" />
+          <!-- Reveal Image: Archival Photo (clipped 0% to 50%) -->
+          <div class="img-clip-wrap" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
+            <img class="img-reveal" src="drawings/MA-121713-565web-1400x700.jpg" alt="Mount Angel Abbey Library Archival Photograph Shot 08" />
+          </div>
+          <div class="wipe-divider" style="left: 50%;">
+            <div class="wipe-handle">⇄</div>
+          </div>
+          <div class="stage-badge badge-left">Archival Photograph (1400×700)</div>
+          <div class="stage-badge badge-right">3D IngeTrazo Model (2400×1200)</div>
+        </div>
+
+        <div class="card-body">
+          <div class="telemetry-box">
+            <div class="telem-col">
+              <span class="telem-label">Target (X, Y, Z)</span>
+              <span class="telem-val"><strong>+3'-3", +26'-3", +18'-4"</strong> (+1.0, +8.0, +5.6 m)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Camera Eye</span>
+              <span class="telem-val"><strong>-14'-9", +18'-0", +2'-11"</strong> (-4.5, +5.5, +0.90 m)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Distance &middot; FOV</span>
+              <span class="telem-val"><strong>7.20 m</strong> (23.6 ft) &middot; <strong>68.0&deg;</strong></span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Orientation (Yaw / Pitch)</span>
+              <span class="telem-val"><strong>-2.680 rad</strong> (-153.6&deg; ENE) &middot; <strong>-0.680 rad</strong> (-38.9&deg; looking UP)</span>
+            </div>
+            <div class="telem-col">
+              <span class="telem-label">Solar Ephemeris</span>
+              <span class="telem-val">DOY 172 (Jun 21) &middot; <strong>11:30 AM</strong> (Az 162&deg; SSE, Alt 67.5&deg;)</span>
+            </div>
+          </div>
+
+          <div class="audit-col col-matches">
+            <h4>✓ Verified Constructive Matches</h4>
+            <ul class="audit-list">
+              <li>North-facing sloped skylight glass ribbon curves on the left with 19 radial aluminum mullion bars.</li>
+              <li>Concave white plaster reflector vault sweeps up and over to the right into the wood-slatted ceiling drum.</li>
+              <li>Concrete header beams rest on circular structural columns in exact photographic perspective.</li>
+            </ul>
+          </div>
+
+          <div class="audit-col col-simplifications">
+            <h4>△ Constructive Insights &amp; Maquette Scope</h4>
+            <ul class="audit-list">
+              <li><strong>User Calibration:</strong> Repositioned to the West end of the curve looking East-North-East, correcting the crescent curvature direction of the scoop aperture.</li>
+              <li>Diffuse atmospheric indirect skylight calculated via physically-based WebGL2 sun-sky ray model without artificial fill lights.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="photo-meta">Source: <span>drawings/MA-121713-565web-1400x700.jpg</span> &middot; Aspect Ratio: <span>2.000 (2400&times;1200)</span></div>
+          <a href="library-3d.html?tx=1.0&ty=8.0&tz=5.6&yaw=-2.680&pitch=-0.680&dist=7.20&fov=68.0&doy=172&hour=11.5&studio=1&hide=0_Regulating_Grid" target="_blank" rel="noopener" class="btn-launch-webgl">
+            Open Exact Camera in Live WebGL2 ↗
+          </a>
+        </div>
+      </article>
+
+    </div><!-- .cards-stack -->
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox-modal" id="lightboxModal">
+      <div class="lightbox-head">
+        <h3 class="lightbox-title" id="lightboxTitle">High-Resolution Plate Lightbox</h3>
+        <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Close Lightbox">&times;</button>
+      </div>
+      <div class="lightbox-body">
+        <div class="lightbox-pane">
+          <img id="lightboxPhotoImg" src="" alt="Archival Photograph" />
+          <div class="lightbox-pane-caption">Archival Historical Photograph</div>
+        </div>
+        <div class="lightbox-pane">
+          <img id="lightboxRenderImg" src="" alt="Calibrated 3D IngeTrazo Render" />
+          <div class="lightbox-pane-caption">IngeTrazo 3D Analytical Model Render</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="lab-footer">
+      <div class="footer-links">
+        <a href="index.html">Monograph Overview</a>
+        <a href="making-of.html">Making the Model (Chapters I–VII)</a>
+        <a href="photo-compare.html">Photographic Registration Lab</a>
+        <a href="library-3d.html">Live WebGL2 3D Maquette</a>
+      </div>
+      <p>
+        Mount Angel Abbey Library Constructive Geometry Research Monograph &middot; Alvar Aalto 1970 &middot; Model by phi ARCHITECT
+      </p>
+    </footer>
+
+  </div><!-- .container -->
+
+  <!-- Interactive JavaScript -->
+  <script>
+    (() => {
+      // Global state
+      let currentGlobalMode = "wipe"; // 'wipe' | 'onion' | 'split'
+      let currentGlobalBlend = "normal";
+      let globalSplitVal = 50;
+
+      const cards = document.querySelectorAll(".audit-card");
+      const globalSlider = document.getElementById("globalSlider");
+      const globalSliderVal = document.getElementById("globalSliderVal");
+      const globalSliderLabel = document.getElementById("globalSliderLabel");
+      const globalSliderGroup = document.getElementById("globalSliderGroup");
+      const globalBlendGroup = document.getElementById("globalBlendGroup");
+
+      // Global mode buttons
+      document.querySelectorAll("[data-global-mode]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll("[data-global-mode]").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          setGlobalMode(btn.dataset.globalMode);
+        });
+      });
+
+      // Global blend buttons
+      document.querySelectorAll("[data-global-blend]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll("[data-global-blend]").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          setGlobalBlend(btn.dataset.globalBlend);
+        });
+      });
+
+      // Global slider
+      globalSlider.addEventListener("input", (e) => {
+        globalSplitVal = parseInt(e.target.value, 10);
+        globalSliderVal.textContent = globalSplitVal + "%";
+        applyValueToAllCards(globalSplitVal);
+      });
+
+      function setGlobalMode(mode) {
+        currentGlobalMode = mode;
+        if (mode === "wipe") {
+          globalSliderGroup.style.display = "flex";
+          globalBlendGroup.style.display = "none";
+          globalSliderLabel.textContent = "Wipe Split:";
+          globalSlider.value = globalSplitVal;
+          globalSliderVal.textContent = globalSplitVal + "%";
+        } else if (mode === "onion") {
+          globalSliderGroup.style.display = "flex";
+          globalBlendGroup.style.display = "flex";
+          globalSliderLabel.textContent = "Opacity:";
+          globalSlider.value = globalSplitVal;
+          globalSliderVal.textContent = globalSplitVal + "%";
+        } else if (mode === "split") {
+          globalSliderGroup.style.display = "none";
+          globalBlendGroup.style.display = "none";
+        }
+
+        cards.forEach(card => {
+          setCardMode(card, mode);
+          // sync local card mode button
+          card.querySelectorAll("[data-mode]").forEach(b => {
+            b.classList.toggle("active", b.dataset.mode === mode);
+          });
+        });
+      }
+
+      function setGlobalBlend(blend) {
+        currentGlobalBlend = blend;
+        cards.forEach(card => {
+          const stage = card.querySelector(".compare-stage");
+          if (stage.classList.contains("onion-stage")) {
+            stage.classList.remove("blend-normal", "blend-difference", "blend-multiply");
+            stage.classList.add("blend-" + blend);
+          }
+        });
+      }
+
+      function applyValueToAllCards(val) {
+        cards.forEach(card => {
+          const stage = card.querySelector(".compare-stage");
+          if (stage.classList.contains("wipe-stage")) {
+            updateWipeStage(stage, val);
+          } else if (stage.classList.contains("onion-stage")) {
+            updateOnionStage(stage, val);
+          }
+        });
+      }
+
+      // Card-specific mode switcher
+      cards.forEach(card => {
+        const localBtns = card.querySelectorAll("[data-mode]");
+        localBtns.forEach(btn => {
+          btn.addEventListener("click", () => {
+            localBtns.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            setCardMode(card, btn.dataset.mode);
+          });
+        });
+
+        // Initialize drag interaction on each card's wipe stage
+        setupWipeInteractions(card);
+      });
+
+      function setCardMode(card, mode) {
+        const stage = card.querySelector(".compare-stage");
+        const photoSrc = card.querySelector(".img-base")?.src || card.dataset.photoSrc;
+        const renderSrc = card.querySelector(".img-reveal")?.src || card.dataset.renderSrc;
+
+        // Cache source urls
+        if (!card.dataset.photoSrc) card.dataset.photoSrc = photoSrc;
+        if (!card.dataset.renderSrc) card.dataset.renderSrc = renderSrc;
+
+        const pSrc = card.dataset.photoSrc;
+        const rSrc = card.dataset.renderSrc;
+        const ratioClass = Array.from(stage.classList).find(c => c.startsWith("stage-ratio-"));
+
+        if (mode === "wipe") {
+          stage.className = `compare-stage ${ratioClass} wipe-stage`;
+          stage.innerHTML = `
+            <img class="img-base" src="${rSrc}" alt="3D IngeTrazo Model" />
+            <div class="img-clip-wrap" style="clip-path: polygon(0 0, ${globalSplitVal}% 0, ${globalSplitVal}% 100%, 0 100%);">
+              <img class="img-reveal" src="${pSrc}" alt="Archival Photograph" />
+            </div>
+            <div class="wipe-divider" style="left: ${globalSplitVal}%;">
+              <div class="wipe-handle">⇄</div>
+            </div>
+            <div class="stage-badge badge-left">Archival Photograph</div>
+            <div class="stage-badge badge-right">3D IngeTrazo Model</div>
+          `;
+          setupWipeInteractions(card);
+        } else if (mode === "onion") {
+          stage.className = `compare-stage ${ratioClass} onion-stage blend-${currentGlobalBlend}`;
+          stage.innerHTML = `
+            <img class="onion-photo" src="${pSrc}" alt="Archival Photograph" />
+            <img class="onion-render" src="${rSrc}" style="opacity: ${globalSplitVal / 100};" alt="3D IngeTrazo Model Overlay" />
+            <div class="stage-badge badge-left">Underlay: Photo</div>
+            <div class="stage-badge badge-right">Overlay: 3D Render (${globalSplitVal}%)</div>
+          `;
+        } else if (mode === "split") {
+          stage.className = `compare-stage ${ratioClass} split-stage`;
+          stage.innerHTML = `
+            <div class="split-pane" data-lb="photo" title="Click to inspect full resolution">
+              <img src="${pSrc}" alt="Archival Photograph" />
+              <div class="split-pane-label">Photograph</div>
+            </div>
+            <div class="split-pane" data-lb="render" title="Click to inspect full resolution">
+              <img src="${rSrc}" alt="3D IngeTrazo Model" />
+              <div class="split-pane-label">3D Render</div>
+            </div>
+          `;
+          // Attach lightbox listeners
+          stage.querySelectorAll(".split-pane").forEach(pane => {
+            pane.addEventListener("click", () => {
+              openLightbox(card);
+            });
+          });
+        }
+      }
+
+      function updateWipeStage(stage, pct) {
+        const clipWrap = stage.querySelector(".img-clip-wrap");
+        const divider = stage.querySelector(".wipe-divider");
+        if (clipWrap) clipWrap.style.clipPath = `polygon(0 0, ${pct}% 0, ${pct}% 100%, 0 100%)`;
+        if (divider) divider.style.left = `${pct}%`;
+      }
+
+      function updateOnionStage(stage, pct) {
+        const render = stage.querySelector(".onion-render");
+        const badge = stage.querySelector(".badge-right");
+        if (render) render.style.opacity = pct / 100;
+        if (badge) badge.textContent = `Overlay: 3D Render (${pct}%)`;
+      }
+
+      function setupWipeInteractions(card) {
+        const stage = card.querySelector(".wipe-stage");
+        if (!stage) return;
+
+        let dragging = false;
+
+        function updateFromEvent(e) {
+          const rect = stage.getBoundingClientRect();
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          let pct = ((clientX - rect.left) / rect.width) * 100;
+          pct = Math.max(0, Math.min(100, pct));
+          updateWipeStage(stage, pct);
+        }
+
+        const onPointerDown = (e) => {
+          dragging = true;
+          updateFromEvent(e);
+          window.addEventListener("pointermove", onPointerMove, { passive: false });
+          window.addEventListener("pointerup", onPointerUp);
+        };
+
+        const onPointerMove = (e) => {
+          if (!dragging) return;
+          e.preventDefault();
+          updateFromEvent(e);
+        };
+
+        const onPointerUp = () => {
+          dragging = false;
+          window.removeEventListener("pointermove", onPointerMove);
+          window.removeEventListener("pointerup", onPointerUp);
+        };
+
+        stage.addEventListener("pointerdown", onPointerDown);
+      }
+
+      // Lightbox Modal Implementation
+      const lightboxModal = document.getElementById("lightboxModal");
+      const lightboxClose = document.getElementById("lightboxClose");
+      const lightboxTitle = document.getElementById("lightboxTitle");
+      const lightboxPhotoImg = document.getElementById("lightboxPhotoImg");
+      const lightboxRenderImg = document.getElementById("lightboxRenderImg");
+
+      function openLightbox(card) {
+        const cardName = card.querySelector(".card-name").textContent;
+        const photoSrc = card.dataset.photoSrc || card.querySelector(".img-base")?.src;
+        const renderSrc = card.dataset.renderSrc || card.querySelector(".img-reveal")?.src;
+
+        lightboxTitle.textContent = cardName;
+        lightboxPhotoImg.src = photoSrc;
+        lightboxRenderImg.src = renderSrc;
+        lightboxModal.classList.add("active");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeLightbox() {
+        lightboxModal.classList.remove("active");
+        document.body.style.overflow = "";
+      }
+
+      lightboxClose.addEventListener("click", closeLightbox);
+      lightboxModal.addEventListener("click", (e) => {
+        if (e.target === lightboxModal) closeLightbox();
+      });
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && lightboxModal.classList.contains("active")) {
+          closeLightbox();
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>

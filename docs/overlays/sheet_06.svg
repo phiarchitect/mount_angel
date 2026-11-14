@@ -46,7 +46,7 @@
     <text x="1015.54" y="104.24" fill="#fecdd3" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">H-COL D (WP #8/#9)</text>
   </g>
   <g class="vec-layer" data-layer="walls">
-    <polyline points="114.53,593.99 262.33,338.28 303.74,291.58 564.47,134.16 628.44,120.77 937.08,112.97 1000.62,130.26 1309.01,211.47" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="6,4" stroke-linejoin="round"/>
+    <polyline points="128.81,584.36 262.33,338.28 303.74,291.58 564.47,134.16 628.44,120.77 937.08,112.97 1000.62,130.26 1303.85,230.51" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="6,4" stroke-linejoin="round"/>
     <polyline points="156.90,610.00 94.87,597.02 244.03,322.14 246.67,317.28 265.91,334.25 300.16,295.61 278.81,276.10 283.64,273.22 558.92,108.67 563.80,105.75 569.75,133.05 623.17,121.88 618.79,99.51 624.25,99.37 946.30,91.07 952.21,90.92 942.33,114.40 995.35,128.83 1004.39,108.54 1009.54,110.24 1349.59,222.66 1048.40,459.65" fill="none" stroke="#10b981" stroke-width="2.6" stroke-linejoin="round"/>
     <polyline points="484.35,682.94 531.79,543.25 654.27,463.84 795.92,477.74 916.84,557.29" fill="none" stroke="#22c55e" stroke-width="2.4" stroke-linejoin="round"/>
   </g>

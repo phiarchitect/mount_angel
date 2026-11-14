@@ -8,9 +8,11 @@ Constructs Aalto's iconic main reading room at Z = 0.00 m:
   - Continuous curved white plaster parapet + raised birch curb + cantilevered matte-black
     linoleum workbench (R = 44.1..46.6 ft) on white steel wall T-brackets, equipped with
     custom parapet-mounted angled-arm white mushroom reading lamps & backless Artek 60 stools
-  - 15 radiating double-faced slatted-birch bookstack ranges
+  - 15 radiating double-faced slatted-birch bookstack ranges with variable lengths & directory stanchions
   - 20 perimeter study carrel alcoves along North Curtain Wall Bays A-B, B-C, C-D, D-E
   - Periodical Lounge reading group facing the East Mt. Hood Picture Window
+  - 14-bay glazed partition wall dividing Reading Room from Director's Office 344 & Periodical Room 346
+  - West Squiggle Walls: 28°-canted wood-fin screen wall & serpentine Public Catalogue wall with card catalogs
 """
 
 from __future__ import annotations
@@ -23,28 +25,30 @@ from phiarchitect.mountangel.vectors import (
     get_carrel_alcoves_ft,
     get_h_pier_polygons_ft,
     get_north_perimeter_with_pockets_ft,
-    get_radial_bookstacks_ft,
     polar_pt,
 )
 
-from .lower_levels import _add_bookstack_range
+from .aalto_bookcases import add_aalto_bookcase_ft
 from .primitives import (
     MATERIALS,
     _clean_ring_2d,
     add_aalto_linear_parapet_lamp,
     add_aalto_parapet_lamp,
     add_arc_band_ft,
+    add_artek_chair_69,
     add_artek_stool_60,
     add_counter_wall_bracket,
     add_cylinder_ft,
     add_extruded_polygon_ft,
     add_extruded_polygon_with_holes_ft,
+    add_oriented_box_ft,
     add_quad,
     add_stepped_stair_ft,
     add_tubular_arc_railing_ft,
     add_wall_strip_ft,
     create_scene_group,
     m_ft,
+    offset_polyline_right_ft,
     xy_m,
 )
 
@@ -100,8 +104,7 @@ def _add_l3_stair_bookcase(
     the radial edge where the Mezzanine stairs descend from Level 3 (`0'-0"`) to the Mezzanine (`-4'-6"`)
     (`mezzaninewithdictionaryweb2`, `Angel-090508`, `Sheet 22-a22 Section B`, `Sheet 30-f2`):
       - Stairwell-facing side: smooth white-plaster parapet + sloped stair-cheek wall + continuous birch cap
-      - Level 3 top-floor side: 6-bay, 3-shelf counter-height birch bookcase (`+3'-1"` flat birch counter top
-        replacing an open guardrail!)
+      - Level 3 top-floor side: counter-height birch bookcase (`+3'-1"` flat birch counter top replacing open guardrail)
       - 4 custom parapet-mounted white angled-arm mushroom reading lamps illuminating the bookcase counter.
     """
     G = AaltoGeometry
@@ -114,14 +117,6 @@ def _add_l3_stair_bookcase(
 
     def rpt(r_ft: float, t_ft: float) -> tuple[float, float]:
         return (cx + r_ft * urx + t_ft * tx, cy + r_ft * ury + t_ft * ty)
-
-    birch_furn = {**MATERIALS["birch_wood"], "furniture": True}
-    book_mats = [
-        {**MATERIALS["book_slate"], "furniture": True},
-        {**MATERIALS["book_terracotta"], "furniture": True},
-        {**MATERIALS["book_ochre"], "furniture": True},
-        {**MATERIALS["book_sage"], "furniture": True},
-    ]
 
     r_in = G.R_GALLERY_RAIL          # 22.80 ft (meets curved Control Peninsula bronze guardrail)
     r_out = G.R_MEZZ_OPENING + 0.30  # 44.10 ft (meets outer curved Level 3 workbench parapet)
@@ -149,30 +144,29 @@ def _add_l3_stair_bookcase(
     cap_quad = _clean_ring_2d([rpt(r_in - 0.15, -0.15), rpt(r_out, -0.15), rpt(r_out, 0.36), rpt(r_in - 0.15, 0.36)], ccw=True)
     add_extruded_polygon_ft(mesh, cap_quad, z_l3 + 0.895, z_l3 + 0.99, MATERIALS["birch_wood"])
 
-    # 2. 6-Bay, 3-Shelf Counter-Height Birch Bookcase facing Level 3 (t = +0.33 .. +1.62 ft, height +0.94 m)
-    plinth_quad = _clean_ring_2d([rpt(r_in + 0.05, 0.33), rpt(r_out - 0.05, 0.33), rpt(r_out - 0.05, 1.52), rpt(r_in + 0.05, 1.52)], ccw=True)
-    add_extruded_polygon_ft(mesh, plinth_quad, z_l3 + 0.005, z_l3 + 0.09, birch_furn)
+    # 2. Counter-Height Birch Bookcase facing Level 3 using add_aalto_bookcase_ft
+    depth_ft = 1.20
+    length_ft = r_out - r_in - 0.20  # 21.10 ft
+    r_mid = 0.5 * (r_in + 0.10 + r_out - 0.10)
+    t_mid = 0.33 + 0.5 * depth_ft
+    c_bookcase = rpt(r_mid, t_mid)
+    ang_bc = (deg + 180.0) % 360.0 if room_sign < 0.0 else deg
 
-    counter_top = _clean_ring_2d([rpt(r_in - 0.05, 0.33), rpt(r_out, 0.33), rpt(r_out, 1.64), rpt(r_in - 0.05, 1.64)], ccw=True)
-    add_extruded_polygon_ft(mesh, counter_top, z_l3 + 0.885, z_l3 + 0.94, birch_furn)
-
-    shelf_quad = _clean_ring_2d([rpt(r_in + 0.17, 0.34), rpt(r_out - 0.17, 0.34), rpt(r_out - 0.17, 1.50), rpt(r_in + 0.17, 1.50)], ccw=True)
-    for z_sh in (0.35, 0.61):
-        add_extruded_polygon_ft(mesh, shelf_quad, z_l3 + z_sh, z_l3 + z_sh + 0.032, birch_furn)
-
-    n_bays = 6
-    bay_len = (r_out - 0.10 - (r_in + 0.05)) / n_bays
-    for b_i in range(n_bays + 1):
-        r_div = (r_in + 0.05) + b_i * bay_len
-        div_q = _clean_ring_2d([rpt(r_div, 0.33), rpt(r_div + 0.12, 0.33), rpt(r_div + 0.12, 1.54), rpt(r_div, 1.54)], ccw=True)
-        add_extruded_polygon_ft(mesh, div_q, z_l3 + 0.092, z_l3 + 0.883, birch_furn)
-
-    for b_i in range(n_bays):
-        ra = (r_in + 0.05) + b_i * bay_len + 0.16
-        rb = (r_in + 0.05) + (b_i + 1) * bay_len - 0.04
-        bk_q = _clean_ring_2d([rpt(ra, 0.38), rpt(rb, 0.38), rpt(rb, 1.38), rpt(ra, 1.38)], ccw=True)
-        for s_tier, (zb0, zb1) in enumerate(((0.095, 0.31), (0.385, 0.58), (0.645, 0.84))):
-            add_extruded_polygon_ft(mesh, bk_q, z_l3 + zb0, z_l3 + zb1, book_mats[(b_i + s_tier) % len(book_mats)])
+    add_aalto_bookcase_ft(
+        mesh,
+        center_ft=c_bookcase,
+        length_ft=length_ft,
+        depth_ft=depth_ft,
+        angle_deg=ang_bc,
+        z_floor_m=z_l3,
+        height_m=0.935,
+        double_sided=False,
+        n_shelf_tiers=3,
+        canopy_style="counter",
+        end_slats="none",
+        populate_books=True,
+        seed=int(deg * 10),
+    )
 
     # 3. 4 Parapet-Mounted Angled-Arm White Mushroom Lamps along the stairwell bookcase cap (`mezzaninewithdictionaryweb2`)
     for r_lamp in (25.4, 30.7, 36.0, 41.3):
@@ -181,53 +175,39 @@ def _add_l3_stair_bookcase(
 
 def _add_wall_mounted_bookcase_ft(
     mesh,
-    p0_ft: tuple[float, float],
-    p1_ft: tuple[float, float],
     z_floor_m: float,
-    height_m: float = 2.12,
+    height_m: float = 2.08,
 ):
-    """Single-faced 7'-0" birch wall bookcase (`Sheet 30-f2: 10\" x 3'-0\" LIBRARY STACK UNITS MOUNTED AT WALL`)."""
-    dx, dy = p1_ft[0] - p0_ft[0], p1_ft[1] - p0_ft[1]
-    L = math.hypot(dx, dy)
-    if L < 2.0:
-        return
-    ux, uy = dx / L, dy / L
-    # Left normal pointing into reading room when p0 -> p1 runs from PT_LOUNGE_JUNC toward PT_E
-    nx, ny = -uy, ux
-    birch_furn = {**MATERIALS["birch_wood"], "furniture": True}
-    book_mats = [
-        {**MATERIALS["book_terracotta"], "furniture": True},
-        {**MATERIALS["book_slate"], "furniture": True},
-        {**MATERIALS["book_ochre"], "furniture": True},
-        {**MATERIALS["book_sage"], "furniture": True},
-    ]
+    """Single-faced birch wall bookcase along East Flank wall (`Sheet 30-f2`)."""
+    G = AaltoGeometry
+    rad_e = math.radians(G.RAY_E_DEG)
+    uxe, uye = math.cos(rad_e), math.sin(rad_e)
+    nxe, nye = -uye, uxe
+    s_start = 1.50
+    s_end = 15.00
+    length_ft = s_end - s_start  # 13.50 ft
+    s_mid = 0.5 * (s_start + s_end)
+    depth_ft = 1.15
+    # Inset 1.18 ft from wall line so it clears the inner wall face cleanly
+    d_mid = 1.18
+    c_x = G.PT_LOUNGE_JUNC[0] + s_mid * uxe + d_mid * nxe
+    c_y = G.PT_LOUNGE_JUNC[1] + s_mid * uye + d_mid * nye
 
-    def wpt(s: float, d: float) -> tuple[float, float]:
-        return (p0_ft[0] + s * ux + d * nx, p0_ft[1] + s * uy + d * ny)
-
-    # Plinth, canopy top & 5 shelves
-    body_q = _clean_ring_2d([wpt(0.0, 0.02), wpt(L, 0.02), wpt(L, 1.02), wpt(0.0, 1.02)], ccw=True)
-    add_extruded_polygon_ft(mesh, body_q, z_floor_m + 0.005, z_floor_m + 0.10, birch_furn)
-    add_extruded_polygon_ft(mesh, body_q, z_floor_m + height_m - 0.05, z_floor_m + height_m, birch_furn)
-    for tier in range(4):
-        z_sh = z_floor_m + 0.12 + tier * 0.48
-        sh_q = _clean_ring_2d([wpt(0.12, 0.04), wpt(L - 0.12, 0.04), wpt(L - 0.12, 0.98), wpt(0.12, 0.98)], ccw=True)
-        add_extruded_polygon_ft(mesh, sh_q, z_sh, z_sh + 0.03, birch_furn)
-
-    n_units = max(2, int(L / 3.2))
-    u_len = L / n_units
-    for u_i in range(n_units + 1):
-        s_d = min(L - 0.12, u_i * u_len)
-        st_q = _clean_ring_2d([wpt(s_d, 0.02), wpt(s_d + 0.12, 0.02), wpt(s_d + 0.12, 1.02), wpt(s_d, 1.02)], ccw=True)
-        add_extruded_polygon_ft(mesh, st_q, z_floor_m + 0.102, z_floor_m + height_m - 0.052, birch_furn)
-
-    for u_i in range(n_units):
-        sa = u_i * u_len + 0.16
-        sb = (u_i + 1) * u_len - 0.06
-        bk_q = _clean_ring_2d([wpt(sa, 0.06), wpt(sb, 0.06), wpt(sb, 0.88), wpt(sa, 0.88)], ccw=True)
-        for tier in range(4):
-            z_sh = z_floor_m + 0.155 + tier * 0.48
-            add_extruded_polygon_ft(mesh, bk_q, z_sh, z_sh + 0.34, book_mats[(u_i + tier) % len(book_mats)])
+    add_aalto_bookcase_ft(
+        mesh,
+        center_ft=(c_x, c_y),
+        length_ft=length_ft,
+        depth_ft=depth_ft,
+        angle_deg=G.RAY_E_DEG,
+        z_floor_m=z_floor_m,
+        height_m=height_m,
+        double_sided=False,
+        n_shelf_tiers=5,
+        canopy_style="birch",
+        end_slats="start",
+        populate_books=True,
+        seed=42,
+    )
 
 
 def _add_l3_workbench_segment(
@@ -269,6 +249,35 @@ def _add_l3_workbench_segment(
         add_counter_wall_bracket(mesh, G.WP3A, r_room_face, lamp_degs[0], z_l3, seat_sign=1)
 
 
+def _catmull_rom_chain(ctrl_pts: list[tuple[float, float]], n_sub: int = 3) -> list[tuple[float, float]]:
+    """Generate smooth Catmull-Rom spline chain through control points."""
+    pts: list[tuple[float, float]] = []
+    m = len(ctrl_pts)
+    for i in range(m - 1):
+        p0 = ctrl_pts[max(0, i - 1)]
+        p1 = ctrl_pts[i]
+        p2 = ctrl_pts[i + 1]
+        p3 = ctrl_pts[min(m - 1, i + 2)]
+        for s in range(n_sub if i < m - 2 else n_sub + 1):
+            t = s / n_sub
+            t2 = t * t
+            t3 = t2 * t
+            x = 0.5 * (
+                (2.0 * p1[0])
+                + (-p0[0] + p2[0]) * t
+                + (2.0 * p0[0] - 5.0 * p1[0] + 4.0 * p2[0] - p3[0]) * t2
+                + (-p0[0] + 3.0 * p1[0] - 3.0 * p2[0] + p3[0]) * t3
+            )
+            y = 0.5 * (
+                (2.0 * p1[1])
+                + (-p0[1] + p2[1]) * t
+                + (2.0 * p0[1] - 5.0 * p1[1] + 4.0 * p2[1] - p3[1]) * t2
+                + (-p0[1] + 3.0 * p1[1] - 3.0 * p2[1] + p3[1]) * t3
+            )
+            pts.append((round(x, 3), round(y, 3)))
+    return pts
+
+
 def build_level3_reading_room(scene):
     grp = create_scene_group(scene, "4_Level_3_Reading_Room")
     mesh = grp.mesh
@@ -279,21 +288,24 @@ def build_level3_reading_room(scene):
     birch_furn = {**MATERIALS["birch_wood"], "furniture": True}
     lino_furn = {**MATERIALS["black_linoleum"], "furniture": True}
     slat_furn = {**MATERIALS["hemlock_slat"], "furniture": True}
+    brass_furn = {**MATERIALS["brass"], "furniture": True}
+    plaster_mat = MATERIALS["white_plaster"]
+    glass_mat = MATERIALS["glass_clear"]
+    col_mat = MATERIALS["white_column"]
 
-    # 1. Unified Watertight Level 3 Floorplate (`0'-0"`) pierced by the Annular-Sector Reading Well & Stairwells
-    #    (`R = 22.80..43.80 ft`, `41.8°..161.5°`; Sheets 05-a5 & 30-f2)
+    # 1. Unified Watertight Level 3 Floorplate (`0'-0"`) pierced by the Annular-Sector Reading Well
     deg_well_e, deg_well_w = 41.8, 161.5
+    ext_l3_chain = offset_polyline_right_ft(
+        [(-77.5, 1.5), G.PT_A_INNER_JUNC, *get_north_perimeter_with_pockets_ft(level=3), G.PT_LOUNGE_JUNC, (51.8, -8.8)],
+        0.52,
+    )
     l3_outer_poly = [
-        G.PT_A_INNER_JUNC,          # (-77.5, 12.8)
-        *get_north_perimeter_with_pockets_ft(level=3),
-        G.PT_LOUNGE_JUNC,           # (+51.8, 32.8)
-        (51.8, -8.8),               # Periodical Lounge SE corner
-        (19.0, -8.8),
-        (19.0, -4.5),               # East side of Lobby threshold steps
-        (-18.5, -4.5),              # West side of Lobby threshold steps
-        (-18.5, -8.8),
-        (-77.5, -8.8),
-        (-77.5, 1.5),
+        *ext_l3_chain[1:-1],
+        (51.28, -8.8),              # Periodical Lounge SE corner (inset inside East brick wall)
+        (18.0, -8.8),
+        (18.0, -21.0),              # Extended southward to Y = -21.0 across X = -76.98 .. +18.0
+        (-76.98, -21.0),
+        (-76.98, 1.5),
     ]
     well_hole_poly = [
         *arc_pts(G.WP3A, G.R_MEZZ_OPENING, deg_well_e, deg_well_w, 48),
@@ -313,20 +325,22 @@ def build_level3_reading_room(scene):
 
     # 2. Upper South Entrance Lobby & West Cataloging Floorplate (Z = +0.61 m / +2'-0")
     south_upper_poly = [
-        (-126.5, 1.5),
-        (-77.5, 1.5),
-        (-77.5, -8.8),
-        (-18.5, -8.8),
-        (-18.5, -4.5),
-        (19.0, -4.5),
-        (19.0, -8.8),
+        (-76.98, -21.0),
+        (18.0, -21.0),
+        (18.0, -8.8),
         (61.5, -8.8),
         (61.5, -59.5),
         (19.5, -59.5),
-        (16.5, -50.8),
-        (-91.5, -50.8),
+        (16.5, -50.2),
+        (0.0, -50.2),
+        (0.0, -57.5),               # South Vestibule 316 projecting pad
+        (-18.0, -57.5),
+        (-18.0, -50.2),
+        (-91.5, -50.2),
         (-91.5, -28.0),
         (-126.5, -28.0),
+        (-126.5, 1.5),
+        (-76.98, 1.5),
     ]
     add_extruded_polygon_ft(
         mesh,
@@ -337,8 +351,41 @@ def build_level3_reading_room(scene):
         MATERIALS["concrete"],
     )
 
-    # 3 Wide Entrance Threshold Steps descending from Lobby (+0.61 m) to Control Area (0.00 m)
-    add_stepped_stair_ft(mesh, (0.0, -4.5), (0.0, -0.5), width_ft=24.0, z_top_m=z_lobby, z_bot_m=z_l3, n_steps=4)
+    # 0.50 ft Concrete riser apron spanning 0.00 .. +0.29 m to prevent any vertical floor gap
+    add_wall_strip_ft(
+        mesh,
+        [(-76.98, -21.0), (18.0, -21.0), (18.0, -8.8)],
+        0.50,
+        z_l3,
+        z_lobby - 0.32,
+        MATERIALS["concrete"],
+    )
+
+    # Wide Lobby -> Entry Area threshold steps (Y = -21.0 .. -17.2, width = 32.0 ft, 4 steps)
+    add_stepped_stair_ft(
+        mesh,
+        (-0.25, -21.0),
+        (-0.25, -17.2),
+        width_ft=32.0,
+        z_top_m=z_lobby,
+        z_bot_m=z_l3,
+        n_steps=4,
+        tread_attrs=birch_furn,
+    )
+
+    # Aalto curved central brass threshold arc band at Y ≈ -18.0
+    add_arc_band_ft(
+        mesh,
+        (-0.25, -28.0),
+        9.8,
+        10.2,
+        70.0,
+        110.0,
+        z_l3,
+        z_l3 + 0.015,
+        brass_furn,
+        steps=16,
+    )
 
     # 3. Iconic Level 3 Curved Parapet, Matte-Black Linoleum Workbench, Mushroom Lamps & Artek 60 Stools
     #    Sweeping continuously (`47.9°..155.4°`) between the East & West Mezzanine stair entries (`41.8°..47.9°` & `155.4°..161.5°`)
@@ -387,25 +434,44 @@ def build_level3_reading_room(scene):
         steps=32,
     )
 
-    # 7. 15 Radiating Double-Faced Birch Bookstack Ranges on Level 3 + SE Wall-Mounted Birch Stack Units (`Sheet 30-f2`)
-    for idx, stk in enumerate(get_radial_bookstacks_ft(51.2, 69.0)):
-        _add_bookstack_range(mesh, stk, z_l3, height_m=2.12, idx=idx, top_mat_key="birch_wood")
+    # 7. 15 Radiating Double-Faced Birch Bookstack Ranges on Level 3 with Variable Lengths (`Sheet 29-f1`)
+    r_start = 51.2
+    r_ends = [67.8, 69.4, 71.0, 68.2, 70.4, 71.2, 69.8, 68.0, 68.5, 70.8, 71.2, 69.2, 67.5, 69.8, 70.5]
+    stack_angles = [
+        156.0, 149.5, 143.0,
+        130.5, 124.2, 118.0, 111.8, 105.5,
+        92.5, 86.2, 80.0, 73.8,
+        57.5, 51.2, 45.0,
+    ]
+    for idx, (deg, r_end) in enumerate(zip(stack_angles, r_ends)):
+        rad = math.radians(deg)
+        ux, uy = math.cos(rad), math.sin(rad)
+        l_stack = r_end - r_start
+        r_mid = 0.5 * (r_start + r_end)
+        c_stk = (G.WP3A[0] + r_mid * ux, G.WP3A[1] + r_mid * uy)
+        add_aalto_bookcase_ft(
+            mesh,
+            center_ft=c_stk,
+            length_ft=l_stack,
+            depth_ft=2.70,
+            angle_deg=deg,
+            z_floor_m=z_l3,
+            height_m=2.08,
+            double_sided=True,
+            n_shelf_tiers=5,
+            canopy_style="birch",
+            end_slats="start",
+            populate_books=True,
+            seed=idx,
+        )
 
-    rad_e = math.radians(G.RAY_E_DEG)
-    uxe, uye = math.cos(rad_e), math.sin(rad_e)
-    nxe, nye = -uye, uxe
-    _add_wall_mounted_bookcase_ft(
-        mesh,
-        (G.PT_LOUNGE_JUNC[0] + 1.5 * uxe + 0.98 * nxe, G.PT_LOUNGE_JUNC[1] + 1.5 * uye + 0.98 * nye),
-        (G.PT_LOUNGE_JUNC[0] + 15.2 * uxe + 0.98 * nxe, G.PT_LOUNGE_JUNC[1] + 15.2 * uye + 0.98 * nye),
-        z_l3,
-        height_m=2.12,
-    )
+    # East Flank Wall-Mounted Birch Stack Units (`Sheet 30-f2`)
+    _add_wall_mounted_bookcase_ft(mesh, z_l3, height_m=2.08)
 
     # 8. Level 3 Perimeter Study Carrel Partitions & Built-in Birch Desks (tucked cleanly under the +7'-2" clerestory sill!)
     for c_box in get_carrel_alcoves_ft():
-        add_wall_strip_ft(mesh, [c_box[0], c_box[3]], 0.35, z_l3 + 0.01, z_l3 + 2.10, MATERIALS["white_plaster"])
-        add_wall_strip_ft(mesh, [c_box[1], c_box[2]], 0.35, z_l3 + 0.01, z_l3 + 2.10, MATERIALS["white_plaster"])
+        add_wall_strip_ft(mesh, [c_box[0], c_box[3]], 0.35, z_l3 + 0.01, z_l3 + 2.10, plaster_mat)
+        add_wall_strip_ft(mesh, [c_box[1], c_box[2]], 0.35, z_l3 + 0.01, z_l3 + 2.10, plaster_mat)
         desk_quad = [
             c_box[0],
             c_box[1],
@@ -433,5 +499,140 @@ def build_level3_reading_room(scene):
             sy = py_ft + 3.4 * math.sin(math.radians(c_ang))
             add_artek_stool_60(mesh, (sx, sy), z_l3, rot_deg=float(c_ang))
 
-    return grp
+    # 10. 14-Bay Repeating Birch-Framed Glazed Partition Wall (PT_EAST_THROAT -> PT_LOUNGE_JUNC)
+    p_gl0 = (15.50, 3.60)
+    p_gl1 = (51.80, 32.80)
+    dx_gl = p_gl1[0] - p_gl0[0]
+    dy_gl = p_gl1[1] - p_gl0[1]
+    l_gl = math.hypot(dx_gl, dy_gl)
+    ux_gl, uy_gl = dx_gl / l_gl, dy_gl / l_gl
+    ang_gl = math.degrees(math.atan2(dy_gl, dx_gl))
 
+    # Continuous head rail & upper plaster spandrel bulkhead
+    c_mid_gl = (p_gl0[0] + 0.5 * dx_gl, p_gl0[1] + 0.5 * dy_gl)
+    add_oriented_box_ft(mesh, c_mid_gl, l_gl, 0.38, ang_gl, 2.60, 2.74, birch_furn)
+    add_oriented_box_ft(mesh, c_mid_gl, l_gl, 0.42, ang_gl, 2.74, 3.29, plaster_mat)
+
+    n_bays_gl = 14
+    w_bay_gl = l_gl / n_bays_gl
+    t_mul = 0.16
+    d_mul = 0.38
+
+    # 15 Vertical Birch Mullions
+    for k in range(n_bays_gl + 1):
+        s_k = max(t_mul * 0.5, min(l_gl - t_mul * 0.5, k * w_bay_gl))
+        pt_k = (p_gl0[0] + s_k * ux_gl, p_gl0[1] + s_k * uy_gl)
+        z_bot = 0.00 if k in (1, 2, 5, 6) else 0.86
+        add_oriented_box_ft(mesh, pt_k, t_mul, d_mul, ang_gl, z_bot, 2.60, birch_furn)
+
+    # 14 Bays
+    for i in range(n_bays_gl):
+        s_a = i * w_bay_gl + t_mul * 0.5
+        s_b = (i + 1) * w_bay_gl - t_mul * 0.5
+        w_open = s_b - s_a
+        s_c = (s_a + s_b) * 0.5
+        pt_c = (p_gl0[0] + s_c * ux_gl, p_gl0[1] + s_c * uy_gl)
+
+        if i in (1, 5):
+            # Type C Glazed Birch Door
+            w_stile = 0.38
+            pt_s0 = (p_gl0[0] + (s_a + w_stile * 0.5) * ux_gl, p_gl0[1] + (s_a + w_stile * 0.5) * uy_gl)
+            pt_s1 = (p_gl0[0] + (s_b - w_stile * 0.5) * ux_gl, p_gl0[1] + (s_b - w_stile * 0.5) * uy_gl)
+            add_oriented_box_ft(mesh, pt_s0, w_stile, 0.14, ang_gl, 0.00, 2.13, birch_furn)
+            add_oriented_box_ft(mesh, pt_s1, w_stile, 0.14, ang_gl, 0.00, 2.13, birch_furn)
+            w_mid = w_open - 2.0 * w_stile
+            add_oriented_box_ft(mesh, pt_c, w_mid, 0.14, ang_gl, 0.00, 0.30, birch_furn)
+            add_oriented_box_ft(mesh, pt_c, w_mid, 0.14, ang_gl, 1.98, 2.13, birch_furn)
+            add_oriented_box_ft(mesh, pt_c, w_mid, 0.06, ang_gl, 0.30, 1.98, glass_mat)
+            add_oriented_box_ft(mesh, pt_c, w_open, 0.22, ang_gl, 2.13, 2.20, birch_furn)
+            add_oriented_box_ft(mesh, pt_c, w_open, 0.06, ang_gl, 2.20, 2.60, glass_mat)
+        else:
+            # 12 Window bays
+            add_oriented_box_ft(mesh, pt_c, w_open, 0.38, ang_gl, 0.00, 0.10, lino_furn)
+            add_oriented_box_ft(mesh, pt_c, w_open, 0.38, ang_gl, 0.10, 0.81, plaster_mat)
+            add_oriented_box_ft(mesh, pt_c, w_open, 0.44, ang_gl, 0.81, 0.86, lino_furn)
+            add_oriented_box_ft(mesh, pt_c, w_open, 0.08, ang_gl, 0.86, 2.60, glass_mat)
+
+    # Interior walls of Director's Office 344 and Periodical Room 346
+    add_wall_strip_ft(mesh, [(25.87, 11.94), (39.34, -4.80)], 0.42, 0.00, 3.29, plaster_mat)
+    add_wall_strip_ft(
+        mesh,
+        [(15.50, 3.60), (16.1, 1.4), (16.9, -0.8), (17.9, -2.8), (19.00, -4.80)],
+        0.45,
+        0.00,
+        3.29,
+        plaster_mat,
+    )
+    add_wall_strip_ft(mesh, [(19.00, -4.80), (42.5, -4.80)], 0.45, 0.00, 3.29, plaster_mat)
+    add_wall_strip_ft(mesh, [(46.0, -4.80), (51.20, -4.80)], 0.45, 0.00, 3.29, plaster_mat)
+    add_wall_strip_ft(mesh, [(42.5, -4.80), (46.0, -4.80)], 0.45, 2.15, 3.29, plaster_mat)
+
+    # Executive desk & Artek 69 chairs inside Director's Office 344
+    desk_center = (23.2, 1.2)
+    add_oriented_box_ft(mesh, desk_center, 5.5, 3.0, ang_gl, 0.72, 0.76, birch_furn)
+    add_oriented_box_ft(mesh, desk_center, 5.1, 2.6, ang_gl, 0.76, 0.765, lino_furn)
+    for d_s in (-2.0, 2.0):
+        ped_pt = (desk_center[0] + d_s * ux_gl, desk_center[1] + d_s * uy_gl)
+        add_oriented_box_ft(mesh, ped_pt, 1.2, 2.6, ang_gl, 0.00, 0.72, birch_furn)
+    add_artek_chair_69(mesh, (desk_center[0] - 2.8 * (-uy_gl), desk_center[1] - 2.8 * ux_gl), ang_gl + 90.0, 0.00)
+    add_artek_chair_69(mesh, (desk_center[0] + 2.8 * (-uy_gl), desk_center[1] + 2.8 * ux_gl), ang_gl - 90.0, 0.00)
+
+    # 11. West Squiggle Walls: 28-deg Canted Wood-Fin Screen Wall
+    p_sc0 = (-17.2, -17.5)
+    p_sc1 = (-18.5, 0.2)
+    dx_sc = p_sc1[0] - p_sc0[0]
+    dy_sc = p_sc1[1] - p_sc0[1]
+    l_sc = math.hypot(dx_sc, dy_sc)
+    ux_sc, uy_sc = dx_sc / l_sc, dy_sc / l_sc
+    wall_ang_sc = math.degrees(math.atan2(dy_sc, dx_sc))
+    c_sc = (0.5 * (p_sc0[0] + p_sc1[0]), 0.5 * (p_sc0[1] + p_sc1[1]))
+
+    add_oriented_box_ft(mesh, c_sc, l_sc, 0.22, wall_ang_sc, 0.00, 2.88, MATERIALS["railing_bronze"])
+    add_oriented_box_ft(mesh, c_sc, l_sc, 0.35, wall_ang_sc, 2.88, 3.29, plaster_mat)
+
+    n_fins = 18
+    fin_step = l_sc / n_fins
+    for j in range(n_fins):
+        s_j = (j + 0.5) * fin_step
+        pt_j = (p_sc0[0] + s_j * ux_sc, p_sc0[1] + s_j * uy_sc)
+        add_oriented_box_ft(mesh, pt_j, 0.75, 0.12, wall_ang_sc + 28.0, 0.05, 2.88, slat_furn)
+
+    # 12. Serpentine S-Curved Public Catalogue Plaster Wall
+    ctrl_pts = [
+        (-43.0, -20.6),
+        (-43.0, -11.0),
+        (-41.2, -5.2),
+        (-38.2, -1.2),
+        (-36.5, -0.5),
+        (-33.0, 1.0),
+        (-30.3, 1.6),
+    ]
+    spline_pts = _catmull_rom_chain(ctrl_pts, n_sub=3)
+    add_wall_strip_ft(mesh, spline_pts, 0.42, 0.00, 3.28, plaster_mat)
+
+    # White steel pipe column at (-36.5, -0.5)
+    add_cylinder_ft(mesh, (-36.5, -0.5), 0.18, 0.00, 3.29, col_mat, sides=14)
+
+    # Card-Catalog Cabinets on Tapered Legs inside PUBLIC CATALOGUE 320
+    catalog_islands = [
+        (-33.5, -8.0, 0.0),
+        (-26.0, -8.0, 0.0),
+        (-30.0, -14.5, 0.0),
+    ]
+    for cx_c, cy_c, rot_c in catalog_islands:
+        c_pt = (cx_c, cy_c)
+        for dx_leg in (-2.4, 2.4):
+            for dy_leg in (-0.85, 0.85):
+                add_cylinder_ft(mesh, (cx_c + dx_leg, cy_c + dy_leg), 0.10, 0.00, 0.42, birch_furn, sides=8)
+        add_oriented_box_ft(mesh, c_pt, 5.2, 1.9, rot_c, 0.35, 0.42, birch_furn)
+        add_oriented_box_ft(mesh, c_pt, 5.8, 2.3, rot_c, 0.42, 1.22, birch_furn)
+        add_oriented_box_ft(mesh, c_pt, 6.0, 2.45, rot_c, 1.22, 1.25, birch_furn)
+
+    # 13. Hook for south_wing_interiors.py
+    try:
+        from .south_wing_interiors import populate_south_wing_interiors
+        populate_south_wing_interiors(mesh)
+    except (ImportError, ModuleNotFoundError):
+        pass
+
+    return grp

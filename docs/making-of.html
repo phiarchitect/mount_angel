@@ -1048,6 +1048,7 @@
 
     <div class="suite-btns">
       <a href="index.html" class="nav-btn">&larr; Blueprint Archive (63)</a>
+      <a href="photo-compare.html" class="nav-btn">&#9680; Photo vs. Model Lab</a>
       <a href="library-3d.html" class="nav-btn primary">&#9670; Launch Interactive 3D</a>
     </div>
   </nav>
@@ -1110,7 +1111,7 @@
         <div class="metric-label">Parametric IngeTrazo 0.6.0 Scene</div>
       </div>
       <div class="metric">
-        <div class="metric-val">52,813 <span>faces</span></div>
+        <div class="metric-val">134,459 <span>faces</span></div>
         <div class="metric-label">100% Watertight 2-Manifold Solids</div>
       </div>
       <div class="metric">
@@ -1153,7 +1154,7 @@
       <div class="pipe-step">
         <div class="pipe-idx">STEP 04 &middot; 2-MANIFOLD 3D</div>
         <div class="pipe-title">IngeTrazo 0.6.0 Builder</div>
-        <div class="pipe-desc">7 modular Python builders extrude closed solids with Eberly hole-bridging ear-clipping (<code>.igz</code>, <code>.obj</code>, and live MCP TCP push).</div>
+        <div class="pipe-desc">9 modular Python builders (now including <code>aalto_bookcases.py</code> and <code>south_wing_interiors.py</code>) extrude closed solids with Eberly hole-bridging ear-clipping (<code>.igz</code>, <code>.obj</code>, and live MCP TCP push).</div>
       </div>
       <div class="pipe-step">
         <div class="pipe-idx">STEP 05 &middot; WEBGL2 LAB</div>
@@ -1169,9 +1170,9 @@
           <div class="pill-group" id="curtainModePills">
             <button class="ui-pill active" type="button"
               data-before="model/mount_angel.png"
-              data-after="renders/studio_03_roof_cutaway_axon.png"
+              data-after="renders/studio_17_blockout_match_axon.png"
               data-blabel="BEFORE · Early Grey Blockout"
-              data-alabel="AFTER · 52,813-Face Constructive Cutaway">
+              data-alabel="AFTER · 134,459-Face Constructive 3D Model">
               1. Blockout &rarr; Constructive 3D
             </button>
             <button class="ui-pill" type="button"
@@ -1192,14 +1193,14 @@
         </div>
 
         <div class="curtain-stage" id="curtainStage">
-          <img id="curtainAfterImg" src="renders/studio_03_roof_cutaway_axon.png" alt="After comparison" />
+          <img id="curtainAfterImg" src="renders/studio_17_blockout_match_axon.png" alt="After comparison" />
           <div class="curtain-before-wrap" id="curtainBeforeWrap">
             <img id="curtainBeforeImg" src="model/mount_angel.png" alt="Before comparison" />
           </div>
           <div class="curtain-divider" id="curtainDivider"></div>
           <div class="curtain-knob" id="curtainKnob">&harr;</div>
           <span class="curtain-badge left" id="curtainBeforeBadge">BEFORE &middot; Early Grey Blockout</span>
-          <span class="curtain-badge right" id="curtainAfterBadge">AFTER &middot; 52,813-Face Constructive Cutaway</span>
+          <span class="curtain-badge right" id="curtainAfterBadge">AFTER &middot; 134,459-Face Constructive 3D Model</span>
         </div>
       </div>
 
@@ -1611,7 +1612,9 @@ sampler2DShadow + 16-tap Interleaved Gradient Noise Poisson Disk
       <div class="panel-toolbar">
         <span class="toolbar-title">&#9670; INTERACTIVE WEBGL2 SANDBOX STAGE</span>
         <div class="pill-group">
+          <button class="ui-pill" type="button" onclick="mountLiveViewer('campus_aerial')">Load Abbey Campus Aerial</button>
           <button class="ui-pill" type="button" onclick="mountLiveViewer('alcove_mthood')">Load Entry &rarr; Mt. Hood Window</button>
+          <button class="ui-pill" type="button" onclick="mountLiveViewer('control_glass_wall')">Load Slatted Ceiling &amp; Glass Wall</button>
           <button class="ui-pill" type="button" onclick="mountLiveViewer('sun_summer_noon')">Load Noon Skylight Section</button>
           <button class="ui-pill" type="button" onclick="mountLiveViewer('sun_winter_heliodon')">Load 3D Heliodon Dome</button>
           <a href="library-3d.html" class="ui-pill" style="text-decoration:none; color:#fef3c7; border-color:var(--gold);">Full-Screen Viewer &#8599;</a>
@@ -1637,6 +1640,7 @@ sampler2DShadow + 16-tap Interleaved Gradient Noise Poisson Disk
     </div>
     <div style="display:flex; gap:18px;">
       <a href="index.html">Blueprint &amp; Vector Archive</a>
+      <a href="photo-compare.html">Photo vs. Model Lab</a>
       <a href="library-3d.html">Interactive 3D &amp; Section Viewer</a>
       <a href="#top">Back to Top &uarr;</a>
     </div>
@@ -1926,73 +1930,73 @@ sampler2DShadow + 16-tap Interleaved Gradient Noise Poisson Disk
       },
       {
         name: "1_Abbey_Hillside_Site",
-        tris: "2,312 struct tris",
+        tris: "4,668 struct tris",
         module: "site_terrain.py",
-        cam: "sun_winter_heliodon",
-        img: "renders/studio_15_sun_winter_heliodon.png",
-        title: "Layer 1 · Watertight Abbey Bluff Terrain Maquette",
-        desc: "Closed architectural earth plinth (-18.5 m base) dropping from the +1'-8\" South Entry Plaza down the steep wooded North slope, enabling 45° diagonal earth hatching in Section A-A.",
-        code: "build_site_terrain(scene)      # 2,312 tris · unpaired_edges = 0"
+        cam: "campus_aerial",
+        img: "renders/studio_18_campus_aerial.png",
+        title: "Layer 1 · Mount Angel Abbey Hilltop Campus & Bluff Maquette",
+        desc: "760×570 ft watertight Abbey bluff plinth (-20.0 m base) with curving Abbey Drive, Quad walkways, Aquinas Hall, NW downhill annex, Seminary academic halls, symmetrical 3-story N–S Monastery range, Romanesque arcaded West narthex, and the Abbey Church with its 126-ft South-side Bell Tower (Sheets 1 & 2).",
+        code: "build_site_terrain(scene)      # 4,668 tris · unpaired_edges = 0"
       },
       {
         name: "2_Level_1_Base",
-        tris: "148 struct + 2,340 millwork",
+        tris: "148 struct + 43,740 millwork",
         module: "lower_levels.py",
         cam: "section_aa",
         img: "renders/studio_08_section_aa_ortho.png",
         title: "Layer 2 · Level 1 Base Stack Deck (-26'-6\" / -8.08 m)",
-        desc: "Stepped-back exposed-concrete lower stack floorplate, pentagonal core retaining wall against the hillside, and radial compact bookstacks with slate-grey laminate tops.",
-        code: "Z_L1 = -8.08 m · struct_tris = 148 · furn_tris = 2,340 · unpaired = 0"
+        desc: "Stepped-back exposed-concrete lower stack floorplate, pentagonal core retaining wall, and variable-length parameterized Aalto bookcases (aalto_bookcases.py) with recessed linoleum plinths, birch bay dividers, slate-grey laminate tops, and multi-volume book clusters.",
+        code: "Z_L1 = -8.08 m · struct_tris = 148 · furn_tris = 43,740 · unpaired = 0"
       },
       {
         name: "3_Level_2_Middle",
-        tris: "3,928 struct + 22,432 millwork",
+        tris: "3,904 struct + 57,556 millwork",
         module: "lower_levels.py",
         cam: "sunken_well",
         img: "renders/studio_05_sunken_well_scoop.png",
         title: "Layer 3 · Level 2 (-12'-6\") & Mezzanine Workstations (-4'-6\")",
-        desc: "Enclosed R = 31'-10\" core & two concentric rings of grey-topped radial stacks on Level 2; slate-blue wool Mezzanine carpet, curved & radial Reference Bookwalls, outer-arc workbench, 11 mushroom lamps, 11 Artek 69 chairs, and wall-bracketed U-turn switchback stairs.",
-        code: "Z_MEZZ = -1.37 m · struct_tris = 3,928 · furn_tris = 22,432 · unpaired = 0"
+        desc: "Enclosed R = 31'-10\" core & two concentric rings of variable-length Aalto stacks on Level 2; slate-blue Mezzanine carpet, faceted curved & radial Aalto Reference Bookwalls, outer-arc workbench, 11 mushroom lamps, 11 Artek 69 chairs, and U-turn + SE flank stairs.",
+        code: "Z_MEZZ = -1.37 m · struct_tris = 3,904 · furn_tris = 57,556 · unpaired = 0"
       },
       {
         name: "4_Level_3_Reading_Room",
-        tris: "2,224 struct + 31,744 millwork",
+        tris: "3,752 struct + 66,740 millwork",
         module: "level3_reading_room.py",
-        cam: "mezzanine_pov",
-        img: "renders/studio_04_mezzanine_counter_pov.png",
-        title: "Layer 4 · Level 3 Reading Room, Workbench & Stairwell Bookcases",
-        desc: "Unified 0'-0\" fan slab pierced by the annular Reading Well, counter-height 3-shelf birch bookcases + 8 radial lamps replacing railings along both Mezzanine stairs, curved linoleum workbench + 16 lamps + 16 Artek 60 stools, 15 radial birch stacks, and 20 carrel alcoves.",
-        code: "_add_l3_stair_bookcase() · struct_tris = 2,224 · furn_tris = 31,744 · unpaired = 0"
+        cam: "control_glass_wall",
+        img: "renders/studio_19_control_glass_wall.png",
+        title: "Layer 4 · Reading Room, Glazed Offices, Wood Screen, Squiggle Walls & Auditorium",
+        desc: "15 variable-length slatted-end birch radial bookcases, stairwell counter bookcases, 14-bay birch-framed glass wall for the Director's Office & Media Room, West serpentine & 28°-canted wood-fin squiggle walls, Lobby 32-batten bathroom privacy screen, and Auditorium with curved AV booth, SE stage & undulating acoustic ceiling.",
+        code: "build_level3_reading_room() · struct_tris = 3,752 · furn_tris = 66,740 · unpaired = 0"
       },
       {
         name: "5_Structural_Frame",
-        tris: "2,272 struct tris",
+        tris: "2,340 struct tris",
         module: "envelope_and_south_wing.py",
         cam: "h_columns_north",
         img: "renders/studio_07_north_h_columns.png",
         title: "Layer 5 · Twin 18\"Ø Columns & Irregular Perimeter H-Columns",
         desc: "Well 18\"Ø columns, 6 paired twin columns (5'-4\" c/c on Rays B, C, D), 3 irregular rotated H-columns (with genus-1 eye-level square Mt. Hood window punched through HPier_D), Level 1 concrete U-channels, and corner-offset copper scuppers.",
-        code: "_add_hpier_solid_ft(hp_idx=2)  # 2,272 tris · unpaired_edges = 0"
+        code: "_add_hpier_solid_ft(hp_idx=2)  # 2,340 tris · unpaired_edges = 0"
       },
       {
         name: "6_Envelope_And_South_Wing",
-        tris: "4,668 struct tris + glass",
+        tris: "5,620 struct tris + glass",
         module: "envelope_and_south_wing.py",
         cam: "alcove_mthood",
         img: "renders/studio_16_entry_mthood_alcove.png",
         title: "Layer 6 · +7'-2\" Clerestory Curtain Wall, Mt. Hood Window & South Wing",
-        desc: "Cavity-separated exterior buff-brick + interior white-plaster North bays rising to the +7'-2\" (+2.18 m) Level 3 clerestory sill, full-height hemlock sun louvers, HPier_D bronze frame & glazing, East Periodical Lounge picture window, and 1-story South Wing + Entry Canopy.",
-        code: "_add_faceted_curtain_bay()     # 4,668 struct tris · unpaired_edges = 0"
+        desc: "Cavity-separated buff-brick + white-plaster North bays (+7'-2\" clerestory sill), acute mitered prows (PT_A 73.3° & PT_E 56.5°), hemlock sun louvers, HPier_D Mt. Hood window, taller SE Auditorium brick mass (+20'-2\" parapet), and glazed South Vestibule + flanking open white pergola trellises.",
+        code: "_add_faceted_curtain_bay()     # 5,620 struct tris · unpaired_edges = 0"
       },
       {
         name: "7_Roof_And_Daylight_Scoop",
-        tris: "9,576 struct tris + glass",
+        tris: "15,000 struct tris + glass",
         module: "roof_and_skylights.py",
         cam: "sun_summer_noon",
         img: "renders/studio_12_sun_summer_noon_section.png",
         title: "Layer 7 · Curved North Daylight Scoop & 12 Perforated Conical Skylights",
-        desc: "Radial fan roof with sheet-copper parapet fascia, sweeping crescent North Daylight Scoop with radial structural ribs, perforated slatted-birch Control Desk drum, and 12 open conical skylight shafts punching true sunlight into the Lobby & Rare Book Vault.",
-        code: "add_extruded_polygon_with_holes_ft()  # 9,576 struct tris · unpaired = 0"
+        desc: "Three-tier roof hierarchy: lower +12'-8\" terracotta Lobby roof, upward radial step walls to the +15'-3\"..+16'-3\" Main Fan roof (with 3'-11\" deep 24WF68 plenum, splayed skylight coffer & upward perimeter soffit), taller +18'-8\" dark-membrane Auditorium roof, North Daylight Scoop, 1\"×1\" radial wood-slatted ceiling sector, and 12 conical skylights.",
+        code: "build_roof_and_skylights()     # 15,000 struct tris · unpaired = 0"
       }
     ];
 

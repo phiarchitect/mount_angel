@@ -27,6 +27,7 @@ from phiarchitect.mountangel.vectors import (
     polar_pt,
 )
 
+from .aalto_bookcases import add_aalto_bookcase_ft, add_aalto_curved_bookwall_ft
 from .primitives import (
     MATERIALS,
     add_aalto_parapet_lamp,
@@ -34,11 +35,11 @@ from .primitives import (
     add_artek_chair_69,
     add_counter_wall_bracket,
     add_extruded_polygon_ft,
-    add_oriented_box_ft,
     add_stepped_stair_ft,
     add_wall_strip_ft,
     create_scene_group,
     m_ft,
+    offset_polyline_right_ft,
 )
 
 
@@ -58,54 +59,33 @@ def _add_bookstack_range(
     Build an Aalto slatted-birch double-faced bookstack range with vertical birch end panels,
     canopy top (`stack_canopy_grey` on Level 2 per `IMG_5143`, `birch_wood` on Level 3), and recessed book tiers.
     """
-    p0, p1, p2, p3 = quad_ft  # p0->p1 and p3->p2 are long radial edges; p0-p3 (inner) and p1-p2 (outer) are ends
-    birch_side = {**MATERIALS["hemlock_slat"], "furniture": True}
-    birch_end = {**MATERIALS["birch_wood"], "furniture": True}
-    canopy_top = {**MATERIALS[top_mat_key], "furniture": True}
+    p0, p1, p2, p3 = quad_ft
+    p_in = ((p0[0] + p3[0]) * 0.5, (p0[1] + p3[1]) * 0.5)
+    p_out = ((p1[0] + p2[0]) * 0.5, (p1[1] + p2[1]) * 0.5)
+    vx = p_out[0] - p_in[0]
+    vy = p_out[1] - p_in[1]
+    length_ft = math.hypot(vx, vy)
+    angle_deg = math.degrees(math.atan2(vy, vx))
+    center_ft = ((p_in[0] + p_out[0]) * 0.5, (p_in[1] + p_out[1]) * 0.5)
+    depth_ft = math.hypot(p3[0] - p0[0], p3[1] - p0[1])
+    canopy_style = "slate_grey" if "grey" in top_mat_key else "birch"
+    end_slats = "inner" if canopy_style == "birch" else "none"
 
-    # 1. Full-height slatted birch inner & outer end panels (t = 0.00..0.04 and 0.96..1.00 along length)
-    end_in = [p0, _lerp2(p0, p1, 0.035), _lerp2(p3, p2, 0.035), p3]
-    end_out = [_lerp2(p0, p1, 0.965), p1, p2, _lerp2(p3, p2, 0.965)]
-    add_extruded_polygon_ft(mesh, end_in, z_floor_m, z_floor_m + height_m, birch_end, birch_side)
-    add_extruded_polygon_ft(mesh, end_out, z_floor_m, z_floor_m + height_m, birch_end, birch_side)
-
-    # 2. Central structural spine & base plinth
-    spine = [
-        _lerp2(_lerp2(p0, p3, 0.42), _lerp2(p1, p2, 0.42), 0.035),
-        _lerp2(_lerp2(p0, p3, 0.42), _lerp2(p1, p2, 0.42), 0.965),
-        _lerp2(_lerp2(p0, p3, 0.58), _lerp2(p1, p2, 0.58), 0.965),
-        _lerp2(_lerp2(p0, p3, 0.58), _lerp2(p1, p2, 0.58), 0.035),
-    ]
-    add_extruded_polygon_ft(mesh, spine, z_floor_m + 0.10, z_floor_m + height_m - 0.05, birch_side)
-    add_extruded_polygon_ft(mesh, quad_ft, z_floor_m, z_floor_m + 0.10, birch_end)
-
-    # 3. Full-width top canopy (`stack_canopy_grey` on Level 2, `birch_wood` on Level 3/1)
-    add_extruded_polygon_ft(mesh, quad_ft, z_floor_m + height_m - 0.05, z_floor_m + height_m, canopy_top, canopy_top)
-
-    # 4. Recessed shelves + 4 tiers of colorful muted volumes visible along both sides
-    shelf_quad = [
-        _lerp2(_lerp2(p0, p3, 0.06), _lerp2(p1, p2, 0.06), 0.035),
-        _lerp2(_lerp2(p0, p3, 0.06), _lerp2(p1, p2, 0.06), 0.965),
-        _lerp2(_lerp2(p0, p3, 0.94), _lerp2(p1, p2, 0.94), 0.965),
-        _lerp2(_lerp2(p0, p3, 0.94), _lerp2(p1, p2, 0.94), 0.035),
-    ]
-    book_quad = [
-        _lerp2(_lerp2(p0, p3, 0.11), _lerp2(p1, p2, 0.11), 0.05),
-        _lerp2(_lerp2(p0, p3, 0.11), _lerp2(p1, p2, 0.11), 0.95),
-        _lerp2(_lerp2(p0, p3, 0.89), _lerp2(p1, p2, 0.89), 0.95),
-        _lerp2(_lerp2(p0, p3, 0.89), _lerp2(p1, p2, 0.89), 0.05),
-    ]
-    book_mats = [
-        MATERIALS["book_terracotta"],
-        MATERIALS["book_slate"],
-        MATERIALS["book_ochre"],
-        MATERIALS["book_sage"],
-    ]
-    for tier in range(4):
-        z_sh = z_floor_m + 0.12 + tier * 0.48
-        add_extruded_polygon_ft(mesh, shelf_quad, z_sh, z_sh + 0.03, birch_end)
-        bmat = {**book_mats[(idx + tier) % len(book_mats)], "furniture": True}
-        add_extruded_polygon_ft(mesh, book_quad, z_sh + 0.03, z_sh + 0.36, bmat)
+    add_aalto_bookcase_ft(
+        mesh,
+        center_ft=center_ft,
+        length_ft=length_ft,
+        depth_ft=depth_ft,
+        angle_deg=angle_deg,
+        z_floor_m=z_floor_m,
+        height_m=height_m,
+        double_sided=True,
+        n_shelf_tiers=5,
+        canopy_style=canopy_style,
+        end_slats=end_slats,
+        populate_books=True,
+        seed=idx * 19 + 7,
+    )
 
 
 def build_lower_levels(scene):
@@ -144,9 +124,33 @@ def build_lower_levels(scene):
         MATERIALS["concrete"],
     )
 
-    # Level 1 Archival Radial Bookstacks
+    # Level 1 Archival Radial Bookstacks (canopy_style="slate_grey", end_slats="none")
     for idx, stk in enumerate(get_radial_bookstacks_ft(38.5, 70.5)):
-        _add_bookstack_range(m1, stk, z_l1, height_m=2.20, idx=idx, top_mat_key="stack_canopy_grey")
+        p0, p1, p2, p3 = stk
+        p_in = ((p0[0] + p3[0]) * 0.5, (p0[1] + p3[1]) * 0.5)
+        p_out = ((p1[0] + p2[0]) * 0.5, (p1[1] + p2[1]) * 0.5)
+        vx = p_out[0] - p_in[0]
+        vy = p_out[1] - p_in[1]
+        length_ft = math.hypot(vx, vy)
+        angle_deg = math.degrees(math.atan2(vy, vx))
+        center_ft = ((p_in[0] + p_out[0]) * 0.5, (p_in[1] + p_out[1]) * 0.5)
+        depth_ft = math.hypot(p3[0] - p0[0], p3[1] - p0[1])
+
+        add_aalto_bookcase_ft(
+            m1,
+            center_ft=center_ft,
+            length_ft=length_ft,
+            depth_ft=depth_ft,
+            angle_deg=angle_deg,
+            z_floor_m=z_l1,
+            height_m=2.15,
+            double_sided=True,
+            n_shelf_tiers=5,
+            canopy_style="slate_grey",
+            end_slats="none",
+            populate_books=True,
+            seed=idx * 17 + 101,
+        )
 
     # =========================================================================
     # LAYER 3: LEVEL 2 STACKS, MEZZANINE (-4'-6") & SWITCHBACK STAIRS
@@ -154,10 +158,10 @@ def build_lower_levels(scene):
     grp_l2 = create_scene_group(scene, "3_Level_2_Middle")
     m2 = grp_l2.mesh
 
-    # Level 2 Concrete Floor Slab (-3.81 m)
+    # Level 2 Concrete Floor Slab (-3.81 m, inset 0.52 ft inside exterior face brick veneer)
     add_extruded_polygon_ft(
         m2,
-        get_level2_envelope_ft(),
+        offset_polyline_right_ft(get_level2_envelope_ft(), 0.52, closed=True),
         z_l2 - 0.30,
         z_l2,
         MATERIALS["floor_oatmeal"],
@@ -203,11 +207,59 @@ def build_lower_levels(scene):
     # Level 2 Inner Ring of Radial Bookstacks (R = 34.4..47.4 ft, between well stairs; `Sheet 29-f1` & `IMG_5143`)
     inner_l2_stacks = get_radial_bookstacks_ft(34.4, 47.4)[2:13]
     for idx, stk in enumerate(inner_l2_stacks):
-        _add_bookstack_range(m2, stk, z_l2, height_m=2.15, idx=idx, top_mat_key="stack_canopy_grey")
+        p0, p1, p2, p3 = stk
+        p_in = ((p0[0] + p3[0]) * 0.5, (p0[1] + p3[1]) * 0.5)
+        p_out = ((p1[0] + p2[0]) * 0.5, (p1[1] + p2[1]) * 0.5)
+        vx = p_out[0] - p_in[0]
+        vy = p_out[1] - p_in[1]
+        length_ft = math.hypot(vx, vy)
+        angle_deg = math.degrees(math.atan2(vy, vx))
+        center_ft = ((p_in[0] + p_out[0]) * 0.5, (p_in[1] + p_out[1]) * 0.5)
+        depth_ft = math.hypot(p3[0] - p0[0], p3[1] - p0[1])
+
+        add_aalto_bookcase_ft(
+            m2,
+            center_ft=center_ft,
+            length_ft=length_ft,
+            depth_ft=depth_ft,
+            angle_deg=angle_deg,
+            z_floor_m=z_l2,
+            height_m=2.15,
+            double_sided=True,
+            n_shelf_tiers=5,
+            canopy_style="slate_grey",
+            end_slats="none",
+            populate_books=True,
+            seed=idx * 19 + 201,
+        )
 
     # Level 2 Outer Ring of Radial Bookstacks (R = 51.4..68.5 ft; `Sheet 29-f1`)
     for idx, stk in enumerate(get_radial_bookstacks_ft(51.4, 68.5)):
-        _add_bookstack_range(m2, stk, z_l2, height_m=2.15, idx=idx + 2, top_mat_key="stack_canopy_grey")
+        p0, p1, p2, p3 = stk
+        p_in = ((p0[0] + p3[0]) * 0.5, (p0[1] + p3[1]) * 0.5)
+        p_out = ((p1[0] + p2[0]) * 0.5, (p1[1] + p2[1]) * 0.5)
+        vx = p_out[0] - p_in[0]
+        vy = p_out[1] - p_in[1]
+        length_ft = math.hypot(vx, vy)
+        angle_deg = math.degrees(math.atan2(vy, vx))
+        center_ft = ((p_in[0] + p_out[0]) * 0.5, (p_in[1] + p_out[1]) * 0.5)
+        depth_ft = math.hypot(p3[0] - p0[0], p3[1] - p0[1])
+
+        add_aalto_bookcase_ft(
+            m2,
+            center_ft=center_ft,
+            length_ft=length_ft,
+            depth_ft=depth_ft,
+            angle_deg=angle_deg,
+            z_floor_m=z_l2,
+            height_m=2.15,
+            double_sided=True,
+            n_shelf_tiers=5,
+            canopy_style="slate_grey",
+            end_slats="none",
+            populate_books=True,
+            seed=(idx + 2) * 23 + 301,
+        )
 
     # =========================================================================
     # MEZZANINE / READING LEVEL (-4'-6" / -1.37 m) (`Angel-090508`, `IMG_5143`)
@@ -239,50 +291,23 @@ def build_lower_levels(scene):
     )
 
     # 2. Inner (-R) Arc: Curved 4-Shelf Birch Reference Bookwall tucked under Control Peninsula (`Angel-090508`)
-    birch_furn = {**MATERIALS["birch_wood"], "furniture": True}
-    add_arc_band_ft(m2, G.WP3A, 21.50, 21.85, 42.2, 161.1, z_gal, z_l3 - 0.28, birch_furn, steps=36)
-    for z_sh in (0.04, 0.30, 0.56, 0.81, 1.05):
-        add_arc_band_ft(
-            m2,
-            G.WP3A,
-            21.85,
-            G.R_GALLERY_RAIL + 0.15,
-            42.2,
-            161.1,
-            z_gal + z_sh,
-            z_gal + z_sh + 0.035,
-            birch_furn,
-            steps=36,
-        )
-    ref_book_mats = [
-        {**MATERIALS["book_slate"], "furniture": True},
-        {**MATERIALS["book_sage"], "furniture": True},
-        {**MATERIALS["book_terracotta"], "furniture": True},
-        {**MATERIALS["book_ochre"], "furniture": True},
-    ]
-    n_ref_bays = 18
-    for b_idx in range(n_ref_bays):
-        d0 = 42.6 + b_idx * (118.0 / n_ref_bays)
-        d1 = d0 + (118.0 / n_ref_bays) - 0.6
-        div_pt = polar_pt(G.WP3A, 22.40, d0 - 0.3)
-        add_oriented_box_ft(m2, div_pt, 1.10, 0.12, d0 - 0.3, z_gal, z_l3 - 0.28, birch_furn)
-        for s_tier, z_b0 in enumerate((0.08, 0.34, 0.60, 0.85)):
-            add_arc_band_ft(
-                m2,
-                G.WP3A,
-                21.88,
-                G.R_GALLERY_RAIL + 0.02,
-                d0 + 0.2,
-                d1 - 0.2,
-                z_gal + z_b0,
-                z_gal + z_b0 + 0.19,
-                ref_book_mats[(b_idx + s_tier) % len(ref_book_mats)],
-                steps=2,
-            )
+    add_aalto_curved_bookwall_ft(
+        m2,
+        center_ft=G.WP3A,
+        radius_ft=22.25,
+        deg_start=42.2,
+        deg_end=161.1,
+        z_floor_m=z_gal,
+        height_m=1.08,
+        depth_ft=1.15,
+        n_shelf_tiers=4,
+        face_inward=False,
+        seed=42,
+    )
 
     # Straight Radial 4-Shelf End Bookcases closing East (41.8°) & West (161.5°) Mezzanine Ends
     # (`Sheet 13-a13: EAST @ STAIR #2 / WEST @ STAIR #1` & visible behind columns in `mezzaninewithdictionaryweb2`!)
-    for end_deg, in_sign in ((41.8, 1.0), (161.5, -1.0)):
+    for end_deg, in_sign, slat_side in ((41.8, 1.0, "start"), (161.5, -1.0, "end")):
         rad_e = math.radians(end_deg)
         urx, ury = math.cos(rad_e), math.sin(rad_e)
         itx, ity = in_sign * (-ury), in_sign * urx  # points inward onto Mezzanine carpet
@@ -295,34 +320,31 @@ def build_lower_levels(scene):
             (cx0 + 21.8 * urx + 0.05 * itx, cy0 + 21.8 * ury + 0.05 * ity),
         ]
         add_extruded_polygon_ft(m2, back_quad, z_gal - 0.22, z_l3 - 0.28, MATERIALS["white_plaster"])
-        # 4-shelf birch bookcase (R = 22.9..31.5 ft) under plaster spandrel beam
-        sh_quad = [
-            (cx0 + 22.95 * urx + 0.06 * itx, cy0 + 22.95 * ury + 0.06 * ity),
-            (cx0 + 31.45 * urx + 0.06 * itx, cy0 + 31.45 * ury + 0.06 * ity),
-            (cx0 + 31.45 * urx + 1.02 * itx, cy0 + 31.45 * ury + 1.02 * ity),
-            (cx0 + 22.95 * urx + 1.02 * itx, cy0 + 22.95 * ury + 1.02 * ity),
-        ]
-        for z_sh in (0.04, 0.30, 0.56, 0.81, 1.04):
-            add_extruded_polygon_ft(m2, sh_quad, z_gal + z_sh, z_gal + z_sh + 0.032, birch_furn)
-        for eb_i in range(3):
-            r_a = 23.05 + eb_i * 2.75
-            r_b = r_a + 2.60
-            bk_quad = [
-                (cx0 + r_a * urx + 0.10 * itx, cy0 + r_a * ury + 0.10 * ity),
-                (cx0 + r_b * urx + 0.10 * itx, cy0 + r_b * ury + 0.10 * ity),
-                (cx0 + r_b * urx + 0.88 * itx, cy0 + r_b * ury + 0.88 * ity),
-                (cx0 + r_a * urx + 0.88 * itx, cy0 + r_a * ury + 0.88 * ity),
-            ]
-            for s_tier, z_b0 in enumerate((0.08, 0.34, 0.60)):
-                add_extruded_polygon_ft(
-                    m2,
-                    bk_quad,
-                    z_gal + z_b0,
-                    z_gal + z_b0 + 0.19,
-                    ref_book_mats[(eb_i + s_tier) % len(ref_book_mats)],
-                )
+
+        # 4-shelf birch bookcase (R = 22.95..31.45 ft, L = 8.50 ft, D = 1.05 ft) under plaster spandrel beam
+        r_mid = 27.20
+        c_x = cx0 + r_mid * urx + 0.58 * itx
+        c_y = cy0 + r_mid * ury + 0.58 * ity
+        ang = end_deg if in_sign > 0 else (end_deg + 180.0) % 360.0
+
+        add_aalto_bookcase_ft(
+            m2,
+            center_ft=(c_x, c_y),
+            length_ft=8.50,
+            depth_ft=1.05,
+            angle_deg=ang,
+            z_floor_m=z_gal,
+            height_m=1.08,
+            double_sided=False,
+            n_shelf_tiers=4,
+            canopy_style="birch",
+            end_slats=slat_side,
+            populate_books=True,
+            seed=int(end_deg * 10),
+        )
 
     # 3. Outer (+R) Arc: Mezzanine Parapet, Matte-Black Linoleum Workbench, Custom Lamps & Artek 69 Chairs (`IMG_5143`)
+    birch_furn = {**MATERIALS["birch_wood"], "furniture": True}
     mezz_deg0, mezz_deg1 = 55.8, 147.8
     r_mezz_in = G.R_WELL_L2_WALL - 0.18   # 31.65 ft (Mezzanine-facing plaster wall)
     r_mezz_out = G.R_WELL_L2_WALL + 0.42  # 32.25 ft (Well-facing plaster wall overlooking Level 2 stacks)
@@ -389,13 +411,16 @@ def build_lower_levels(scene):
             tread_attrs=MATERIALS["carpet_blue"],
         )
 
-    # SE Stair #2 tucked inside Axis E diagonal brick wall (connecting L3 -> L2 -> L1)
-    rad_e = math.radians(G.RAY_E_DEG)
-    uxe, uye = math.cos(rad_e), math.sin(rad_e)
-    nxe, nye = -uye, uxe
-    st2_top = (65.0 + 3.2 * nxe, 42.2 + 3.2 * nye)
-    st2_bot = (65.0 + 18.5 * uxe + 3.2 * nxe, 42.2 + 18.5 * uye + 3.2 * nye)
-    add_stepped_stair_ft(m2, st2_top, st2_bot, width_ft=5.8, z_top_m=z_l3, z_bot_m=z_l2, n_steps=18)
+    # SE Stair #2 tucked inside Axis E diagonal brick wall (connecting L3 -> L2)
+    dx_e = G.PT_E[0] - G.PT_LOUNGE_JUNC[0]
+    dy_e = G.PT_E[1] - G.PT_LOUNGE_JUNC[1]
+    L_e = math.hypot(dx_e, dy_e)
+    uxe_w, uye_w = dx_e / L_e, dy_e / L_e
+    nxe_w, nye_w = -uye_w, uxe_w  # Inward normal into Reading Room
+    c_dist = 4.05  # 1.12 ft wall + 0.15 ft clearance + 2.78 ft half-width = 4.05 ft
+    st2_top = (G.PT_LOUNGE_JUNC[0] + 16.5 * uxe_w + c_dist * nxe_w, G.PT_LOUNGE_JUNC[1] + 16.5 * uye_w + c_dist * nye_w)
+    st2_bot = (G.PT_LOUNGE_JUNC[0] + 35.0 * uxe_w + c_dist * nxe_w, G.PT_LOUNGE_JUNC[1] + 35.0 * uye_w + c_dist * nye_w)
+    add_stepped_stair_ft(m2, st2_top, st2_bot, width_ft=5.8, z_top_m=z_l3, z_bot_m=z_l2, n_steps=18, wall_side=-1)
 
     return grp_l1, grp_l2
 

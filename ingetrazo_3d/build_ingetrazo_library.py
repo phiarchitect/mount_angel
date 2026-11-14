@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Alvar Aalto's Mount Angel Abbey Library — IngeTrazo 0.6.0 Master 3D Builder
 ===========================================================================
@@ -210,6 +209,8 @@ for p in (str(repo_root), str(repo_root / "src")):
 import importlib
 import phiarchitect.mountangel.vectors as _vec
 import ingetrazo_3d.components.primitives as _pr
+import ingetrazo_3d.components.aalto_bookcases as _ab
+import ingetrazo_3d.components.south_wing_interiors as _swi
 import ingetrazo_3d.components.regulating_lines as _rl
 import ingetrazo_3d.components.site_terrain as _st
 import ingetrazo_3d.components.lower_levels as _ll
@@ -219,7 +220,7 @@ import ingetrazo_3d.components.roof_and_skylights as _rs
 import ingetrazo_3d.components as _comp
 import ingetrazo_3d.build_ingetrazo_library as _bld
 
-for _m in (_vec, _pr, _rl, _st, _ll, _l3, _ew, _rs, _comp, _bld):
+for _m in (_vec, _pr, _ab, _swi, _rl, _st, _ll, _l3, _ew, _rs, _comp, _bld):
     importlib.reload(_m)
 
 _bld.build_mount_angel_scene(scene)
@@ -320,8 +321,17 @@ def capture_web_renders(repo_root: Path):
             ("sun_summer_west", "studio_14_sun_summer_west_hcolumns.png"),
             ("sun_winter_heliodon", "studio_15_sun_winter_heliodon.png"),
             ("alcove_mthood", "studio_16_entry_mthood_alcove.png"),
+            ("blockout_match", "studio_17_blockout_match_axon.png"),
+            ("campus_aerial", "studio_18_campus_aerial.png"),
+            ("control_glass_wall", "studio_19_control_glass_wall.png"),
+            ("auditorium_cutaway", "studio_20_auditorium_cutaway.png"),
         ]
         if browser_bin:
+            try:
+                from PIL import Image
+            except ImportError:
+                Image = None
+
             docs_renders_dir = docs_dir / "renders"
             docs_renders_dir.mkdir(parents=True, exist_ok=True)
             for cam_key, fname in shots:
@@ -329,20 +339,27 @@ def capture_web_renders(repo_root: Path):
                 url = f"http://127.0.0.1:{port}/library-3d.html?cam={cam_key}&studio=1"
                 cmd = [
                     browser_bin,
-                    "--headless",
+                    "--headless=new",
                     "--hide-scrollbars",
                     "--no-sandbox",
                     "--enable-webgl",
                     "--ignore-gpu-blocklist",
                     "--use-gl=angle",
                     "--use-angle=swiftshader",
-                    "--window-size=2560,1440",
-                    "--virtual-time-budget=3500",
+                    "--window-size=2560,1520",
+                    "--virtual-time-budget=6500",
                     f"--screenshot={out_file}",
                     url,
                 ]
                 subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
                 if out_file.is_file():
+                    if Image is not None:
+                        try:
+                            with Image.open(out_file) as im:
+                                if im.size != (2560, 1440):
+                                    im.crop((0, 0, 2560, 1440)).save(out_file)
+                        except OSError as err:
+                            print(f"Warning: Could not crop {out_file.name}: {err}")
                     shutil.copy2(out_file, docs_renders_dir / fname)
                 print(f"Captured QHD Studio Render: {out_file}")
         else:
@@ -360,10 +377,10 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
 
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
-    from PySide6.QtWidgets import QApplication
     from core.scene import Scene
     from formats.igz import save_scene
     from formats.obj import save_obj
+    from PySide6.QtWidgets import QApplication
 
     _app = QApplication.instance() or QApplication(sys.argv)
     scene = Scene()

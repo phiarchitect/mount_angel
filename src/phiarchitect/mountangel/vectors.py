@@ -68,12 +68,18 @@ class AaltoGeometry:
     Z_L1_FT = ft(-26, 6)            # -26'-6" (-8.08 m) Level 1 Downhill Base Stacks
     Z_CRAWL_FT = ft(-34, 0)         # -34'-0" (-10.36 m) North Crawl Space & Footing Toe
 
-    Z_CANOPY_FT = ft(10, 8)         # +10'-8" (+3.25 m) South Entry Portico Marquee
-    Z_FAN_ROOF_LOW_FT = ft(12, 6)   # +12'-6" (+3.81 m) Fan Roof Deck outside Monitor
-    Z_SOUTH_ROOF_FT = ft(16, 4)     # +16'-4" (+4.98 m) South Wing Built-up Roof & Parapet
-    Z_FAN_PARAPET_N_FT = ft(17, 6)  # +17'-6" (+5.33 m) Tipped North Perimeter Light-Scoop Parapet
-    Z_LANTERN_TOP_FT = ft(19, 6)    # +19'-6" (+5.94 m) Conical Roof Skylight Lanterns
-    Z_SCOOP_RIDGE_FT = ft(21, 6)    # +21'-6" (+6.55 m) Curved Central Clerestory Light Scoop Peak
+    Z_CANOPY_FT = ft(10, 8)             # +10'-8"  (+3.25 m) South Entry Portico Marquee & Trellises
+    Z_SOUTH_CEIL_FT = ft(10, 10)        # +10'-10" (+3.30 m) South Wing / Lobby / Lounge Interior Ceiling Soffit
+    Z_FAN_CEIL_FT = ft(11, 4)           # +11'-4"  (+3.45 m) Fan Reading Room Flat Ceiling Soffit below 24WF68 Plenum (Sheet 17-a17)
+    Z_SOUTH_ROOF_FT = ft(12, 8)         # +12'-8"  (+3.86 m) Lower South Wing / Lobby / Lounge Built-up Roof Deck (0.56 m thick!)
+    Z_SOUTH_PARAPET_FT = ft(13, 10)     # +13'-10" (+4.22 m) South Wing Parapet Coping
+    Z_FAN_ROOF_LOW_FT = ft(15, 3)       # +15'-3"  (+4.65 m) Higher Main Fan Built-up Roof Deck (1.20 m / 3'-11" deep plenum!)
+    Z_FAN_ROOF_HIGH_FT = ft(16, 3)      # +16'-3"  (+4.95 m) Outer North Perimeter Fan Roof Deck (tapering over clerestory soffit)
+    Z_LANTERN_TOP_FT = ft(15, 10)       # +15'-10" (+4.83 m) Conical Roof Skylight Lantern Peaks above South Wing Roof
+    Z_FAN_PARAPET_N_FT = ft(17, 10)     # +17'-10" (+5.44 m) North Perimeter Brick & Copper Parapet Coping
+    Z_AUDITORIUM_ROOF_FT = ft(18, 8)    # +18'-8"  (+5.69 m) Taller SE Auditorium (Rm 327) Dark Membrane Roof Deck
+    Z_AUDITORIUM_PARAPET_FT = ft(20, 2) # +20'-2"  (+6.15 m) Taller SE Auditorium Brick & Copper Parapet Coping (Sheet 17-a17)
+    Z_SCOOP_RIDGE_FT = ft(21, 6)        # +21'-6"  (+6.55 m) Curved Central Clerestory Light Scoop Peak
 
     # --- Polycentric Working Points (X_ft, Y_ft) ---
     WP4: tuple[float, float] = (0.0, 0.0)          # Survey Datum on Grid 6
@@ -440,12 +446,35 @@ def get_north_perimeter_with_pockets_ft(level: int = 3) -> list[tuple[float, flo
     G = AaltoGeometry
     if level == 1:
         uB, uC, uD = get_h_pier_polygons_ft(level=1)
+        bays_l3 = get_faceted_curtain_bays_ft()
+
+        def _off_seg_right(a: tuple[float, float], b: tuple[float, float], d: float) -> tuple[tuple[float, float], tuple[float, float]]:
+            dx, dy = b[0] - a[0], b[1] - a[1]
+            L = math.hypot(dx, dy)
+            ix, iy = dy / L, -dx / L
+            return (a[0] + d * ix, a[1] + d * iy), (b[0] + d * ix, b[1] + d * iy)
+
+        def _dist_right(a: tuple[float, float], b: tuple[float, float], pt: tuple[float, float]) -> float:
+            dx, dy = b[0] - a[0], b[1] - a[1]
+            L = math.hypot(dx, dy)
+            ix, iy = dy / L, -dx / L
+            return (pt[0] - a[0]) * ix + (pt[1] - a[1]) * iy
+
+        d_b0 = _dist_right(bays_l3[0][0], bays_l3[0][1], uB[0])
+        d_b3 = _dist_right(bays_l3[3][0], bays_l3[3][1], uD[1])
+        w_a, w_b = _off_seg_right(G.PT_A_INNER_JUNC, G.PT_A, 2.80)
+        b0_a, b0_b = _off_seg_right(bays_l3[0][0], bays_l3[0][1], d_b0)
+        l1_pt_a = _line_intersect_2d(w_a, w_b, b0_a, b0_b)
+
+        e_a, e_b = _off_seg_right(G.PT_E, G.PT_LOUNGE_JUNC, 3.20)
+        b3_a, b3_b = _off_seg_right(bays_l3[3][0], bays_l3[3][1], d_b3)
+        l1_pt_e = _line_intersect_2d(b3_a, b3_b, e_a, e_b)
         return [
-            (-83.6, 15.2),
+            l1_pt_a,
             uB[0], uB[1],
             uC[0], uC[1],
             uD[0], uD[1],
-            (90.0, 68.2),
+            l1_pt_e,
         ]
     pB, pC, pD = get_h_pier_polygons_ft(level=3)
     return [
@@ -529,20 +558,22 @@ def get_l1_inner_pentagon_ft() -> list[tuple[float, float]]:
 def get_carrel_alcoves_ft() -> list[list[tuple[float, float]]]:
     """Perimeter study carrel partitions along the 4 Faceted Bays A-B, B-C, C-D, D-E."""
     boxes = []
-    for p0, p1 in get_faceted_curtain_bays_ft():
+    bays = get_faceted_curtain_bays_ft()
+    for b_idx, (p0, p1) in enumerate(bays):
         n_carrels = 5
         vx, vy = p1[0] - p0[0], p1[1] - p0[1]
         L = math.hypot(vx, vy)
         ux, uy = vx / L, vy / L
         # Inward normal (pointing South/toward fan center: rotate clockwise 90 deg -> (uy, -ux))
         nx, ny = uy, -ux
-        margin = 1.8
-        usable = L - 2 * margin
+        margin_s = 4.8 if b_idx == 0 else 1.8
+        margin_e = 6.6 if b_idx == len(bays) - 1 else 1.8
+        usable = L - margin_s - margin_e
         cw = usable / n_carrels
         depth = 5.6
         for i in range(n_carrels):
-            s0 = margin + i * cw + 0.55
-            s1 = margin + (i + 1) * cw - 0.55
+            s0 = margin_s + i * cw + 0.55
+            s1 = margin_s + (i + 1) * cw - 0.55
             q0 = (p0[0] + ux * s0 + nx * 1.15, p0[1] + uy * s0 + ny * 1.15)
             q1 = (p0[0] + ux * s1 + nx * 1.15, p0[1] + uy * s1 + ny * 1.15)
             q2 = (q1[0] + nx * depth, q1[1] + ny * depth)
@@ -593,16 +624,19 @@ def get_well_stairs_ft() -> list[list[tuple[float, float]]]:
                 (cx + r1 * ux + hw * nx, cy + r1 * uy + hw * ny),
                 (cx + r0 * ux + hw * nx, cy + r0 * uy + hw * ny),
             ])
-    # Also Stair #2 along SE diagonal wall (X=+65..+81, along Ray E)
-    rad_e = math.radians(G.RAY_E_DEG)
-    uxe, uye = math.cos(rad_e), math.sin(rad_e)
+    # Also Stair #2 along SE diagonal wall (strictly parallel to PT_LOUNGE_JUNC -> PT_E inside 1.12 ft wall)
+    dx_e = G.PT_E[0] - G.PT_LOUNGE_JUNC[0]
+    dy_e = G.PT_E[1] - G.PT_LOUNGE_JUNC[1]
+    L_e = math.hypot(dx_e, dy_e)
+    uxe, uye = dx_e / L_e, dy_e / L_e
     nxe, nye = -uye, uxe
-    bx, by = 64.5, 41.8
+    bx = G.PT_LOUNGE_JUNC[0] + 16.5 * uxe + 1.25 * nxe
+    by = G.PT_LOUNGE_JUNC[1] + 16.5 * uye + 1.25 * nye
     stairs.append([
         (bx, by),
-        (bx + 19.0 * uxe, by + 19.0 * uye),
-        (bx + 19.0 * uxe + 6.5 * nxe, by + 19.0 * uye + 6.5 * nye),
-        (bx + 6.5 * nxe, by + 6.5 * nye),
+        (bx + 18.5 * uxe, by + 18.5 * uye),
+        (bx + 18.5 * uxe + 5.8 * nxe, by + 18.5 * uye + 5.8 * nye),
+        (bx + 5.8 * nxe, by + 5.8 * nye),
     ])
     return stairs
 
@@ -874,7 +908,7 @@ def build_sheet_svg(sheet_id: int) -> str:
         svg.add_line("walls", (85.4, G.Z_CRAWL_FT), (85.4, G.Z_FAN_PARAPET_N_FT), "#10b981", width=2.8)
         svg.add_line("walls", (33.0, G.Z_CRAWL_FT), (33.0, G.Z_L2_FT), "#10b981", width=2.4)
 
-        # Roof, Conical Lanterns, Curved Daylight Scoop & Tipped North Perimeter Roof!
+        # Roof, Conical Lanterns, Curved Daylight Scoop & Thick 24WF68 Fan Roof Plenum (Sheet 13-a13 Section A-A)!
         svg.add_polyline(
             "roof_skylights",
             [
@@ -882,19 +916,32 @@ def build_sheet_svg(sheet_id: int) -> str:
                 (23.5, G.Z_SOUTH_ROOF_FT),
                 # Exterior copper scoop roof slope up to ridge at S = +35.1 ft, Z = +21.5 ft
                 (35.1, G.Z_SCOOP_RIDGE_FT),
-                # Steep North-facing skylight glazing down to S = +40.9 ft, Z = +12.5 ft
-                (40.9, G.Z_FAN_ROOF_LOW_FT),
-                # Flat fan roof deck + Tipped North Perimeter Parapet (+17'-6")
-                (75.5, G.Z_FAN_ROOF_LOW_FT),
+                # Steep North-facing skylight glazing down to high Fan Roof curb at S = +39.8 ft, Z = +15.25 ft
+                (39.8, G.Z_FAN_ROOF_LOW_FT),
+                # High Fan built-up roof deck (+15'-3" -> +16'-3") + North Parapet (+17'-10")
+                (85.4, G.Z_FAN_ROOF_HIGH_FT),
                 (85.4, G.Z_FAN_PARAPET_N_FT),
             ],
             "#facc15",
             width=2.6,
         )
-        # Concave white plaster reflector vault inside the North Light Scoop + upward North soffit
+        # Deep Fan Roof Structural Soffit (+11'-4" over stacks, splayed skylight coffer & upward North soffit!)
         svg.add_polyline(
             "roof_skylights",
-            [(28.2, 12.6), (29.5, 16.0), (31.8, 19.0), (35.1, G.Z_SCOOP_RIDGE_FT)],
+            [
+                (39.8, G.Z_FAN_ROOF_LOW_FT),
+                (43.2, G.Z_FAN_CEIL_FT),
+                (65.5, G.Z_FAN_CEIL_FT),
+                (84.6, 15.15),
+            ],
+            "#38bdf8",
+            width=2.0,
+            dash="5,3",
+        )
+        # Concave white plaster reflector vault inside the North Light Scoop
+        svg.add_polyline(
+            "roof_skylights",
+            [(28.2, G.Z_SOUTH_CEIL_FT), (29.5, 16.0), (31.8, 19.0), (35.1, G.Z_SCOOP_RIDGE_FT)],
             "#38bdf8",
             width=2.0,
             dash="4,2",
@@ -903,7 +950,7 @@ def build_sheet_svg(sheet_id: int) -> str:
         for s_cone in (-27.0, -16.0, 6.9):
             svg.add_polyline(
                 "roof_skylights",
-                [(s_cone - 3.2, 10.5), (s_cone - 2.1, G.Z_LANTERN_TOP_FT), (s_cone + 2.1, G.Z_LANTERN_TOP_FT), (s_cone + 3.2, 10.5)],
+                [(s_cone - 3.2, 10.2), (s_cone - 2.1, G.Z_LANTERN_TOP_FT), (s_cone + 2.1, G.Z_LANTERN_TOP_FT), (s_cone + 3.2, 10.2)],
                 "#f59e0b",
                 width=1.8,
             )
