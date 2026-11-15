@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.2] - 2026-11-15
+
+### Fixed
+- **Reading-room parapet continuity**: the west and east clerestory step walls in `roof_and_skylights.py` are now one continuous brick parapet with copper coping. It runs from the west junction along a 48-step arc behind the sloped daylight-scoop skylight to the lounge junction, matching Sheet 13 (A13) and the aerial photographs.
+
+### Changed
+- **Simplified home page** (`docs/index.html`): now a short project intro and a directory of the five suite pages (3D Model, Making the Model, Photo vs. Model, Blueprints, Visitor Guide). The detailed content stays in `making-of.html`.
+- Rebuilt the 3D model (`134,737` faces) and re-captured the 20 QHD studio renders plus exterior photo-match renders 01–02.
+
+---
+
 ## [0.4.1] - 2026-11-15
 
 ### Fixed

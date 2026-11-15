@@ -2051,7 +2051,7 @@ def render_visitor_guide_html() -> str:
 
           <footer class="ps-colophon">
             <span>MOUNT ANGEL ABBEY &middot; ST. BENEDICT, OREGON</span>
-            <span>EXPLORE THE FULL 134,405-FACE 3D DIGITAL MAQUETTE AT LIBRARY-3D.HTML</span>
+            <span>EXPLORE THE FULL 134,737-FACE 3D DIGITAL MAQUETTE AT LIBRARY-3D.HTML</span>
             <span>SHEET III &middot; GEOMETRY &amp; CRAFT</span>
           </footer>
         </article>
