@@ -550,43 +550,41 @@ def build_roof_and_skylights(scene):
         MATERIALS["white_soffit"],
     )
 
-    # Continuous Watertight Buff-Brick + Copper-Capped Clerestory Step Walls rising UP from the
-    # Lower South Wing Roof (+3.74 m) to the Higher Fan Roof (+4.83 m) across both flanks (`Sheet 18-a18`)!
-    west_step_pts = [
+    # Continuous Watertight Buff-Brick + Copper-Capped Clerestory Step Parapet rising UP from the
+    # Lower South Wing Roof (+3.74 m) to +4.83 m. It runs unbroken from the West flank (PT_A junction)
+    # along R_SCOOP_INNER — passing BEHIND the springing of the curved Daylight Scoop (45°..156°),
+    # exactly as the parapet + coping at the low end of `Sheet 18-a18 Detail 4` and the continuous
+    # white cap seen in the aerial photograph — to the East flank (Periodical Lounge junction).
+    n_step_arc = 48
+    step_pts = [
         G.PT_A_INNER_JUNC,
         *[
-            polar_pt(G.WP3A, G.R_SCOOP_INNER, deg_step_w_outer - (deg_step_w_outer - (deg1 - 0.25)) * (k / 10))
-            for k in range(11)
-        ],
-    ]
-    east_step_pts = [
-        *[
-            polar_pt(G.WP3A, G.R_SCOOP_INNER, (deg0 + 0.25) - ((deg0 + 0.25) - deg_step_e_outer) * (k / 10))
-            for k in range(11)
+            polar_pt(G.WP3A, G.R_SCOOP_INNER, deg_step_w_outer - (deg_step_w_outer - deg_step_e_outer) * (k / n_step_arc))
+            for k in range(n_step_arc + 1)
         ],
         G.PT_LOUNGE_JUNC,
     ]
-    for step_chain, ov_l, th_b in ((west_step_pts, 0.95, 1.55), (east_step_pts, 0.68, 1.35)):
-        add_wall_strip_ft(
-            mesh,
-            step_chain,
-            th_b,
-            z_south_rf - 0.12,
-            z_fan_low + 0.18,
-            MATERIALS["buff_brick"],
-            offset_mode="right",
-            overhang_left_ft=ov_l,
-        )
-        add_wall_strip_ft(
-            mesh,
-            step_chain,
-            th_b + 0.16,
-            z_fan_low + 0.18,
-            z_fan_low + 0.32,
-            MATERIALS["copper_roof"],
-            offset_mode="right",
-            overhang_left_ft=ov_l + 0.08,
-        )
+    step_ov_l, step_th = 0.95, 1.55
+    add_wall_strip_ft(
+        mesh,
+        step_pts,
+        step_th,
+        z_south_rf - 0.12,
+        z_fan_low + 0.18,
+        MATERIALS["buff_brick"],
+        offset_mode="right",
+        overhang_left_ft=step_ov_l,
+    )
+    add_wall_strip_ft(
+        mesh,
+        step_pts,
+        step_th + 0.16,
+        z_fan_low + 0.18,
+        z_fan_low + 0.32,
+        MATERIALS["copper_roof"],
+        offset_mode="right",
+        overhang_left_ft=step_ov_l + 0.08,
+    )
 
     # Copper Parapet Coping around Lower South Wing & Periodical Lounge Perimeter
     south_coping_chain_e = [
