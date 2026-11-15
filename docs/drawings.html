@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blueprint &amp; Vector Archive (47) — Mount Angel Abbey Library (Alvar Aalto, 1970)</title>
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="suite.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="suite-header">
+        <a href="index.html" class="suite-brand" title="Mount Angel Abbey Library — Project Overview">
+            <span class="suite-crest">
+                <img src="angel-logo.svg" alt="" width="24" height="19">
+            </span>
+            <span class="suite-brand-text">
+                <span class="suite-brand-title">Mount Angel Abbey Library</span>
+                <span class="suite-brand-sub">Alvar Aalto &middot; 1970</span>
+            </span>
+        </a>
+
+        <nav class="suite-nav" aria-label="Project Suite">
+            <a href="index.html" class="suite-link">Overview</a>
+            <a href="making-of.html" class="suite-link">Making the Model</a>
+            <a href="photo-compare.html" class="suite-link">Photo vs. Model</a>
+            <a href="drawings.html" class="suite-link is-active">Blueprints <span class="suite-count">47</span></a>
+            <a href="visitor-guide.html" class="suite-link">Visitor Guide</a>
+            <a href="library-3d.html" class="suite-link suite-link-3d">&#9670; 3D Model</a>
+        </nav>
+    </header>
+
+    <div class="suite-subbar">
+        <div class="archive-intro-line">
+            <strong>Original Construction &amp; Structural Set (A1&ndash;A28, F1&ndash;F3, S1&ndash;S16)</strong>
+            <span>Click any of the <strong>7 Vector-Calibrated</strong> sheets to toggle constructive SVG layers and inspect sub-pixel blueprint registration.</span>
+        </div>
+        <div class="controls">
+            <button id="calibratedOnlyBtn" class="calibrated-filter-btn" type="button">
+                &#10022; Vector Calibrated (7)
+            </button>
+            <div class="search-wrap">
+                <input type="text" id="searchInput" placeholder="Search sheet title or contents...">
+            </div>
+            <div class="filter-wrap">
+                <select id="typeFilter" aria-label="Filter by sheet type">
+                    <option value="all">All Sheet Types</option>
+                </select>
+            </div>
+            <div class="sort-wrap">
+                <select id="sortSelect" aria-label="Sort sheets">
+                    <option value="id_asc">Sheet Order (A1 &rarr; S16)</option>
+                    <option value="id_desc">Reverse Order (S16 &rarr; A1)</option>
+                    <option value="type_asc">Group by Discipline</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <main class="gallery-container">
+        <div id="galleryGrid" class="grid">
+            <!-- Cards populated by main.js -->
+        </div>
+    </main>
+
+    <!-- Modal for full-size blueprint & interactive constructive vector overlay -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <button id="prevBtn" class="nav-btn left-btn">&lsaquo;</button>
+            <button id="nextBtn" class="nav-btn right-btn">&rsaquo;</button>
+
+            <div class="modal-header-tools">
+                <label class="switch">
+                    <input type="checkbox" id="editModeToggle">
+                    <span class="slider round"></span>
+                </label>
+                <span>Edit Mode</span>
+            </div>
+
+            <!-- College-Geometry-Style Constructive Vector Control Bar -->
+            <div id="vectorOverlayBar" class="vector-control-bar" style="display: none;">
+                <label class="vec-master-toggle">
+                    <input type="checkbox" id="vecMasterCheck" checked>
+                    <span>&#10022; Vectors</span>
+                </label>
+                <div class="vec-divider"></div>
+                <div id="vecLayerPills" class="vec-layer-pills">
+                    <!-- Populated from overlays/manifest.json -->
+                </div>
+                <div class="vec-divider"></div>
+                <label class="vec-dark-toggle" title="Invert scan to dark architectural blueprint mode">
+                    <input type="checkbox" id="vecDarkBlueprintCheck" checked>
+                    <span>Dark Blueprint</span>
+                </label>
+                <label class="vec-opacity-wrap" title="Dim low-resolution raster scan to inspect pure extracted vectors">
+                    <span>Scan</span>
+                    <input type="range" id="scanOpacitySlider" min="0" max="100" value="78">
+                    <span id="scanOpacityVal">78%</span>
+                </label>
+            </div>
+
+            <div id="editorToolbar" class="editor-toolbar" style="display: none;">
+                <button id="toolBox" class="tool-btn active">Draw Bounding Box</button>
+                <button id="toolPoint" class="tool-btn">Set Reference Point</button>
+                <div style="width: 1px; background: rgba(255,255,255,0.2); margin: 0 0.5rem;"></div>
+                <button id="exportBtn" class="action-btn" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;">Export JSON</button>
+            </div>
+
+            <div class="canvas-container" id="canvasContainer">
+                <img id="modalImage" src="" alt="Full Drawing" draggable="false">
+                <div id="vectorSvgLayer" class="vector-svg-layer"></div>
+                <div id="annotationsLayer" class="annotations-layer"></div>
+                <div id="drawingOverlay" class="drawing-overlay" style="display: none;"></div>
+            </div>
+
+            <div id="modalCaption" class="modal-caption"></div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

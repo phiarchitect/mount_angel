@@ -1,0 +1,215 @@
+/* ==========================================================================
+   Mount Angel Abbey Library — Shared Suite Design System & Header Bar
+   Unifies index.html, library-3d.html, making-of.html, photo-compare.html,
+   drawings.html, and visitor-guide.html.
+   ========================================================================== */
+
+:root {
+  --suite-bg: #0b0f17;
+  --suite-surface: #121824;
+  --suite-surface-hi: #182030;
+  --suite-border: rgba(148, 163, 184, 0.18);
+  --suite-border-warm: rgba(212, 180, 131, 0.30);
+  --suite-cream: #f5efe4;
+  --suite-birch: #d4b483;
+  --suite-poche: #a42d21;
+  --suite-poche-hi: #c43c2d;
+  --suite-gold: #eab308;
+  --suite-amber: #d97706;
+  --suite-sky: #38bdf8;
+  --suite-text: #f3f4f6;
+  --suite-muted: #94a3b8;
+  --suite-header-h: 58px;
+}
+
+.suite-header {
+  position: sticky;
+  top: 0;
+  z-index: 1200;
+  min-height: var(--suite-header-h);
+  padding: 8px 24px;
+  background: rgba(11, 15, 23, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--suite-border);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.32);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.suite-header.suite-header-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.suite-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  color: var(--suite-cream);
+  flex-shrink: 0;
+}
+
+.suite-crest {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: linear-gradient(145deg, #161d2b, #0e131d);
+  border: 1.5px solid var(--suite-poche);
+  box-shadow: inset 0 0 0 1px rgba(232, 198, 142, 0.16), 0 2px 8px rgba(0, 0, 0, 0.35);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.16s ease, border-color 0.16s ease;
+}
+
+.suite-brand:hover .suite-crest {
+  transform: translateY(-1px);
+  border-color: var(--suite-gold);
+}
+
+.suite-crest img {
+  width: 24px;
+  height: 19px;
+  display: block;
+}
+
+.suite-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.suite-brand-title {
+  font-size: 0.96rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--suite-cream);
+}
+
+.suite-brand-sub {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--suite-birch);
+  margin-top: 2px;
+}
+
+.suite-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.suite-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 0.79rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  transition: background 0.14s ease, color 0.14s ease, border-color 0.14s ease;
+  white-space: nowrap;
+}
+
+.suite-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(212, 180, 131, 0.45);
+}
+
+.suite-link.is-active {
+  color: var(--suite-cream);
+  background: rgba(164, 45, 33, 0.28);
+  border-color: var(--suite-poche-hi);
+  box-shadow: inset 0 0 0 1px rgba(196, 60, 45, 0.25);
+}
+
+.suite-count {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.66rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--suite-birch);
+}
+
+.suite-link-3d {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  border-color: #f59e0b;
+  color: #fffbeb !important;
+  font-weight: 700;
+  box-shadow: 0 2px 10px rgba(217, 119, 6, 0.25);
+}
+
+.suite-link-3d:hover {
+  background: linear-gradient(135deg, #eab308, #d97706);
+  border-color: #fde68a;
+  color: #0b0f17 !important;
+}
+
+.suite-link-3d.is-active {
+  background: linear-gradient(135deg, #eab308, #ca8a04);
+  border-color: #fef08a;
+  color: #0b0f17 !important;
+  box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.28);
+}
+
+/* Sub-header bar option (used for chapter anchors or gallery filters) */
+.suite-subbar {
+  background: rgba(15, 21, 33, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--suite-border);
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.kbd-badge {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.64rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.11);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fde68a;
+  line-height: 1.2;
+}
+
+@media (max-width: 900px) {
+  .suite-header {
+    padding: 8px 14px;
+  }
+  .suite-link {
+    padding: 5px 9px;
+    font-size: 0.74rem;
+  }
+}
+
+@media print {
+  .suite-header,
+  .suite-subbar {
+    display: none !important;
+  }
+}

@@ -4,9 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Photographic Registration & Accuracy Evaluation Lab — Mount Angel Abbey Library (1970)</title>
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="suite.css" />
   <style>
     :root {
       --bg-deep: #0b1018;
@@ -837,29 +840,27 @@
 </head>
 <body>
 
-  <!-- Sticky Top Navigation -->
-  <nav class="top-nav">
-    <a href="index.html" class="brand">
-      <span class="brand-title">Mount Angel Abbey Library</span>
-      <span class="brand-sub">Alvar Aalto 1970</span>
+  <!-- Unified Suite Header -->
+  <header class="suite-header">
+    <a href="index.html" class="suite-brand" title="Mount Angel Abbey Library — Project Overview">
+      <span class="suite-crest">
+        <img src="angel-logo.svg" alt="" width="24" height="19">
+      </span>
+      <span class="suite-brand-text">
+        <span class="suite-brand-title">Mount Angel Abbey Library</span>
+        <span class="suite-brand-sub">Alvar Aalto &middot; 1970</span>
+      </span>
     </a>
 
-    <div class="nav-links">
-      <a href="index.html" class="nav-pill">Overview</a>
-      <a href="making-of.html" class="nav-pill">Making the Model</a>
-      <a href="photo-compare.html" class="nav-pill active">
-        <span class="nav-dot"></span>
-        Photo Registration Lab
-      </a>
-    </div>
-
-    <div class="suite-btns">
-      <a href="library-3d.html" class="btn-3d" target="_blank" rel="noopener">
-        <span>3D Live Maquette</span>
-        <span>↗</span>
-      </a>
-    </div>
-  </nav>
+    <nav class="suite-nav" aria-label="Project Suite">
+      <a href="index.html" class="suite-link">Overview</a>
+      <a href="making-of.html" class="suite-link">Making the Model</a>
+      <a href="photo-compare.html" class="suite-link is-active">Photo vs. Model</a>
+      <a href="drawings.html" class="suite-link">Blueprints <span class="suite-count">47</span></a>
+      <a href="visitor-guide.html" class="suite-link">Visitor Guide</a>
+      <a href="library-3d.html" class="suite-link suite-link-3d">&#9670; 3D Model</a>
+    </nav>
+  </header>
 
   <div class="container">
 
@@ -1625,10 +1626,12 @@
     <!-- Footer -->
     <footer class="lab-footer">
       <div class="footer-links">
-        <a href="index.html">Monograph Overview</a>
-        <a href="making-of.html">Making the Model (Chapters I–VII)</a>
-        <a href="photo-compare.html">Photographic Registration Lab</a>
-        <a href="library-3d.html">Live WebGL2 3D Maquette</a>
+        <a href="index.html">Overview</a>
+        <a href="making-of.html">Making the Model</a>
+        <a href="photo-compare.html">Photo vs. Model</a>
+        <a href="drawings.html">Blueprints (47)</a>
+        <a href="visitor-guide.html">Visitor Guide</a>
+        <a href="library-3d.html">Live WebGL2 3D Model</a>
       </div>
       <p>
         Mount Angel Abbey Library Constructive Geometry Research Monograph &middot; Alvar Aalto 1970 &middot; Model by phi ARCHITECT

@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.0] - 2026-11-15
+
+### Added
+- **Visitor Rack Card & Lobby Orientation Poster Studio (`src/phiarchitect/mountangel/wayfinding.py`, `visitor_guide.py`, `docs/visitor-guide.html`)**:
+  - Parametric SVG architectural wayfinding generators derived directly from `AaltoGeometry` (`Level 3 & South Wing`, `Mezzanine & Level 2`, `Level 1`, `Section A–A Skylight & Bluff Cut`, and `Mount Angel Abbey Hilltop Campus Map`).
+  - Double-sided `4" × 9"` visitor rack card, three `24" × 36"` Lobby orientation boards, and interactive Lobby wall installation preview.
+  - Four Abbey & Model palettes (`Abbey & Model`, `Warm Buff-Brick`, `White Plaster`, `Dark Studio`) featuring architectural **Red Poché** (`#a42d21`), bluff earth hatching, and Abbey Quad meadow tones.
+- **Project Introduction Landing Page (`docs/index.html`) & Dedicated Blueprint Explorer (`docs/drawings.html`)**:
+  - Editorial overview introducing Alvar Aalto's 1970 library and the digital reconstruction, with an interactive 4-view QHD stage, live draggable Photo-vs-Model curtain wipe, telemetry bar, and direct camera/chapter launch chips.
+  - Relocated the 47-sheet blueprint & 7-sheet multi-layer SVG vector-overlay explorer cleanly to `docs/drawings.html`.
+- **Unified Suite Design System, Favicons & 3D Hotkeys (`docs/suite.css`, `docs/favicon.ico`, `docs/favicon.svg`, `docs/angel-logo.svg`)**:
+  - Consistent `.suite-header` navigation bar and shared Abbey birch / Red Poché design tokens across all 6 suite pages.
+  - Multi-resolution `favicon.ico` and vector `favicon.svg` / `angel-logo.svg` derived from the Mount Angel Abbey heraldic angel crest.
+  - Added keyboard shortcuts `F` (toggle fullscreen) and `M` (hide/show all menu panels) to `docs/library-3d.html`.
+
+---
+
 ## [0.3.0] - 2026-11-14
 
 ### Added

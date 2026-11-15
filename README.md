@@ -13,10 +13,12 @@ This repository reconstructs Alvar Aalto's landmark library at Mount Angel Abbey
    - Cross-registers 7 primary architectural & structural sheets (`03-a3`, `04-a4`, `05-a5`, `06-a6`, `07-a7`, `13-a13`, `35-s4`) to sub-pixel accuracy (`0.68–1.21 px` RMS) and emits multi-layer *College Geometry*-style SVG overlays (`docs/overlays/sheet_*.svg`) and dark-blueprint verification proofs (`docs/overlays/proofs/`).
 
 2. **Interactive Web Suite (`docs/`)**
-   - **Blueprint & Vector Archive (`docs/index.html`)**: Browse all 47 sheets with a **✦ Vector Calibrated (7)** filter, toggle constructive layers (`Regulating Grid & Rays`, `Columns & H-Piers`, `Walls, Slabs & Carrels`, `Well, Stairs & Bookstacks`, `Roof, Scoop & Skylights`), switch **Dark Blueprint** mode, and dim the raster scan opacity (`0%–100%`) to inspect the extracted vectors cleanly.
-   - **Standalone WebGL2 3D Viewer (`docs/library-3d.html`)**: Zero-dependency WebGL2 architectural viewer loading `docs/overlays/library_3d_scene.json` with real-time Orbit/Pan/Zoom, per-layer toggles, dynamic 4096px solar shadows, 45.07°N Mount Angel heliodon studies, 1-click **Roof Cutaway**, and 6 architectural camera presets.
+   - **Project Introduction & Suite Overview (`docs/index.html`)**: Unified landing page introducing Alvar Aalto's 1970 Mount Angel Abbey Library and the digital reconstruction, with an interactive 4-view QHD stage, live draggable Photo-vs-Model curtain wipe, Mount Angel Abbey angel crest & `favicon.ico`, and consistent suite navigation (`docs/suite.css`).
+   - **Standalone WebGL2 3D Viewer (`docs/library-3d.html`)**: Zero-dependency WebGL2 architectural viewer loading `docs/overlays/library_3d_scene.json` with real-time Orbit/Pan/Zoom, per-layer toggles, GPU stencil architectural **Red Poché** section cuts, dynamic 4096px solar shadows, 45.07°N Mount Angel heliodon studies, 1-click **Roof Cutaway**, 20 camera presets, and keyboard hotkeys (`F` fullscreen, `M` hide/show menus).
    - **Making-Of Architectural Monograph (`docs/making-of.html`)**: Comprehensive interactive monograph detailing the constructive reverse-engineering methodology, structural mechanics, daylighting acoustics, and an interactive before/after curtain slider comparing early blockouts against the final 134,459-face model.
-   - **Photographic Registration & Evaluation Lab (`docs/photo-compare.html`)**: Accuracy evaluation lab comparing 8 archival and contemporary photographs side-by-side with matched IngeTrazo camera perspectives.
+   - **Photographic Registration & Evaluation Lab (`docs/photo-compare.html`)**: Accuracy evaluation lab comparing 8 archival and contemporary photographs against matched IngeTrazo camera perspectives via Curtain Wipe, Onion-Skin Difference/Multiply, and Side-by-Side modes.
+   - **Blueprint & Vector Archive (`docs/drawings.html`)**: Browse all 47 sheets (`A1–A28`, `F1–F3`, `S1–S16`) with a **✦ Vector Calibrated (7)** filter, toggle constructive layers (`Regulating Grid & Rays`, `Columns & H-Piers`, `Walls, Slabs & Carrels`, `Well, Stairs & Bookstacks`, `Roof, Scoop & Skylights`), switch **Dark Blueprint** mode, and dim raster scan opacity (`0%–100%`).
+   - **Visitor Rack Card & Lobby Orientation Poster Studio (`docs/visitor-guide.html`)**: Flexible CSS-variable-driven print & wayfinding workbench featuring a double-sided `4" × 9"` visitor rack card, three `24" × 36"` Lobby orientation posters, skylight cross-section, Abbey hilltop campus map, 4 Abbey & Model palettes with architectural red poché, and Lobby wall installation preview (`src/phiarchitect/mountangel/wayfinding.py`, `visitor_guide.py`).
 
 3. **Modular IngeTrazo 0.6.0 3D Model (`ingetrazo_3d/`)**
    - Compiles a complete **134,459-face 2-manifold** parametric 3D architectural model (`ingetrazo_3d/mount_angel_library.igz` + `.obj`/`.mtl`) directly from `AaltoGeometry` (`FT_TO_M = 0.3048`) across 9 modular component builders:
@@ -62,7 +64,9 @@ python3 -m http.server 8080 --directory docs
 ```
 
 Then open:
-- Blueprint & Vector Archive: `http://localhost:8080/index.html`
-- Interactive 3D Model Viewer: `http://localhost:8080/library-3d.html`
+- Project Overview & Suite Landing Page: `http://localhost:8080/index.html`
+- Interactive 3D Model Viewer (`F` fullscreen, `M` hide menus): `http://localhost:8080/library-3d.html`
 - Making-Of Architectural Monograph: `http://localhost:8080/making-of.html`
 - Photographic Evaluation Lab: `http://localhost:8080/photo-compare.html`
+- Blueprint & Vector Archive (47 Sheets): `http://localhost:8080/drawings.html`
+- Visitor Rack Card & Lobby Posters: `http://localhost:8080/visitor-guide.html`

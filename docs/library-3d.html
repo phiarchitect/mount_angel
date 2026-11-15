@@ -4,13 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mount Angel Abbey Library — Alvar Aalto Interactive 3D &amp; Section Viewer</title>
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="suite.css" />
   <style>
     :root {
       --bg-sky-top: #1a2639;
-      --panel-bg: rgba(12, 18, 29, 0.88);
-      --panel-border: rgba(217, 155, 82, 0.35);
+      --panel-bg: rgba(11, 15, 23, 0.90);
+      --panel-border: rgba(212, 180, 131, 0.30);
       --accent: #eab308;
-      --terracotta: #c25947;
+      --terracotta: #a42d21;
       --cyan: #38bdf8;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
@@ -37,70 +40,37 @@
     }
     #glCanvas:active { cursor: grabbing; }
 
-    .top-bar {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: 54px;
-      background: rgba(10, 15, 25, 0.88);
-      border-bottom: 1px solid var(--panel-border);
-      backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-      z-index: 20;
-    }
-
-    .title-wrap {
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-    }
-    .title-wrap h1 {
-      font-size: 1.05rem;
-      font-weight: 700;
-      letter-spacing: 0.3px;
-      color: #fef3c7;
-    }
-    .title-wrap span {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .btn-link, .cutaway-btn {
-      background: rgba(255, 255, 255, 0.08);
+    .cutaway-btn {
+      background: rgba(255, 255, 255, 0.06);
       color: var(--text-main);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      border-radius: 6px;
-      padding: 6px 12px;
-      font-size: 0.8rem;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 7px;
+      padding: 5px 10px;
+      font-size: 0.76rem;
       font-weight: 600;
       text-decoration: none;
       cursor: pointer;
-      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: background 0.14s ease, border-color 0.14s ease;
     }
-    .btn-link:hover, .cutaway-btn:hover {
-      background: rgba(234, 179, 8, 0.2);
+    .cutaway-btn:hover {
+      background: rgba(234, 179, 8, 0.18);
       border-color: var(--accent);
     }
     .cutaway-btn.active {
-      background: rgba(56, 189, 248, 0.24);
+      background: rgba(56, 189, 248, 0.22);
       border-color: var(--cyan);
       color: #e0f2fe;
     }
 
     .side-panel {
       position: fixed;
-      top: 68px;
+      top: 70px;
       left: 16px;
       width: 304px;
-      max-height: calc(100vh - 84px);
+      max-height: calc(100vh - 86px);
       overflow-y: auto;
       background: var(--panel-bg);
       border: 1px solid var(--panel-border);
@@ -333,28 +303,84 @@
       padding: 1px 6px;
     }
 
-    body.studio-mode .top-bar,
-    body.studio-mode .side-panel {
+    .viewer-quick-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .restore-ui-pill {
       display: none;
+      position: fixed;
+      top: 14px;
+      left: 16px;
+      z-index: 30;
+      background: rgba(11, 15, 23, 0.72);
+      color: #f5efe4;
+      border: 1px solid rgba(212, 180, 131, 0.35);
+      border-radius: 7px;
+      padding: 5px 11px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      opacity: 0.58;
+      transition: opacity 0.15s ease, border-color 0.15s ease;
+    }
+    .restore-ui-pill:hover {
+      opacity: 1;
+      border-color: #eab308;
+    }
+
+    body.menus-hidden .suite-header,
+    body.menus-hidden .side-panel,
+    body.menus-hidden .hud-caption {
+      display: none !important;
+    }
+    body.menus-hidden:not(.studio-mode) .restore-ui-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    body.studio-mode .suite-header,
+    body.studio-mode .side-panel,
+    body.studio-mode .restore-ui-pill {
+      display: none !important;
     }
   </style>
 </head>
 <body>
   <canvas id="glCanvas"></canvas>
 
-  <header class="top-bar">
-    <div class="title-wrap">
-      <h1>Mount Angel Abbey Library</h1>
-      <span>Alvar Aalto (1970) &middot; IngeTrazo 0.6.0 Parametric 3D, Section &amp; Solar Viewer</span>
-    </div>
-    <div class="nav-actions">
+  <header class="suite-header suite-header-fixed">
+    <a href="index.html" class="suite-brand" title="Mount Angel Abbey Library — Project Overview">
+      <span class="suite-crest">
+        <img src="angel-logo.svg" alt="" width="24" height="19">
+      </span>
+      <span class="suite-brand-text">
+        <span class="suite-brand-title">Mount Angel Abbey Library</span>
+        <span class="suite-brand-sub">Alvar Aalto &middot; 1970</span>
+      </span>
+    </a>
+
+    <div class="viewer-quick-bar">
       <button id="shadowToggleBtn" class="cutaway-btn active" type="button" title="Toggle Real-Time 4096px WebGL2 Solar Shadows">&#9728; Shadows</button>
-      <button id="orthoToggleBtn" class="cutaway-btn" type="button" title="Switch between Perspective and True Parallel Orthographic Projection">&#9645; Orthographic</button>
-      <button id="roofCutawayBtn" class="cutaway-btn" type="button">&#9698; Roof Cutaway</button>
-      <a href="photo-compare.html" class="btn-link">&#9680; Photo vs. Model</a>
-      <a href="making-of.html" class="btn-link">&#10022; Making the Model</a>
-      <a href="index.html" class="btn-link">&larr; Blueprint Archive</a>
+      <button id="orthoToggleBtn" class="cutaway-btn" type="button" title="Switch between Perspective and Orthographic Projection">&#9645; Ortho</button>
+      <button id="roofCutawayBtn" class="cutaway-btn" type="button" title="Toggle Roof &amp; Daylight Scoop Layer">&#9698; Cutaway</button>
+      <button id="menuToggleBtn" class="cutaway-btn" type="button" title="Hide or Show Menu Panels (Hotkey: M)">&#9707; Menus <span class="kbd-badge">M</span></button>
+      <button id="fullscreenBtn" class="cutaway-btn" type="button" title="Toggle Fullscreen (Hotkey: F)">&#9974; Full <span class="kbd-badge">F</span></button>
     </div>
+
+    <nav class="suite-nav" aria-label="Project Suite">
+      <a href="index.html" class="suite-link">Overview</a>
+      <a href="making-of.html" class="suite-link">Making the Model</a>
+      <a href="photo-compare.html" class="suite-link">Photo vs. Model</a>
+      <a href="drawings.html" class="suite-link">Blueprints <span class="suite-count">47</span></a>
+      <a href="visitor-guide.html" class="suite-link">Visitor Guide</a>
+      <a href="library-3d.html" class="suite-link suite-link-3d is-active">&#9670; 3D Model</a>
+    </nav>
   </header>
 
   <aside class="side-panel">
@@ -460,10 +486,15 @@
       <div class="panel-heading">IngeTrazo Model Layers</div>
       <div class="layer-list" id="layerList" style="margin-top:6px;"></div>
     </div>
-    <div style="font-size:0.69rem;color:#94a3b8;line-height:1.35;">
-      <strong>Controls:</strong> Left-drag Orbit &middot; Right/Shift-drag Pan &middot; Scroll Zoom
+    <div style="font-size:0.69rem;color:#94a3b8;line-height:1.45;">
+      <strong>Controls:</strong> Drag Orbit &middot; Right/Shift Pan &middot; Scroll Zoom<br>
+      <strong>Hotkeys:</strong> <span class="kbd-badge">F</span> Fullscreen &middot; <span class="kbd-badge">M</span> Hide Menu Panels
     </div>
   </aside>
+
+  <button type="button" id="restoreUiBtn" class="restore-ui-pill" title="Show Menu Panels (Hotkey: M)">
+    <span class="kbd-badge">M</span> Show Menus
+  </button>
 
   <div class="hud-caption" id="hudCaption">
     <h3 id="camTitle">Loading IngeTrazo 3D Scene...</h3>
@@ -1799,6 +1830,50 @@
       layerVisible["7_Roof_And_Daylight_Scoop"] = !cur;
       syncUiCheckboxes();
       requestRender();
+    });
+
+    // UI Panels ('m') & Fullscreen ('f') Controls + Hotkeys
+    const menuToggleBtn = document.getElementById("menuToggleBtn");
+    const restoreUiBtn = document.getElementById("restoreUiBtn");
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+
+    function toggleMenus() {
+      const hidden = document.body.classList.toggle("menus-hidden");
+      if (menuToggleBtn) menuToggleBtn.classList.toggle("active", hidden);
+      requestRender();
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    if (menuToggleBtn) menuToggleBtn.addEventListener("click", toggleMenus);
+    if (restoreUiBtn) restoreUiBtn.addEventListener("click", toggleMenus);
+    if (fullscreenBtn) fullscreenBtn.addEventListener("click", toggleFullscreen);
+
+    document.addEventListener("fullscreenchange", () => {
+      if (fullscreenBtn) {
+        fullscreenBtn.classList.toggle("active", Boolean(document.fullscreenElement));
+      }
+      requestRender();
+    });
+
+    window.addEventListener("keydown", e => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const tag = e.target && e.target.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      const key = e.key.toLowerCase();
+      if (key === "f") {
+        e.preventDefault();
+        toggleFullscreen();
+      } else if (key === "m") {
+        e.preventDefault();
+        toggleMenus();
+      }
     });
 
     // Mouse Orbit / Pan / Zoom
