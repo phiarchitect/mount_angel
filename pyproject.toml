@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "phiarchitect-mountangel"
-version = "0.4.1"
+version = "0.4.2"
 description = "Constructive vector extraction, blueprint overlays, and IngeTrazo 3D architectural model of Alvar Aalto's Mount Angel Abbey Library"
 readme = "README.md"
 requires-python = ">=3.11"
