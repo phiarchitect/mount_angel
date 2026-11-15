@@ -470,31 +470,29 @@ def build_roof_and_skylights(scene):
         (18.0, -13.5),
         (18.0, -21.0),
     ]
-    # Extrude 0.64 m structural slab (+5.05 .. +5.69 m) with dark slate-charcoal membrane
+    # Envelope wall (Layer 6) is 1.35 ft thick and runs INWARD from this footprint line.
+    aud_wall_ft = 1.35
+    # Extrude 0.64 m structural slab (+5.05 .. +5.69 m) with dark slate-charcoal membrane,
+    # inset to the inner face of the envelope wall so slab and wall never share coplanar faces.
+    aud_slab_poly = offset_polyline_right_ft(auditorium_roof_poly, -aud_wall_ft, closed=True)
     add_extruded_polygon_ft(
         mesh,
-        auditorium_roof_poly,
+        aud_slab_poly,
         z_aud_rf - 0.64,
         z_aud_rf,
         MATERIALS["auditorium_roof"],
         MATERIALS["buff_brick"],
         MATERIALS["white_soffit"],
     )
-    # Brick Parapet + Copper Coping around Auditorium Perimeter
-    aud_parapet_loop = [*auditorium_roof_poly, auditorium_roof_poly[0]]
+    # Copper Coping capping the Auditorium parapet. The buff-brick parapet itself is the
+    # Layer 6 auditorium envelope wall (rising to z_aud_par), so no second brick strip is
+    # added here (it would be coplanar and z-fight). Loop is wound clockwise like the
+    # envelope wall so "right" = inward; the coping overhangs both wall faces by 0.08 ft.
+    aud_coping_loop = [*reversed(auditorium_roof_poly), auditorium_roof_poly[-1]]
     add_wall_strip_ft(
         mesh,
-        aud_parapet_loop,
-        1.25,
-        z_aud_rf,
-        z_aud_par,
-        MATERIALS["buff_brick"],
-        offset_mode="right",
-    )
-    add_wall_strip_ft(
-        mesh,
-        aud_parapet_loop,
-        1.40,
+        aud_coping_loop,
+        aud_wall_ft + 0.16,
         z_aud_par,
         z_aud_par + 0.14,
         MATERIALS["copper_roof"],

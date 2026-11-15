@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.1] - 2026-11-15
+
+### Fixed
+- **Auditorium roof z-fighting**: closed-loop walls in `add_wall_strip_ft` (`ingetrazo_3d/components/primitives.py`) were emitted as a single unmitred keyhole polygon whose top/bottom caps filled the entire enclosed area. The auditorium parapet & coping caps therefore spanned the whole roof at +6.15 m and z-fought with the envelope wall tops, hiding the slate membrane. Closed loops are now true ring solids (outer ring + inner hole) with wrap-around miters.
+- Removed the duplicate roof-layer brick parapet (coplanar with the Layer 6 auditorium envelope wall), inset the auditorium roof slab to the wall's inner face, and aligned the copper coping with the envelope wall (0.08 ft overhang each side).
+
+### Changed
+- Rebuilt the 3D model (`134,405` faces, 0 unmatched edges in Layers 6–7) and re-captured the 20 QHD studio renders plus exterior photo-match renders 01–02.
+
+---
+
 ## [0.4.0] - 2026-11-15
 
 ### Added

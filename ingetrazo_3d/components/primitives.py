@@ -473,7 +473,12 @@ def add_wall_strip_ft(
     offset_mode: str = "center",  # "center", "left", "right"
     overhang_left_ft: float = 0.0,
 ):
-    """Extrude a multi-segment wall along `pts_ft` with exact acute-capable mitered corners."""
+    """Extrude a multi-segment wall along `pts_ft` with exact acute-capable mitered corners.
+
+    If the polyline is closed (first point == last point), the wall is built as a true
+    ring solid (outer ring + inner hole) with mitered corners at every vertex, including
+    the start/end seam, so its top and bottom caps never fill the enclosed interior.
+    """
     n = len(pts_ft)
     if n < 2:
         return
@@ -483,6 +488,47 @@ def add_wall_strip_ft(
         d_left, d_right = thickness_ft, 0.0
     else:
         d_left, d_right = overhang_left_ft, overhang_left_ft - thickness_ft
+
+    is_closed = (
+        n >= 4
+        and abs(pts_ft[0][0] - pts_ft[-1][0]) < 1e-6
+        and abs(pts_ft[0][1] - pts_ft[-1][1]) < 1e-6
+    )
+    if is_closed:
+        ring = list(pts_ft[:-1])
+        m = len(ring)
+        normals = []
+        for i in range(m):
+            dx = ring[(i + 1) % m][0] - ring[i][0]
+            dy = ring[(i + 1) % m][1] - ring[i][1]
+            L = math.hypot(dx, dy)
+            normals.append((0.0, 1.0) if L < 1e-6 else (-dy / L, dx / L))
+        left_ring = []
+        right_ring = []
+        for i in range(m):
+            n0x, n0y = normals[i - 1]
+            n1x, n1y = normals[i]
+            mx, my = n0x + n1x, n0y + n1y
+            ml = math.hypot(mx, my)
+            if ml < 1e-4:
+                nx, ny = n1x, n1y
+            else:
+                mx /= ml
+                my /= ml
+                dot = max(0.20, mx * n1x + my * n1y)
+                nx, ny = mx / dot, my / dot
+            px, py = ring[i]
+            left_ring.append((px + nx * d_left, py + ny * d_left))
+            right_ring.append((px + nx * d_right, py + ny * d_right))
+        if abs(_signed_area_2d(left_ring)) >= abs(_signed_area_2d(right_ring)):
+            outer, inner = left_ring, right_ring
+        else:
+            outer, inner = right_ring, left_ring
+        if abs(_signed_area_2d(inner)) < 1e-6:
+            add_extruded_polygon_ft(mesh, outer, z0_m, z1_m, attrs)
+        else:
+            add_extruded_polygon_with_holes_ft(mesh, outer, [inner], z0_m, z1_m, attrs)
+        return
 
     seg_normals = []
     for i in range(n - 1):
