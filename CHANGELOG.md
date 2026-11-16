@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Measuring-grid gallery** in Making the Model, Chapter II ("Scaling the Sheets"): Sheets 3, 4, 5, 6 and 7 with the registered foot grid centred on WP #4, the Sheet 5 ray registration, and the Sheet 13 Section A-A pixel ruler (`docs/overlays/grids/`). Opens in the lightbox; the 3D deep-link is hidden for drawings.
+
+---
+
 ## [0.4.2] - 2026-11-15
 
 ### Fixed

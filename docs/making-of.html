@@ -818,6 +818,34 @@
       gap: 20px;
       margin-top: 28px;
     }
+    .grid-gallery-head { margin-top: 40px; max-width: 70em; }
+    .grid-gallery-head h3 { font-family: var(--serif, Georgia, serif); font-size: 1.5rem; margin-bottom: 8px; }
+    .grid-gallery-head p { color: var(--text-muted, #94a3b8); font-size: 0.92rem; }
+    .grid-gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .grid-fig {
+      margin: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: zoom-in;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .grid-fig:hover { transform: translateY(-2px); border-color: rgba(212, 180, 131, 0.45); }
+    .grid-fig img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; background: #fff; }
+    .grid-fig-wide { grid-column: span 3; }
+    .grid-fig-wide img { aspect-ratio: auto; max-height: 560px; object-fit: contain; }
+    .grid-fig figcaption { padding: 10px 14px 12px; font-size: 0.8rem; color: var(--text-muted, #94a3b8); }
+    .grid-fig figcaption strong { display: block; color: var(--text-main, #f3f4f6); font-size: 0.85rem; margin-bottom: 2px; }
+    @media (max-width: 900px) {
+      .grid-gallery { grid-template-columns: 1fr; }
+      .grid-fig-wide { grid-column: auto; }
+    }
     .feature-card {
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
@@ -1309,6 +1337,44 @@ P_3D(x_ft, y_ft, z_ft) = 0.3048 &middot; [ x_ft, y_ft, z_ft ]
         </div>
       </div>
     </div>
+
+    <!-- Measuring grids used to scale and register the scanned sheets -->
+    <div class="grid-gallery-head">
+      <h3>Scaling the Sheets: Measuring Grids</h3>
+      <p>
+        Before any geometry could be traced, each scanned sheet had to be put to scale. Using the printed dimensions and survey grid lines, every plan was fitted with a shared foot grid centred on <code>WP #4 (0, 0)</code>: red lines every 20&prime; in X, blue lines every 10&prime; in Y. Room corners, columns and walls could then be read straight off the drawings in real feet. Sections were read with a pixel ruler to pick off floor, ceiling and roof heights. Click any sheet to enlarge it.
+      </p>
+    </div>
+    <div class="grid-gallery">
+      <figure class="grid-fig" data-lightbox="overlays/grids/grid_06_basic_layout.jpg">
+        <img src="overlays/grids/grid_06_basic_layout.jpg" alt="Sheet 6 Basic Plan Layout with registered world grid" loading="lazy" />
+        <figcaption><strong>Sheet 6 &middot; Basic Layout</strong> The world grid laid over Aalto&rsquo;s setting-out plan. The red line is X&nbsp;=&nbsp;0 through WP&nbsp;#4.</figcaption>
+      </figure>
+      <figure class="grid-fig" data-lightbox="overlays/grids/reg_05_level3_rays.jpg">
+        <img src="overlays/grids/reg_05_level3_rays.jpg" alt="Sheet 5 Level 3 with structural rays B, C, D registered" loading="lazy" />
+        <figcaption><strong>Sheet 5 &middot; Ray Registration</strong> Rays B, C and D fitted through the paired columns to confirm scale and rotation.</figcaption>
+      </figure>
+      <figure class="grid-fig" data-lightbox="overlays/grids/grid_05_level3.jpg">
+        <img src="overlays/grids/grid_05_level3.jpg" alt="Sheet 5 Level 3 floor plan with foot grid" loading="lazy" />
+        <figcaption><strong>Sheet 5 &middot; Level 3</strong> Main reading room and south wing on the foot grid.</figcaption>
+      </figure>
+      <figure class="grid-fig" data-lightbox="overlays/grids/grid_04_level2.jpg">
+        <img src="overlays/grids/grid_04_level2.jpg" alt="Sheet 4 Level 2 floor plan with foot grid" loading="lazy" />
+        <figcaption><strong>Sheet 4 &middot; Level 2</strong> Stack level below the reading room.</figcaption>
+      </figure>
+      <figure class="grid-fig" data-lightbox="overlays/grids/grid_03_level1.jpg">
+        <img src="overlays/grids/grid_03_level1.jpg" alt="Sheet 3 Level 1 floor plan with foot grid" loading="lazy" />
+        <figcaption><strong>Sheet 3 &middot; Level 1</strong> Lowest level, set into the bluff.</figcaption>
+      </figure>
+      <figure class="grid-fig" data-lightbox="overlays/grids/grid_07_roof.jpg">
+        <img src="overlays/grids/grid_07_roof.jpg" alt="Sheet 7 Roof plan with foot grid" loading="lazy" />
+        <figcaption><strong>Sheet 7 &middot; Roof</strong> Skylight positions and roof steps measured in feet.</figcaption>
+      </figure>
+      <figure class="grid-fig grid-fig-wide" data-lightbox="overlays/grids/grid_13_section_aa.jpg">
+        <img src="overlays/grids/grid_13_section_aa.jpg" alt="Sheet 13 Section A-A with pixel measuring ruler" loading="lazy" />
+        <figcaption><strong>Sheet 13 &middot; Section A-A</strong> A pixel ruler over the section, used to read floor, ceiling and roof heights.</figcaption>
+      </figure>
+    </div>
   </section>
 
   <!-- Chapter III: Forensic Discovery of Irregular 90°-Turned H-Columns -->
@@ -1694,6 +1760,7 @@ sampler2DShadow + 16-tap Interleaved Gradient Noise Poisson Disk
       document.getElementById("lbCaption").textContent = caption || "2560×1440 QHD Studio Render";
       const link = document.getElementById("lbDeepLink");
       link.href = camKey ? `library-3d.html?cam=${camKey}` : "library-3d.html";
+      link.style.display = camKey ? "" : "none";
       document.getElementById("lightbox").classList.add("open");
     }
     function closeLightbox() {
