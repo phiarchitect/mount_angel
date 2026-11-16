@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+- **The Journey** (`docs/journey.html`): Fr. Barnabas Reasoner's March 1966 trip to meet Aalto — route map, stop-by-stop story, Wikimedia Commons photos of the buildings he saw (credited), his hopes for the library, and a request to help find his lost photographs.
+- Journey link in every page's navigation and a Journey card on the home page.
+
+### Fixed
+- README dates the Barnabas report to 1966.
+
 ## [0.4.4] - 2026-11-16
 
 ### Changed

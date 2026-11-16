@@ -1,0 +1,82 @@
+[
+  {
+    "key": "studio_exterior",
+    "file": "journey/studio_exterior.jpg",
+    "caption": "Studio Aalto, Munkkiniemi, Helsinki",
+    "author": "Trogain",
+    "license": "CC BY-SA 3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Studio_Aalto_exterior_2014.jpg"
+  },
+  {
+    "key": "studio_courtyard",
+    "file": "journey/studio_courtyard.jpg",
+    "caption": "The studio courtyard",
+    "author": "Trogain",
+    "license": "CC BY-SA 3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Studio_Aalto,_court_yard.jpg"
+  },
+  {
+    "key": "culture_house",
+    "file": "journey/culture_house.jpg",
+    "caption": "House of Culture (Kulttuuritalo), Helsinki",
+    "author": "Mikkoau",
+    "license": "CC BY-SA 4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Kulttuuritalo_Helsinki.jpg"
+  },
+  {
+    "key": "culture_house_1956",
+    "file": "journey/culture_house_1956.jpg",
+    "caption": "House of Culture under construction, 1956",
+    "author": "Yrjö Lintunen",
+    "license": "Public domain",
+    "source": "https://commons.wikimedia.org/wiki/File:Kulttuuritalo-1956.jpg"
+  },
+  {
+    "key": "otaniemi_main",
+    "file": "journey/otaniemi_main.jpg",
+    "caption": "Technical Institute main building, Otaniemi",
+    "author": "Markus Säynevirta",
+    "license": "CC BY-SA 4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Helsinki_University_of_Technology_Main_Building,_Otaniemi,_Espoo_(October_2018).jpg"
+  },
+  {
+    "key": "otaniemi_library",
+    "file": "journey/otaniemi_library.jpg",
+    "caption": "Otaniemi library (then under construction), today",
+    "author": "Markus Säynevirta",
+    "license": "CC BY-SA 4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Harald_Herlin_Learning_Centre,_Otaniemi,_Espoo_(November_2018).jpg"
+  },
+  {
+    "key": "rovaniemi_exterior",
+    "file": "journey/rovaniemi_exterior.jpg",
+    "caption": "Rovaniemi library, exterior",
+    "author": "Leonhard Lenz",
+    "license": "CC0",
+    "source": "https://commons.wikimedia.org/wiki/File:Lapin_maakuntakirjasto_Rovaniemi_2022-09-14_01.jpg"
+  },
+  {
+    "key": "rovaniemi_interior",
+    "file": "journey/rovaniemi_interior.jpg",
+    "caption": "Rovaniemi library, sunken reading area",
+    "author": "Xepheid",
+    "license": "CC BY-SA 4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Rovaniemi_main_library_interior_2020.jpg"
+  },
+  {
+    "key": "rovaniemi_1965",
+    "file": "journey/rovaniemi_1965.jpg",
+    "caption": "Rovaniemi library interior, 1965",
+    "author": "Pekka Kyytinen",
+    "license": "CC BY 4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Sisäkuva_Rovaniemen_kirjastosta_1965_(KK5596-10.KP.165).tif"
+  },
+  {
+    "key": "seinajoki",
+    "file": "journey/seinajoki.jpg",
+    "caption": "Seinäjoki library (1965)",
+    "author": "Santeri Viinamäki",
+    "license": "CC BY-SA 4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Aalto_library_20180925.jpg"
+  }
+]
