@@ -19,6 +19,7 @@ Nothing needs to be installed. The site works in any modern web browser.
 | Page | What it is for |
 |---|---|
 | **[3D Model](https://phiarchitect.github.io/mount_angel/library-3d.html)** | Walk around and through the library. Cut it open to see the levels and set the sun to any day and hour. Press **F** for full screen and **M** to hide the menus. |
+| **[The Journey](https://phiarchitect.github.io/mount_angel/journey.html)** | Fr. Barnabas's March 1966 trip to meet Aalto: a map, the buildings he saw, and his hopes for the library. |
 | **[Making the Model](https://phiarchitect.github.io/mount_angel/making-of.html)** | How the drawings were read and measured, and what we learned about Aalto's design along the way. |
 | **[Photo vs. Model](https://phiarchitect.github.io/mount_angel/photo-compare.html)** | Eight photographs of the library set beside matching views of the model, so you can judge its accuracy for yourself. |
 | **[Blueprints](https://phiarchitect.github.io/mount_angel/drawings.html)** | All 47 of Aalto's sheets (plans, sections, details, furniture and structure) in one place. |
@@ -31,7 +32,7 @@ Some ways this work might be useful:
 - **Welcoming visitors.** Print the rack card for the entry desk and the posters for the lobby. The model views can also go on screens or in talks.
 - **Teaching and tours.** The 3D model shows things that are hard to see in person: the whole building at once, how the three levels fit together, and how daylight moves through the reading room over the seasons.
 - **Stewardship.** The model and the measured drawings are a record of the building as Aalto designed it. That record can help with care, repairs and future planning. Please note that it is a study model. Before any construction work, confirm dimensions on site and against the original drawings.
-- **The archive.** All 47 drawing sheets are browsable in one place, alongside Fr. Barnabas's 1965 report on the Helsinki visit.
+- **The archive.** All 47 drawing sheets are browsable in one place, alongside Fr. Barnabas's 1966 report on his Helsinki journey.
 
 Corrections are welcome. If you notice anything in the model that doesn't match the building (a wall, a stair, a window, a bookcase), please let us know. Many of the details so far have come from exactly this kind of careful looking.
 
@@ -43,7 +44,7 @@ Corrections are welcome. If you notice anything in the model that doesn't match 
 
 All drawings and photographs remain the property of their owners. They are used here for study and documentation.
 
-Made by **phi ARCHITECT**. Release history is in the [CHANGELOG](CHANGELOG.md). This is version 0.4.4.
+Made by **phi ARCHITECT**. Release history is in the [CHANGELOG](CHANGELOG.md). This is version 0.4.5.
 
 ---
 

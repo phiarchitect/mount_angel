@@ -1565,6 +1565,7 @@ def render_visitor_guide_html() -> str:
 
     <nav class="suite-nav" aria-label="Project Suite">
       <a href="index.html" class="suite-link">Overview</a>
+      <a href="journey.html" class="suite-link">Journey</a>
       <a href="making-of.html" class="suite-link">Making the Model</a>
       <a href="photo-compare.html" class="suite-link">Photo vs. Model</a>
       <a href="drawings.html" class="suite-link">Blueprints <span class="suite-count">47</span></a>
