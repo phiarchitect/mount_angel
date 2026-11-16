@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.4] - 2026-11-16
+
+### Changed
+- **README rewritten for the Abbey community.** It now opens with the building, the live site and what each page is for. A new section covers uses for the library and the Abbey (visitors, tours, stewardship, archive), and sources and credits are listed. Technical notes moved to the end, with corrected build flags and no hard-coded local paths.
+
+---
+
 ## [0.4.3] - 2026-11-15
 
 ### Added
