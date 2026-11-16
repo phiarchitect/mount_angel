@@ -43,7 +43,7 @@ Corrections are welcome. If you notice anything in the model that doesn't match 
 
 All drawings and photographs remain the property of their owners. They are used here for study and documentation.
 
-Made by **phi ARCHITECT**. Release history is in the [CHANGELOG](CHANGELOG.md). This is version 0.4.3.
+Made by **phi ARCHITECT**. Release history is in the [CHANGELOG](CHANGELOG.md). This is version 0.4.4.
 
 ---
 
