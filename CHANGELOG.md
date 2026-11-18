@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [0.4.6] - 2026-11-18
 
 ### Added
 - **Building with Code** (`docs/code.html`): parametric Python modeling strategy, three-tier module organization (`vectors.py` → `primitives.py` → 8 domain builders), live IngeTrazo + manifold-verification feedback loop, 5-stage Git camera stepper, a 7-pass H-column calibration case study (`B`, `C`, `D`), and four before/after viewport bug catches.
