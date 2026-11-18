@@ -11,7 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **Building with Code** (`docs/code.html`): parametric Python modeling strategy, three-tier module organization (`vectors.py` → `primitives.py` → 8 domain builders), live IngeTrazo + manifold-verification feedback loop, 5-stage Git camera stepper, a 7-pass H-column calibration case study (`B`, `C`, `D`), and four before/after viewport bug catches.
-- **Code** navigation link across all suite pages, card `04 · CODE` on the home page, and README entry.
+- **Furniture & Lamps in Code** (`docs/furniture.html`): piece-by-piece study pairing archival photograph observations, macro 3D studio renders, and Python builder code for the parapet-mounted mushroom reading lamp (`add_aalto_parapet_lamp`), cantilevered linoleum workbench & two-lug steel wall T-brackets, Artek Stool E60 & Chair 69, radial birch bookcases with 5-batten directory screens, counter-height stairwell bookcases, and the curved slatted Control Desk.
+- `hud=0` URL parameter on `docs/library-3d.html` alongside `studio=1` for clean caption-free macro renders.
+- **Code** and **Furniture** navigation links across all suite pages, cards on `index.html`, and README entries.
 
 ## [0.4.5] - 2026-11-16
 
