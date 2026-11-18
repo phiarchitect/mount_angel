@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Furniture &amp; Lamps in Code — Mount Angel Abbey Library</title>
+  <meta name="description" content="How Alvar Aalto's custom reading lamps, cantilevered linoleum workbenches, Artek seating, and radial birch bookcases at Mount Angel Abbey Library were observed from photographs and built in Python." />
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="suite.css" />
+  <style>
+    :root {
+      --bg: #0b0f17; --surface: #121824; --surface-hi: #172030;
+      --cream: #f5efe4; --birch: #d4b483;
+      --poche: #a42d21; --poche-hi: #c43c2d;
+      --text: #f3f4f6; --muted: #94a3b8;
+      --border: rgba(148, 163, 184, 0.18);
+      --border-warm: rgba(212, 180, 131, 0.32);
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --mono: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.65; scroll-behavior: smooth; }
+    body { background: radial-gradient(1100px 540px at 14% 0%, rgba(164, 45, 33, 0.14), transparent 62%), var(--bg); }
+    a { color: inherit; }
+    .shell { max-width: 1140px; margin: 0 auto; padding: 0 28px; }
+
+    /* ── Intro ── */
+    .intro { padding: 54px 0 26px; max-width: 800px; }
+    .eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--birch); margin-bottom: 14px; }
+    h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(2.3rem, 4.4vw, 3.4rem); line-height: 1.05; color: var(--cream); margin-bottom: 18px; }
+    h1 em { color: var(--poche-hi); }
+    .lead { font-size: 1.04rem; color: #d6dae2; margin-bottom: 12px; }
+
+    /* ── Jump Strip ── */
+    .jump-strip {
+      display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0 36px;
+    }
+    .jump-pill {
+      font-family: var(--mono); font-size: 0.72rem; text-decoration: none;
+      padding: 6px 12px; border-radius: 999px; background: var(--surface);
+      border: 1px solid var(--border); color: #cfd4dc; transition: all 0.16s;
+    }
+    .jump-pill:hover { border-color: var(--birch); color: var(--cream); }
+
+    /* ── Piece Sections ── */
+    section.piece { padding: 44px 0; border-top: 1px solid var(--border); scroll-margin-top: 76px; }
+    .sec-kicker { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--poche-hi); margin-bottom: 6px; }
+    section.piece h2 { font-family: var(--serif); font-weight: 600; font-size: 2.05rem; line-height: 1.12; color: var(--cream); margin-bottom: 10px; }
+    .piece-intro { max-width: 820px; color: #cfd4dc; font-size: 0.96rem; margin-bottom: 18px; }
+    .obs-list {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 22px;
+      list-style: none; margin: 0 0 22px; max-width: 980px;
+    }
+    .obs-list li {
+      font-size: 0.88rem; color: #cbd2dc; padding-left: 16px; position: relative;
+    }
+    .obs-list li::before {
+      content: "◆"; position: absolute; left: 0; top: 1px;
+      font-size: 0.62rem; color: var(--poche-hi);
+    }
+    .obs-list strong { color: var(--cream); font-weight: 600; }
+    code {
+      font-family: var(--mono); font-size: 0.78rem; background: rgba(255,255,255,0.06);
+      padding: 2px 6px; border-radius: 4px; color: #e8dcc8;
+    }
+
+    /* ── Media Grids ── */
+    .trio-grid { display: grid; grid-template-columns: 0.85fr 1.075fr 1.075fr; gap: 14px; margin-bottom: 18px; }
+    .pair-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+    figure.plate {
+      position: relative; margin: 0; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 9px; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    figure.plate img {
+      width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; cursor: zoom-in;
+    }
+    .plate-tag {
+      position: absolute; top: 10px; left: 10px; font-family: var(--mono);
+      font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 4px; background: rgba(11,15,23,0.86);
+      border: 1px solid var(--border); color: var(--muted); backdrop-filter: blur(4px);
+    }
+    .plate-tag.obs { border-color: rgba(196,60,45,0.55); color: #f2a299; }
+    .plate-tag.mod { border-color: rgba(212,180,131,0.55); color: var(--birch); }
+    figure.plate figcaption { padding: 9px 12px; font-size: 0.78rem; color: var(--muted); flex: 1; }
+
+    /* ── Code Card ── */
+    .code-card {
+      background: #0d121c; border: 1px solid var(--border-warm); border-radius: 10px;
+      overflow: hidden;
+    }
+    .code-head {
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      padding: 9px 14px; background: rgba(212, 180, 131, 0.08);
+      border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 0.73rem; color: var(--birch);
+    }
+    .code-head a { color: var(--muted); text-decoration: none; }
+    .code-head a:hover { color: var(--cream); }
+    pre.code-body {
+      padding: 14px 16px; overflow-x: auto; font-family: var(--mono);
+      font-size: 0.76rem; line-height: 1.58; color: #dce3ee;
+    }
+    .kw { color: #e06c60; }
+    .fn { color: #e5c07b; }
+    .cm { color: #6f7f96; font-style: italic; }
+    .nu { color: #d4b483; }
+    .st { color: #98c379; }
+
+    /* ── Lightbox ── */
+    .lightbox {
+      position: fixed; inset: 0; z-index: 200; background: rgba(6, 9, 14, 0.92);
+      display: none; align-items: center; justify-content: center; padding: 28px; cursor: zoom-out;
+    }
+    .lightbox.is-open { display: flex; }
+    .lightbox img { max-width: 95vw; max-height: 90vh; border-radius: 8px; border: 1px solid var(--border-warm); }
+
+    /* ── Footer ── */
+    .suite-footer { border-top: 1px solid var(--border); background: rgba(8,10,16,0.6); margin-top: 24px; }
+    .suite-footer-inner { max-width: 1140px; margin: 0 auto; padding: 20px 28px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; font-size: 0.8rem; color: var(--muted); }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 16px; }
+    .footer-links a { text-decoration: none; }
+    .footer-links a:hover { color: var(--birch); }
+
+    @media (max-width: 920px) {
+      .obs-list, .trio-grid, .pair-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="suite-header">
+    <a href="index.html" class="suite-brand" title="Mount Angel Abbey Library — Project Overview">
+      <span class="suite-crest"><img src="angel-logo.svg" alt="Mount Angel Abbey Crest" width="24" height="19" /></span>
+      <span class="suite-brand-text">
+        <span class="suite-brand-title">Mount Angel Abbey Library</span>
+        <span class="suite-brand-sub">Alvar Aalto &middot; 1970</span>
+      </span>
+    </a>
+    <nav class="suite-nav" aria-label="Project Suite">
+      <a href="index.html" class="suite-link">Overview</a>
+      <a href="journey.html" class="suite-link">Journey</a>
+      <a href="making-of.html" class="suite-link">Making the Model</a>
+      <a href="code.html" class="suite-link">Code</a>
+      <a href="furniture.html" class="suite-link is-active">Furniture</a>
+      <a href="photo-compare.html" class="suite-link">Photo vs. Model</a>
+      <a href="drawings.html" class="suite-link">Blueprints <span class="suite-count">47</span></a>
+      <a href="visitor-guide.html" class="suite-link">Visitor Guide</a>
+      <a href="library-3d.html" class="suite-link suite-link-3d">&#9670; 3D Model</a>
+    </nav>
+  </header>
+
+  <main class="shell">
+    <section class="intro">
+      <div class="eyebrow">Custom Lighting, Millwork &amp; Artek Seating &middot; Sheets 13-A13, 22-A22 &amp; F1&ndash;F3</div>
+      <h1>Aalto&rsquo;s <em>Furniture &amp; Lamps</em> in Code</h1>
+      <p class="lead">
+        In an Aalto library, the furniture is not placed after the building is finished&mdash;the reading counters, lamps, handrails, and radial bookcases are built into the architecture itself.
+      </p>
+      <p class="lead">
+        Each piece below started by studying photographs and detail sheets to see how it actually mounts and joins, then writing a parametric Python builder to generate it across every floor.
+      </p>
+    </section>
+
+    <nav class="jump-strip" aria-label="Featured Furniture Pieces">
+      <a class="jump-pill" href="#lamp">01 &middot; Parapet Mushroom Lamp</a>
+      <a class="jump-pill" href="#workbench">02 &middot; Linoleum Workbench &amp; T-Brackets</a>
+      <a class="jump-pill" href="#seating">03 &middot; Artek Stool E60 &amp; Chair 69</a>
+      <a class="jump-pill" href="#bookcases">04 &middot; Radial Bookcases &amp; 5-Batten Screens</a>
+      <a class="jump-pill" href="#stair-bookwall">05 &middot; Stairwell Counters &amp; Curved Bookwall</a>
+      <a class="jump-pill" href="#control-desk">06 &middot; Slatted Control Desk &amp; Guardrail</a>
+    </nav>
+
+    <!-- 01 · PARAPET MUSHROOM LAMP -->
+    <section class="piece" id="lamp">
+      <div class="sec-kicker">01 &middot; Lead Study &middot; 35 Custom Fixtures</div>
+      <h2>The Parapet-Mounted Mushroom Reading Lamp</h2>
+      <p class="piece-intro">
+        Our earliest model placed generic brass cone lamps on posts right on the desk. Looking closely at photographs of the Reading Well revealed a much smarter design: Aalto bolted the fixture to the <em>outside</em> of the parapet wall and cantilevered the arm over the birch curb, leaving every inch of writing surface clear.
+      </p>
+
+      <ul class="obs-list">
+        <li><strong>Zero desk footprint:</strong> A rectangular white steel channel bolts to the well-facing plaster face, completely off the black linoleum counter.</li>
+        <li><strong>55&deg; curb-clearing arm:</strong> A <code>21 mm</code> white enameled tube rises vertically, bends <code>~55&deg;</code> across the birch book-stop, and enters the upper shoulder of the shade horizontally.</li>
+        <li><strong>Stepped anti-glare collar:</strong> Under the <code>12.1&Prime;</code> oblate spun-aluminum dome sits a <code>7.7&Prime;</code> vertical cylindrical collar that shields readers across the well from bulb glare, plus an off-center brass pull-switch stem.</li>
+        <li><strong>One function, three placements:</strong> <code>inward_sign = +1</code> reaches inward on Level 3 (16 lamps), <code>-1</code> reaches outward on the Mezzanine (11 lamps), and a linear variant lights both stairwell bookcases (8 lamps).</li>
+      </ul>
+
+      <div class="trio-grid">
+        <figure class="plate">
+          <span class="plate-tag">First Guess</span>
+          <img src="furniture/obs_01_early_cone.jpg" alt="Early placeholder conical brass lamp standing on the desk" />
+          <figcaption>Stage 1 placeholder: a conical shade on a brass post standing directly on the counter.</figcaption>
+        </figure>
+        <figure class="plate">
+          <span class="plate-tag obs">Photo Observation</span>
+          <img src="furniture/obs_01_lamp_photo.jpg" alt="Photograph showing the outer wall bracket, angled white tubular arm, and stepped mushroom shade" />
+          <figcaption>Close inspection: outer parapet channel, 55&deg; arm clearing the birch curb, and stepped anti-glare collar.</figcaption>
+        </figure>
+        <figure class="plate">
+          <span class="plate-tag mod">3D Solid in Code</span>
+          <img src="furniture/render_01_lamp.jpg" alt="Close-up 3D render of the parametric parapet-mounted mushroom lamp" />
+          <figcaption>Constructive 3D piece: swept polytube arm, 12-point revolved dome &amp; collar, glowing diffuser, and brass pull stem.</figcaption>
+        </figure>
+      </div>
+
+      <div class="code-card">
+        <div class="code-head">
+          <span>primitives.py &middot; add_aalto_parapet_lamp()</span>
+          <a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/primitives.py#L1008-L1089">View full function &nearr;</a>
+        </div>
+<pre class="code-body"><span class="cm"># 1. White tubular arm rising from the well-side bracket, angling ~55° over the birch curb</span>
+arm_pts = [
+    (ox - <span class="nu">0.014</span> * ix, oy - <span class="nu">0.014</span> * iy, z_floor_m + <span class="nu">0.890</span>),
+    (ox - <span class="nu">0.014</span> * ix, oy - <span class="nu">0.014</span> * iy, z_floor_m + <span class="nu">1.005</span>),
+    (ox + <span class="nu">0.265</span> * ix, oy + <span class="nu">0.265</span> * iy, z_floor_m + <span class="nu">1.375</span>),
+    (ox + <span class="nu">0.350</span> * ix, oy + <span class="nu">0.350</span> * iy, z_floor_m + <span class="nu">1.375</span>),  <span class="cm"># enters upper shoulder horizontally</span>
+]
+<span class="fn">add_polytube_m</span>(mesh, arm_pts, <span class="nu">0.0105</span>, white_mat, sides=<span class="nu">8</span>)
+
+<span class="cm"># 2. 12-point (radius_m, z_rel_m) solid of revolution: stepped collar -> 12.1" oblate dome</span>
+shade_profile = [
+    (<span class="nu">0.084</span>, <span class="nu">0.012</span>), (<span class="nu">0.084</span>, <span class="nu">0.000</span>), (<span class="nu">0.098</span>, <span class="nu">0.000</span>),  <span class="cm"># recessed diffuser &amp; 7.7" collar lip</span>
+    (<span class="nu">0.098</span>, <span class="nu">0.026</span>), (<span class="nu">0.128</span>, <span class="nu">0.034</span>), (<span class="nu">0.148</span>, <span class="nu">0.050</span>),  <span class="cm"># vertical anti-glare collar &amp; step</span>
+    (<span class="nu">0.154</span>, <span class="nu">0.068</span>), (<span class="nu">0.146</span>, <span class="nu">0.088</span>), (<span class="nu">0.128</span>, <span class="nu">0.108</span>),  <span class="cm"># smooth oblate mushroom equator</span>
+    (<span class="nu">0.096</span>, <span class="nu">0.126</span>), (<span class="nu">0.052</span>, <span class="nu">0.138</span>), (<span class="nu">0.018</span>, <span class="nu">0.143</span>),  <span class="cm"># rounded spun-aluminum crown</span>
+]
+<span class="fn">add_lathe_solid_m</span>(mesh, dome_center, shade_profile,
+                  band_attrs=white_mat, bottom_attrs=glow_mat, top_attrs=white_mat, sides=<span class="nu">18</span>)</pre>
+      </div>
+    </section>
+
+    <!-- 02 · LINOLEUM WORKBENCH & WALL T-BRACKETS -->
+    <section class="piece" id="workbench">
+      <div class="sec-kicker">02 &middot; Built-In Millwork &middot; Sheet 22-A22 Detail 3</div>
+      <h2>Cantilevered Linoleum Workbench &amp; Steel Wall T-Brackets</h2>
+      <p class="piece-intro">
+        Sweeping around both the Level 3 well rim (<code>R = 44&prime;-1&Prime;</code>) and the Mezzanine outer arc (<code>R = 31&prime;-8&Prime;</code>), the continuous reading counter pairs warm Finnish birch edges with a quiet, non-glare matte-black linoleum writing surface.
+      </p>
+
+      <ul class="obs-list">
+        <li><strong>Book-stop curb &amp; bullnose:</strong> A <code>+3.9&Prime;</code> solid birch cap crowns the plaster parapet to keep open books from sliding into the well, matched by a solid birch front bullnose.</li>
+        <li><strong>Legless knee clearance:</strong> Photographs of the Mezzanine revealed white painted tubular steel T-brackets pinned into the plaster wall with two horizontal lugs (<code>+0.20 m</code> and <code>+0.48 m</code>), eliminating floor legs altogether.</li>
+      </ul>
+
+      <div class="pair-grid">
+        <figure class="plate">
+          <span class="plate-tag obs">Photo Observation</span>
+          <img src="furniture/obs_02_workbench_photo.jpg" alt="Photograph of Mezzanine matte-black linoleum workbench, white steel wall T-brackets, and Artek Chair 69" />
+          <figcaption>Mezzanine counter: matte-black linoleum inset, raised birch curb, two-lug white steel wall brackets, and Artek 69 chairs.</figcaption>
+        </figure>
+        <figure class="plate">
+          <span class="plate-tag mod">3D Solid in Code</span>
+          <img src="furniture/render_02_workbench_chair69.jpg" alt="3D render of Mezzanine cantilevered workbench, white wall T-brackets, mushroom lamp, and Artek Chair 69" />
+          <figcaption>Matching view in the 3D model: concentric arc bands supported on swept polytube wall T-brackets.</figcaption>
+        </figure>
+      </div>
+
+      <div class="code-card">
+        <div class="code-head">
+          <span>primitives.py &middot; add_counter_wall_bracket() &amp; Arc Workbench</span>
+          <a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/primitives.py#L1162-L1198">View full function &nearr;</a>
+        </div>
+<pre class="code-body"><span class="cm"># Birch front bullnose + inset matte-black linoleum writing surface along the well arc</span>
+<span class="fn">add_arc_band_ft</span>(mesh, G.WP3A, <span class="nu">29.40</span>, r_in + <span class="nu">0.02</span>, deg0, deg1, z_gal + <span class="nu">0.700</span>, z_gal + <span class="nu">0.745</span>, birch_furn)
+<span class="fn">add_arc_band_ft</span>(mesh, G.WP3A, <span class="nu">29.52</span>, r_in - <span class="nu">0.03</span>, deg0, deg1, z_gal + <span class="nu">0.745</span>, z_gal + <span class="nu">0.758</span>, lino_furn)
+
+<span class="cm"># White tubular steel T-bracket + two horizontal wall-mounting lugs (z = +0.20 m, +0.48 m)</span>
+<span class="fn">add_polytube_m</span>(mesh, [
+    (ox + <span class="nu">0.035</span> * sx, oy + <span class="nu">0.035</span> * sy, z_floor_m + <span class="nu">0.160</span>),
+    (ox + <span class="nu">0.035</span> * sx, oy + <span class="nu">0.035</span> * sy, z_floor_m + <span class="nu">0.685</span>),
+    (ox + <span class="nu">0.480</span> * sx, oy + <span class="nu">0.480</span> * sy, z_floor_m + <span class="nu">0.685</span>),
+], <span class="nu">0.011</span>, white_mat, sides=<span class="nu">6</span>)</pre>
+      </div>
+    </section>
+
+    <!-- 03 · ARTEK STOOL E60 & CHAIR 69 -->
+    <section class="piece" id="seating">
+      <div class="sec-kicker">03 &middot; Steam-Bent Birch Seating &middot; Two Postures</div>
+      <h2>Artek Stool E60 vs. Reading Chair 69</h2>
+      <p class="piece-intro">
+        Comparing photographs of the upper rim and the sunken gallery showed why Aalto specified two different bent-birch seats: backless stools up top to keep sightlines open across the well, and broad backrest chairs down below for longer study.
+      </p>
+
+      <ul class="obs-list">
+        <li><strong>Level 3 Rim &mdash; Stool E60:</strong> Four steam-bent birch L-legs (<code>45&deg; + 90&deg;k</code>) under a circular birch and black-linoleum seat that tucks flush beneath the counter when unoccupied.</li>
+        <li><strong>Mezzanine &mdash; Chair 69:</strong> Two front L-legs (<code>&plusmn;42&deg;</code>) paired with two splayed rear stiles (<code>&plusmn;145&deg;</code>) rising into a <code>114&deg;</code> curved steam-bent birch backrest band, each rotated slightly (<code>&minus;6&deg;..+6&deg;</code>) so the row feels lived-in.</li>
+      </ul>
+
+      <div class="pair-grid">
+        <figure class="plate">
+          <span class="plate-tag obs">Photo Observation</span>
+          <img src="furniture/obs_03_stool60_photo.jpg" alt="Monk reading at the Level 3 workbench on an Artek E60 four-legged bent-birch stool" />
+          <figcaption>Level 3 well rim: 4-legged backless Artek E60 stools with matte-black circular tops keep the horizon clear.</figcaption>
+        </figure>
+        <figure class="plate">
+          <span class="plate-tag mod">3D Solid in Code</span>
+          <img src="furniture/render_03_stool60.jpg" alt="3D render of Artek E60 four-legged bent-birch stools along the Level 3 curved counter" />
+          <figcaption>Parametric E60 stools along the Level 3 counter; Chair 69 (seen in section 02 above) uses the same L-leg kernel plus rear stiles.</figcaption>
+        </figure>
+      </div>
+
+      <div class="code-card">
+        <div class="code-head">
+          <span>primitives.py &middot; add_artek_stool_60() &amp; add_artek_chair_69()</span>
+          <a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/primitives.py#L1200-L1271">View full functions &nearr;</a>
+        </div>
+<pre class="code-body"><span class="cm"># Stool E60: birch seat disc + black linoleum pad + 4 steam-bent L-legs</span>
+<span class="fn">add_cylinder_ft</span>(mesh, pt_ft, <span class="nu">0.175</span> / FT_TO_M, z_floor_m + <span class="nu">0.422</span>, z_floor_m + <span class="nu">0.448</span>, birch, sides=<span class="nu">14</span>)
+<span class="fn">add_cylinder_ft</span>(mesh, pt_ft, <span class="nu">0.168</span> / FT_TO_M, z_floor_m + <span class="nu">0.448</span>, z_floor_m + <span class="nu">0.458</span>, lino, sides=<span class="nu">14</span>)
+<span class="kw">for</span> k <span class="kw">in</span> <span class="fn">range</span>(<span class="nu">4</span>):
+    ca, sa = math.<span class="fn">cos</span>(ang0 + k * math.pi / <span class="nu">2</span>), math.<span class="fn">sin</span>(ang0 + k * math.pi / <span class="nu">2</span>)
+    <span class="fn">add_polytube_m</span>(mesh, [(cx+<span class="nu">.178</span>*ca, cy+<span class="nu">.178</span>*sa, z0), (cx+<span class="nu">.166</span>*ca, cy+<span class="nu">.166</span>*sa, z0+<span class="nu">.39</span>),
+                          (cx+<span class="nu">.075</span>*ca, cy+<span class="nu">.075</span>*sa, z0+<span class="nu">.432</span>)], <span class="nu">0.015</span>, birch, sides=<span class="nu">6</span>)
+
+<span class="cm"># Chair 69 adds rear splayed stiles (+/-145°) &amp; a 114° steam-bent birch backrest band</span>
+<span class="fn">add_arc_band_ft</span>(mesh, pt_ft, <span class="nu">0.214</span> / FT_TO_M, <span class="nu">0.232</span> / FT_TO_M,
+                facing_deg + <span class="nu">123.0</span>, facing_deg + <span class="nu">237.0</span>, z_floor_m + <span class="nu">0.665</span>, z_floor_m + <span class="nu">0.772</span>, birch)</pre>
+      </div>
+    </section>
+
+    <!-- 04 · RADIAL BOOKCASES & 5-BATTEN DIRECTORY SCREENS -->
+    <section class="piece" id="bookcases">
+      <div class="sec-kicker">04 &middot; Parametric Stack System &middot; Sheet 13-A13 Details 9&ndash;14</div>
+      <h2>Radial Birch Bookcases &amp; 5-Batten Directory Screens</h2>
+      <p class="piece-intro">
+        Because the inner well is circular while the north curtain wall is faceted, almost every radial stack range has a different length. One parametric builder generates every bookcase across all three floors&mdash;adapting bay counts, canopy finishes, and end-slat screens automatically.
+      </p>
+
+      <ul class="obs-list">
+        <li><strong>5-batten aisle stanchions:</strong> Five vertical birch slats (<code>1.2&Prime; &times; 1.5&Prime;</code>) frame the inner aisle face of each Level 3 range, rising <code>3&Prime;</code> above the canopy to carry call-number plaques.</li>
+        <li><strong>Recessed plinth &amp; dual canopies:</strong> Every stack sits on a <code>1.5&Prime;</code>-inset dark kick plinth (<code>Detail 10</code>); Level 3 uses birch canopies, while Levels 1 &amp; 2 switch to slate-grey laminate with a birch lip.</li>
+      </ul>
+
+      <div class="pair-grid">
+        <figure class="plate">
+          <span class="plate-tag obs">Photo Observation</span>
+          <img src="furniture/obs_04_bookcase_photo.jpg" alt="Photograph between two radial birch bookcases showing the 5-batten vertical slat end screens and Mt. Hood window" />
+          <figcaption>Aisle view toward H-Column D&rsquo;s window: 5 vertical birch battens with call-number plaques frame each stack end.</figcaption>
+        </figure>
+        <figure class="plate">
+          <span class="plate-tag mod">3D Solid in Code</span>
+          <img src="furniture/render_04_bookcase.jpg" alt="3D render of radial birch bookcases with 5-batten vertical directory screens, recessed plinths, and Mt. Hood window" />
+          <figcaption>Generated stacks: dynamic <code>~3&prime;-1&Prime;</code> bay dividers, 5-batten end screens, recessed kick plinth, and seeded book clusters.</figcaption>
+        </figure>
+      </div>
+
+      <div class="code-card">
+        <div class="code-head">
+          <span>aalto_bookcases.py &middot; 5-Batten Aisle Directory Screen</span>
+          <a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/aalto_bookcases.py#L380-L435">View full module &nearr;</a>
+        </div>
+<pre class="code-body"><span class="cm"># 5 vertical birch battens spaced across stack depth, rising 3" (+0.075 m) above top canopy</span>
+n_slats = <span class="nu">5</span> <span class="kw">if</span> double_sided <span class="kw">else</span> <span class="nu">3</span>
+slat_span = (<span class="nu">2.0</span> * half_d) - <span class="nu">0.16</span>
+<span class="kw">for</span> k <span class="kw">in</span> <span class="fn">range</span>(n_slats):
+    t_center = -<span class="nu">0.5</span> * slat_span + k * (slat_span / (n_slats - <span class="nu">1</span>))
+    <span class="fn">_add_box_local_ft</span>(
+        mesh, cx, cy, ux, uy, nx, ny,
+        s_face, s_face + sign * SLAT_DEPTH_FT,
+        t_center - <span class="nu">0.5</span> * SLAT_WIDTH_FT, t_center + <span class="nu">0.5</span> * SLAT_WIDTH_FT,
+        z_floor_m + PLINTH_HEIGHT_M, z_canopy_top + <span class="nu">0.075</span>, birch_mat,
+    )</pre>
+      </div>
+    </section>
+
+    <!-- 05 · STAIRWELL COUNTER BOOKCASES & CURVED BOOKWALL -->
+    <section class="piece" id="stair-bookwall">
+      <div class="sec-kicker">05 &middot; Guardrails That Hold Books &middot; Sheets 22-A22 &amp; 30-F2</div>
+      <h2>Stairwell Dictionary Counters &amp; Curved Reference Bookwall</h2>
+      <p class="piece-intro">
+        Where the East and West switchback stairs drop from Level 3 to the Mezzanine, our first build placed ordinary open railings. Photographs showed Aalto turned both edges into <code>21&prime;-1&Prime;</code> counter-height birch bookcases&mdash;creating standing consultation surfaces for dictionaries and atlases.
+      </p>
+
+      <ul class="obs-list">
+        <li><strong>Dual-sided stair wall:</strong> Smooth white plaster and a sloped stair cheek face the descending steps, while a 3-tier birch bookcase with an overhanging <code>+3&prime;-1&Prime;</code> counter top faces the reading room.</li>
+        <li><strong>Curved Reference Bookwall:</strong> Across the well at <code>R = 22&prime;-3&Prime;</code>, a faceted 4-shelf birch arc wraps the base of the Control Peninsula beneath 42 chord segments.</li>
+      </ul>
+
+      <div class="pair-grid">
+        <figure class="plate">
+          <span class="plate-tag obs">Photo Observation</span>
+          <img src="furniture/obs_05_stair_bc_photo.jpg" alt="Photograph of the counter-height birch stairwell bookcase with four white angled-arm mushroom lamps" />
+          <figcaption>East stairwell edge: counter-height birch dictionary bookcase lit by four linear parapet mushroom lamps.</figcaption>
+        </figure>
+        <figure class="plate">
+          <span class="plate-tag mod">3D Solid in Code</span>
+          <img src="furniture/render_05_stair_bookcase.jpg" alt="3D render of the East counter-height stairwell bookcase and four linear mushroom lamps" />
+          <figcaption>Reusing <code>add_aalto_bookcase_ft(..., canopy_style="counter")</code> backed by the plaster stair-cheek wall and 4 lamps.</figcaption>
+        </figure>
+      </div>
+
+      <div class="code-card">
+        <div class="code-head">
+          <span>level3_reading_room.py &middot; _add_l3_stair_bookcase()</span>
+          <a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/level3_reading_room.py#L95-L174">View full function &nearr;</a>
+        </div>
+<pre class="code-body"><span class="cm"># Counter-height single-sided birch bookcase (height = 0.935 m / 3'-1") replacing open stair railing</span>
+<span class="fn">add_aalto_bookcase_ft</span>(
+    mesh, center_ft=c_bookcase, length_ft=<span class="nu">21.10</span>, depth_ft=<span class="nu">1.20</span>, angle_deg=ang_bc,
+    z_floor_m=z_l3, height_m=<span class="nu">0.935</span>, double_sided=<span class="kw">False</span>, n_shelf_tiers=<span class="nu">3</span>,
+    canopy_style=<span class="st">"counter"</span>, end_slats=<span class="st">"none"</span>, populate_books=<span class="kw">True</span>,
+)
+<span class="cm"># 4 linear parapet-mounted mushroom lamps bolted to the stairwell plaster cheek</span>
+<span class="kw">for</span> r_lamp <span class="kw">in</span> (<span class="nu">25.4</span>, <span class="nu">30.7</span>, <span class="nu">36.0</span>, <span class="nu">41.3</span>):
+    <span class="fn">add_aalto_linear_parapet_lamp</span>(mesh, <span class="fn">rpt</span>(r_lamp, -<span class="nu">0.10</span>), arm_dir_deg=arm_dir_deg, z_floor_m=z_l3)</pre>
+      </div>
+    </section>
+
+    <!-- 06 · SLATTED CONTROL DESK & BRONZE GUARDRAIL -->
+    <section class="piece" id="control-desk">
+      <div class="sec-kicker">06 &middot; The Peninsula Anchor &middot; Working Point WP_DESK</div>
+      <h2>Curved Slatted Control Desk &amp; 3-Rail Bronze Guardrail</h2>
+      <p class="piece-intro">
+        Commanding the throat of the fan on its own working point (<code>WP_DESK = (&minus;1.2&prime;, +2.2&prime;)</code>), the circulation desk echoes the radial wood-slatted ceiling drum directly overhead, while an open three-rail dark-bronze guardrail keeps sightlines clear down into the Mezzanine.
+      </p>
+
+      <ul class="obs-list">
+        <li><strong>Desk &amp; ceiling dialogue:</strong> A <code>134&deg;</code> slatted-birch drum (<code>+1.02 m</code>) topped with an overhanging matte-black linoleum transaction counter directly beneath the <code>1&Prime;&times;1&Prime;</code> radial ceiling slats.</li>
+        <li><strong>Open 3-rail bronze guardrail:</strong> Replacing our early solid white wall along <code>R = 22&prime;-8&Prime;</code> opened the visual connection between the Control Desk, the Reference Bookwall, and the North Daylight Scoop.</li>
+      </ul>
+
+      <div class="pair-grid">
+        <figure class="plate">
+          <span class="plate-tag obs">Photo Observation</span>
+          <img src="furniture/obs_06_control_photo.jpg" alt="Photograph across the Reading Well showing the curved Control Desk, open 3-rail bronze guardrail, and curved Mezzanine bookwall" />
+          <figcaption>Control Peninsula: curved birch desk under the radial wood ceiling drum, framed by the open 3-rail dark-bronze guardrail.</figcaption>
+        </figure>
+        <figure class="plate">
+          <span class="plate-tag mod">3D Solid in Code</span>
+          <img src="furniture/render_06_control_desk.jpg" alt="3D render of the Control Peninsula, curved Control Desk, 3-rail bronze guardrail, and Mezzanine Reference Bookwall" />
+          <figcaption>Three concentric assemblies in code: <code>WP_DESK</code> circulation drum, <code>add_tubular_arc_railing_ft</code>, and <code>add_aalto_curved_bookwall_ft</code>.</figcaption>
+        </figure>
+      </div>
+
+      <div class="code-card">
+        <div class="code-head">
+          <span>level3_reading_room.py &amp; primitives.py &middot; Control Desk &amp; 3-Rail Guardrail</span>
+          <a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/primitives.py#L973-L1006">View full code &nearr;</a>
+        </div>
+<pre class="code-body"><span class="cm"># Curved slatted-birch Control Desk + overhanging black linoleum counter around WP_DESK</span>
+<span class="fn">add_arc_band_ft</span>(mesh, G.WP_DESK, G.R_DESK_INNER, G.R_DESK_OUTER, <span class="nu">28.0</span>, <span class="nu">162.0</span>, z_l3, z_l3 + <span class="nu">1.02</span>, slat_furn)
+<span class="fn">add_arc_band_ft</span>(mesh, G.WP_DESK, G.R_DESK_INNER - <span class="nu">0.20</span>, G.R_DESK_OUTER + <span class="nu">0.25</span>, <span class="nu">28.0</span>, <span class="nu">162.0</span>, z_l3 + <span class="nu">1.02</span>, z_l3 + <span class="nu">1.07</span>, lino_furn)
+
+<span class="cm"># Open 3-rail dark-bronze tubular steel guardrail (+0.91 m top rail, +0.61 m &amp; +0.32 m mid-rails)</span>
+<span class="kw">for</span> z_rel, r_tube <span class="kw">in</span> ((<span class="nu">0.91</span>, <span class="nu">0.020</span>), (<span class="nu">0.61</span>, <span class="nu">0.011</span>), (<span class="nu">0.32</span>, <span class="nu">0.011</span>)):
+    <span class="fn">add_polytube_m</span>(mesh, [(x, y, z_floor_m + z_rel) <span class="kw">for</span> x, y <span class="kw">in</span> arc_xy_m], r_tube, rail_mat, sides=<span class="nu">8</span>)</pre>
+      </div>
+    </section>
+  </main>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Enlarged image view">
+    <img id="lightboxImg" src="" alt="" />
+  </div>
+
+  <footer class="suite-footer">
+    <div class="suite-footer-inner">
+      <span>Mount Angel Abbey Library &middot; Alvar Aalto (1970) &middot; phi ARCHITECT</span>
+      <nav class="footer-links" aria-label="Footer Suite Navigation">
+        <a href="index.html">Overview</a>
+        <a href="journey.html">Journey</a>
+        <a href="making-of.html">Making the Model</a>
+        <a href="code.html">Code</a>
+        <a href="furniture.html">Furniture</a>
+        <a href="photo-compare.html">Photo vs. Model</a>
+        <a href="drawings.html">Blueprints</a>
+        <a href="visitor-guide.html">Visitor Guide</a>
+        <a href="library-3d.html">3D Model</a>
+        <a href="https://github.com/phiarchitect/mount_angel">Source</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lightboxImg');
+      document.querySelectorAll('figure.plate img').forEach(el => {
+        el.addEventListener('click', () => {
+          lbImg.src = el.src;
+          lbImg.alt = el.alt;
+          lb.classList.add('is-open');
+        });
+      });
+      lb.addEventListener('click', () => lb.classList.remove('is-open'));
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') lb.classList.remove('is-open');
+      });
+    })();
+  </script>
+</body>
+</html>
