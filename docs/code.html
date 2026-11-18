@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Building with Code — Mount Angel Abbey Library</title>
+  <meta name="description" content="How Alvar Aalto's Mount Angel Abbey Library was modeled in parametric Python with IngeTrazo: module organization, topological verification, and iterative visual refinement." />
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="suite.css" />
+  <style>
+    :root {
+      --bg: #0b0f17; --surface: #121824; --surface-hi: #172030;
+      --cream: #f5efe4; --birch: #d4b483;
+      --poche: #a42d21; --poche-hi: #c43c2d;
+      --text: #f3f4f6; --muted: #94a3b8;
+      --border: rgba(148, 163, 184, 0.18);
+      --border-warm: rgba(212, 180, 131, 0.32);
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --mono: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.65; scroll-behavior: smooth; }
+    body { background: radial-gradient(1100px 540px at 14% 0%, rgba(164, 45, 33, 0.14), transparent 62%), var(--bg); }
+    a { color: inherit; }
+    .shell { max-width: 1140px; margin: 0 auto; padding: 0 28px; }
+
+    /* ── Intro ── */
+    .intro { padding: 54px 0 32px; max-width: 800px; }
+    .eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--birch); margin-bottom: 14px; }
+    h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(2.3rem, 4.4vw, 3.4rem); line-height: 1.05; color: var(--cream); margin-bottom: 18px; }
+    h1 em { color: var(--poche-hi); }
+    .lead { font-size: 1.04rem; color: #d6dae2; margin-bottom: 12px; }
+    .stat-strip {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+      margin: 12px 0 42px;
+    }
+    .stat-box {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .stat-val { font-family: var(--serif); font-size: 1.75rem; font-weight: 600; line-height: 1.1; color: var(--cream); }
+    .stat-lbl { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+    /* ── Section Heads ── */
+    section.block { padding: 42px 0; border-top: 1px solid var(--border); }
+    .sec-kicker { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--poche-hi); margin-bottom: 6px; }
+    section.block h2 { font-family: var(--serif); font-weight: 600; font-size: 2.05rem; line-height: 1.12; color: var(--cream); margin-bottom: 10px; }
+    .sec-desc { max-width: 760px; color: #cfd4dc; font-size: 0.96rem; margin-bottom: 24px; }
+
+    /* ── Three-Tier Architecture ── */
+    .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 26px; }
+    .tier {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 18px 20px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .tier-tag { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--birch); }
+    .tier h3 { font-family: var(--serif); font-size: 1.4rem; font-weight: 600; color: var(--cream); line-height: 1.15; }
+    .tier p { font-size: 0.88rem; color: #cbd2dc; flex: 1; }
+    .tier code, .code-inline {
+      font-family: var(--mono); font-size: 0.78rem; background: rgba(255,255,255,0.06);
+      padding: 2px 6px; border-radius: 4px; color: #e8dcc8;
+    }
+    .tier a.file-link {
+      font-family: var(--mono); font-size: 0.74rem; color: var(--birch);
+      text-decoration: none; margin-top: 4px;
+    }
+    .tier a.file-link:hover { text-decoration: underline; }
+
+    /* ── Code + Module Table Split ── */
+    .org-split { display: grid; grid-template-columns: 1.08fr 0.92fr; gap: 20px; align-items: start; }
+    .code-card {
+      background: #0d121c; border: 1px solid var(--border-warm); border-radius: 10px;
+      overflow: hidden;
+    }
+    .code-head {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 14px; background: rgba(212, 180, 131, 0.08);
+      border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 0.73rem; color: var(--birch);
+    }
+    .code-head a { color: var(--muted); text-decoration: none; }
+    .code-head a:hover { color: var(--cream); }
+    pre.code-body {
+      padding: 14px 16px; overflow-x: auto; font-family: var(--mono);
+      font-size: 0.76rem; line-height: 1.58; color: #dce3ee;
+    }
+    .kw { color: #e06c60; }
+    .fn { color: #e5c07b; }
+    .cm { color: #6f7f96; font-style: italic; }
+    .nu { color: #d4b483; }
+
+    .mod-table {
+      width: 100%; border-collapse: collapse; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 10px; overflow: hidden; font-size: 0.83rem;
+    }
+    .mod-table th {
+      text-align: left; font-family: var(--mono); font-size: 0.67rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted); padding: 10px 12px;
+      border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02);
+    }
+    .mod-table td { padding: 8px 12px; border-bottom: 1px solid rgba(148,163,184,0.1); color: #cfd4dc; vertical-align: top; }
+    .mod-table tr:last-child td { border-bottom: none; }
+    .mod-table a { font-family: var(--mono); font-size: 0.76rem; color: var(--birch); text-decoration: none; }
+    .mod-table a:hover { text-decoration: underline; }
+
+    /* ── Feedback Loop ── */
+    .loop-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .loop-step {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 16px 18px; position: relative;
+    }
+    .loop-num { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em; color: var(--poche-hi); margin-bottom: 6px; }
+    .loop-step h3 { font-family: var(--serif); font-size: 1.28rem; font-weight: 600; color: var(--cream); margin-bottom: 6px; line-height: 1.15; }
+    .loop-step p { font-size: 0.85rem; color: #c8cfd9; }
+
+    /* ── Stage Stepper ── */
+    .stepper-wrap {
+      background: var(--surface); border: 1px solid var(--border-warm);
+      border-radius: 12px; padding: 18px;
+    }
+    .stepper-bar {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
+      gap: 12px; margin-bottom: 14px;
+    }
+    .stage-tabs, .cam-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tab-btn {
+      appearance: none; border: 1px solid var(--border); background: rgba(255,255,255,0.03);
+      color: var(--muted); font-family: var(--mono); font-size: 0.73rem;
+      padding: 6px 11px; border-radius: 6px; cursor: pointer; transition: all 0.16s;
+    }
+    .tab-btn:hover { color: var(--cream); border-color: rgba(212,180,131,0.45); }
+    .tab-btn.is-active {
+      background: rgba(164, 45, 33, 0.28); border-color: var(--poche-hi); color: var(--cream);
+    }
+    .cam-tabs .tab-btn.is-active {
+      background: rgba(212, 180, 131, 0.18); border-color: var(--birch); color: var(--cream);
+    }
+    .stage-frame {
+      position: relative; border-radius: 8px; overflow: hidden;
+      border: 1px solid var(--border); background: #090d14; aspect-ratio: 16 / 9;
+    }
+    .stage-frame img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in; }
+    .stage-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: rgba(11, 15, 23, 0.84); border: 1px solid var(--border-warm);
+      padding: 4px 10px; border-radius: 6px; font-family: var(--mono);
+      font-size: 0.7rem; color: var(--birch); backdrop-filter: blur(6px);
+    }
+    .stage-caption {
+      display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
+      padding-top: 14px;
+    }
+    .stage-caption h3 { font-family: var(--serif); font-size: 1.45rem; font-weight: 600; color: var(--cream); }
+    .stage-caption p { font-size: 0.9rem; color: #cfd4dc; margin-top: 4px; }
+    .stage-commit { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+
+    /* ── Four Viewport Catches ── */
+    .catches { display: grid; gap: 24px; }
+    .catch-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 20px;
+    }
+    .catch-head { margin-bottom: 14px; max-width: 820px; }
+    .catch-head h3 { font-family: var(--serif); font-size: 1.5rem; font-weight: 600; color: var(--cream); margin: 2px 0 6px; }
+    .catch-head p { font-size: 0.9rem; color: #cfd4dc; }
+    .catch-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .catch-fig {
+      position: relative; margin: 0; border-radius: 8px; overflow: hidden;
+      border: 1px solid var(--border); background: #090d14;
+    }
+    .catch-fig img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; cursor: zoom-in; }
+    .pill-tag {
+      position: absolute; top: 10px; left: 10px; font-family: var(--mono);
+      font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 4px; background: rgba(11,15,23,0.85);
+      border: 1px solid var(--border); color: var(--muted);
+    }
+    .pill-tag.after { border-color: rgba(212,180,131,0.55); color: var(--birch); }
+    .catch-fig figcaption { padding: 8px 11px; font-size: 0.77rem; color: var(--muted); }
+
+    /* ── H-Column Case Study ── */
+    .hcol-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+    .hcol-step {
+      margin: 0; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;
+    }
+    .hcol-step img {
+      width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block;
+      background: #fff; cursor: zoom-in;
+    }
+    .hcol-step figcaption { padding: 9px 11px; font-size: 0.77rem; color: #cbd2dc; flex: 1; }
+    .hcol-step figcaption strong {
+      display: block; font-family: var(--mono); font-size: 0.67rem;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--birch); margin-bottom: 3px;
+    }
+    .hcol-wide {
+      margin: 0 0 14px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden;
+    }
+    .hcol-wide img { width: 100%; display: block; background: #fff; cursor: zoom-in; }
+    .hcol-wide figcaption { padding: 9px 12px; font-size: 0.79rem; color: var(--muted); }
+
+    /* ── Lightbox ── */
+    .lightbox {
+      position: fixed; inset: 0; z-index: 200; background: rgba(6, 9, 14, 0.92);
+      display: none; align-items: center; justify-content: center; padding: 28px; cursor: zoom-out;
+    }
+    .lightbox.is-open { display: flex; }
+    .lightbox img { max-width: 95vw; max-height: 90vh; border-radius: 8px; border: 1px solid var(--border-warm); }
+
+    /* ── Footer ── */
+    .suite-footer { border-top: 1px solid var(--border); background: rgba(8,10,16,0.6); margin-top: 24px; }
+    .suite-footer-inner { max-width: 1140px; margin: 0 auto; padding: 20px 28px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; font-size: 0.8rem; color: var(--muted); }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 16px; }
+    .footer-links a { text-decoration: none; }
+    .footer-links a:hover { color: var(--birch); }
+
+    @media (max-width: 920px) {
+      .stat-strip, .hcol-strip { grid-template-columns: repeat(2, 1fr); }
+      .tiers, .org-split, .loop-grid, .catch-pair { grid-template-columns: 1fr; }
+      .stage-caption { flex-direction: column; gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="suite-header">
+    <a href="index.html" class="suite-brand" title="Mount Angel Abbey Library — Project Overview">
+      <span class="suite-crest"><img src="angel-logo.svg" alt="Mount Angel Abbey Crest" width="24" height="19" /></span>
+      <span class="suite-brand-text">
+        <span class="suite-brand-title">Mount Angel Abbey Library</span>
+        <span class="suite-brand-sub">Alvar Aalto &middot; 1970</span>
+      </span>
+    </a>
+    <nav class="suite-nav" aria-label="Project Suite">
+      <a href="index.html" class="suite-link">Overview</a>
+      <a href="journey.html" class="suite-link">Journey</a>
+      <a href="making-of.html" class="suite-link">Making the Model</a>
+      <a href="code.html" class="suite-link is-active">Code</a>
+      <a href="photo-compare.html" class="suite-link">Photo vs. Model</a>
+      <a href="drawings.html" class="suite-link">Blueprints <span class="suite-count">47</span></a>
+      <a href="visitor-guide.html" class="suite-link">Visitor Guide</a>
+      <a href="library-3d.html" class="suite-link suite-link-3d">&#9670; 3D Model</a>
+    </nav>
+  </header>
+
+  <main class="shell">
+    <section class="intro">
+      <div class="eyebrow">Constructive Python &middot; IngeTrazo 0.6.0 &middot; Iterative CAD</div>
+      <h1>Building the Forms with <em>Code</em></h1>
+      <p class="lead">
+        In Aalto&rsquo;s radial fan, almost no two walls, roof bays, or bookcases share the same length or angle. Rather than pushing vertices by hand, every solid in this model is generated from Python functions driven by Aalto&rsquo;s survey dimensions.
+      </p>
+      <p class="lead">
+        When a blueprint re-read changed a roof elevation or column angle, the entire building regenerated cleanly in two seconds.
+      </p>
+    </section>
+
+    <div class="stat-strip" aria-label="Codebase Summary">
+      <div class="stat-box">
+        <div class="stat-val">7,165</div>
+        <div class="stat-lbl">Lines of Python</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val">9</div>
+        <div class="stat-lbl">Modular Builders</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val">134,373</div>
+        <div class="stat-lbl">Faces &middot; 8 Layers</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val">0</div>
+        <div class="stat-lbl">Unpaired Seam Edges</div>
+      </div>
+    </div>
+
+    <section class="block" id="organization">
+      <div class="sec-kicker">01 &middot; Strategy &amp; Organization</div>
+      <h2>Three Tiers from Blueprint Feet to 3D Solids</h2>
+      <p class="sec-desc">
+        Keeping survey dimensions, solid-modeling math, and architectural components separate meant we could fix a dimension once and update the 2D blueprint proofs, the visitor floor plans, and the 3D model together.
+      </p>
+
+      <div class="tiers">
+        <div class="tier">
+          <span class="tier-tag">Tier 1 &middot; Survey Truth</span>
+          <h3>Working Points &amp; Elevations</h3>
+          <p>Stores Aalto&rsquo;s four Working Points, radial angles, grid lines, and section heights in canonical decimal feet relative to <code>WP #4 = (0, 0)</code> on the main floor.</p>
+          <a class="file-link" href="https://github.com/phiarchitect/mount_angel/blob/main/src/phiarchitect/mountangel/vectors.py">vectors.py (1,076 lines) &rarr;</a>
+        </div>
+        <div class="tier">
+          <span class="tier-tag">Tier 2 &middot; Solid Kernel</span>
+          <h3>Watertight Primitives</h3>
+          <p>Converts feet to metres, triangulates polygons with holes, extrudes mitered walls and revolved lamps, adds <code>2.5 mm</code> clearances, and applies the 35-material palette.</p>
+          <a class="file-link" href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/primitives.py">primitives.py (1,272 lines) &rarr;</a>
+        </div>
+        <div class="tier">
+          <span class="tier-tag">Tier 3 &middot; Architecture</span>
+          <h3>Domain Builders</h3>
+          <p>Eight focused modules build the bluff, lower stacks, reading room, Aalto bookcases, South Wing rooms, H-columns, and three-tier roof into named scene layers.</p>
+          <a class="file-link" href="https://github.com/phiarchitect/mount_angel/tree/main/ingetrazo_3d/components">ingetrazo_3d/components/ &rarr;</a>
+        </div>
+      </div>
+
+      <div class="org-split">
+        <div class="code-card">
+          <div class="code-head">
+            <span>aalto_bookcases.py &middot; Parametric Radial Stack</span>
+            <a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/aalto_bookcases.py">View source &nearr;</a>
+          </div>
+<pre class="code-body"><span class="kw">def</span> <span class="fn">add_aalto_bookcase_ft</span>(mesh, center_ft, length_ft, depth_ft, angle_deg, ...):
+    <span class="cm"># Every radial stack in Aalto's fan has its own length (4 to 28 ft).</span>
+    <span class="cm"># Subdivide into ~3'-1" bays (Sheet 13-a13 Details 9-12).</span>
+    n_bays = <span class="fn">max</span>(<span class="nu">1</span>, <span class="fn">round</span>(length_ft / <span class="nu">3.10</span>))
+    bay_span_ft = (length_ft - (n_bays + <span class="nu">1</span>) * DIVIDER_THICK_FT) / n_bays
+
+    <span class="cm"># 1. Recessed linoleum kick plinth (Detail 10: 1.5" face inset)</span>
+    <span class="fn">_add_box_local_ft</span>(
+        mesh, cx, cy, ux, uy, nx, ny,
+        -half_l + <span class="nu">0.07</span>, half_l - <span class="nu">0.07</span>, -half_d + <span class="nu">0.125</span>, half_d - <span class="nu">0.125</span>,
+        z_floor_m + TOL_M, z_shelf_bot - TOL_M, plinth_mat,
+    )
+
+    <span class="cm"># 2. Solid 1" birch dividers + shelves + deterministic book clusters</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n_bays + <span class="nu">1</span>):
+        s0 = -half_l + i * (bay_span_ft + DIVIDER_THICK_FT)
+        <span class="fn">_add_box_local_ft</span>(
+            mesh, cx, cy, ux, uy, nx, ny,
+            s0, s0 + DIVIDER_THICK_FT, -half_d, half_d,
+            z_shelf_bot, z_canopy_bot, birch_mat,
+        )</pre>
+        </div>
+
+        <table class="mod-table" aria-label="3D Builder Modules">
+          <thead>
+            <tr>
+              <th>Module</th>
+              <th>Scene Layer &amp; Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/regulating_lines.py">regulating_lines.py</a></td>
+              <td><code>0_Regulating_Grid</code> &mdash; Working points, fan rays &amp; arcs.</td>
+            </tr>
+            <tr>
+              <td><a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/site_terrain.py">site_terrain.py</a></td>
+              <td><code>1_Abbey_Hillside_Site</code> &mdash; Bluff plinth, quad, Abbey Church &amp; Bell Tower.</td>
+            </tr>
+            <tr>
+              <td><a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/lower_levels.py">lower_levels.py</a></td>
+              <td><code>2_Level_1</code> &amp; <code>3_Level_2_And_Mezzanine</code> &mdash; Terraced stacks, carrels &amp; stairs.</td>
+            </tr>
+            <tr>
+              <td><a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/level3_reading_room.py">level3_reading_room.py</a></td>
+              <td><code>4_Level_3_Reading_Room</code> &mdash; Control desk, workbench, lamps &amp; glazed office wall.</td>
+            </tr>
+            <tr>
+              <td><a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/south_wing_interiors.py">south_wing_interiors.py</a></td>
+              <td>Lobby wood privacy screen, Rare Book Vault &amp; Auditorium wave ceiling.</td>
+            </tr>
+            <tr>
+              <td><a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/aalto_bookcases.py">aalto_bookcases.py</a></td>
+              <td>Parametric radial stacks, curved bookwalls &amp; 5-batten directory screens.</td>
+            </tr>
+            <tr>
+              <td><a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/envelope_and_south_wing.py">envelope_and_south_wing.py</a></td>
+              <td><code>5_Structural_Frame</code> &amp; <code>6_Envelope</code> &mdash; Irregular H-columns, brick curtain wall &amp; pergolas.</td>
+            </tr>
+            <tr>
+              <td><a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/roof_and_skylights.py">roof_and_skylights.py</a></td>
+              <td><code>7_Roof_And_Daylight_Scoop</code> &mdash; 3-tier roofs, <code>3&prime;-11&Prime;</code> plenum, scoop &amp; 12 skylights.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="block" id="loop">
+      <div class="sec-kicker">02 &middot; The IngeTrazo Feedback Loop</div>
+      <h2>Write Code, Inspect in 3D, Check Topology, Repeat</h2>
+      <p class="sec-desc">
+        Writing geometry in code is fast, but blind on its own: a wrong sign or wall offset can send a staircase straight through a brick facade. Coupling the Python builders with <strong>IngeTrazo</strong> and automated checks turned modeling into a tight visual loop.
+      </p>
+
+      <div class="loop-grid">
+        <div class="loop-step">
+          <div class="loop-num">STEP 01 &middot; BUILD</div>
+          <h3>Hot-Reload into IngeTrazo</h3>
+          <p><a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/build_ingetrazo_library.py">build_ingetrazo_library.py</a> reloads all modules over IngeTrazo&rsquo;s live TCP/MCP bridge (<code>--live</code>), updating <code>scene.groups</code> in one undoable step and saving <code>.igz</code> + <code>.obj</code>.</p>
+        </div>
+        <div class="loop-step">
+          <div class="loop-num">STEP 02 &middot; VERIFY</div>
+          <h3>Zero-Leak Manifold Gate</h3>
+          <p>A directed-edge check verifies <code>unpaired == 0</code> on every solid. Any missing cap or reversed polygon is caught immediately before it can break stencil section cuts.</p>
+        </div>
+        <div class="loop-step">
+          <div class="loop-num">STEP 03 &middot; CLEAN</div>
+          <h3>Crease &amp; Normal Filtering</h3>
+          <p>On export to WebGL2, internal triangulation diagonals on flat walls and curved plaster vaults are stripped automatically so edges read like architectural ink lines.</p>
+        </div>
+        <div class="loop-step">
+          <div class="loop-num">STEP 04 &middot; COMPARE</div>
+          <h3>20 Locked Studio Cameras</h3>
+          <p>Headless Chromium renders 20 fixed exterior, interior, section, and sun views after each pass&mdash;revealing collisions, shadow artifacts, and blueprint mismatches right away.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="evolution">
+      <div class="sec-kicker">03 &middot; Iterative Refinement</div>
+      <h2>Five Passes Through the Same Cameras</h2>
+      <p class="sec-desc">
+        Because camera presets stayed locked across Git commits, we can step straight from the first grey massing study to the finished campus model. Click a stage or switch cameras below.
+      </p>
+
+      <div class="stepper-wrap">
+        <div class="stepper-bar">
+          <div class="stage-tabs" role="tablist" aria-label="Model Stages">
+            <button type="button" class="tab-btn" data-stage="0">0 &middot; Blockout</button>
+            <button type="button" class="tab-btn" data-stage="1">1 &middot; First Pass</button>
+            <button type="button" class="tab-btn" data-stage="2">2 &middot; Millwork &amp; Lamps</button>
+            <button type="button" class="tab-btn" data-stage="3">3 &middot; Clerestory &amp; Window</button>
+            <button type="button" class="tab-btn is-active" data-stage="4">4 &middot; Full Campus (v0.4.5)</button>
+          </div>
+          <div class="cam-tabs" role="tablist" aria-label="Camera Views">
+            <button type="button" class="tab-btn is-active" data-cam="hero">North Bluff</button>
+            <button type="button" class="tab-btn" data-cam="cutaway">Roof-Off Cutaway</button>
+            <button type="button" class="tab-btn" data-cam="mezz">Mezzanine Counter</button>
+          </div>
+        </div>
+
+        <div class="stage-frame">
+          <img id="stageImg" src="renders/studio_01_hillside_hero.png" alt="Model evolution stage view" />
+          <span class="stage-badge" id="stageBadge">STAGE 4 &middot; NORTH BLUFF</span>
+        </div>
+
+        <div class="stage-caption">
+          <div>
+            <h3 id="stageTitle">Full Campus, Three-Tier Roofs &amp; Parametric Millwork</h3>
+            <p id="stageNote">Abbey hilltop campus context, three-tier terracotta and dark-membrane roofs with the 3&prime;-11&Prime; structural plenum, 1&Prime;&times;1&Prime; radial ceiling slats, glazed Director/Media wall, and South Wing interiors (134,373 faces).</p>
+          </div>
+          <span class="stage-commit" id="stageCommit">v0.4.5 &middot; 134,373 faces</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="h-columns">
+      <div class="sec-kicker">04 &middot; Case Study &middot; Seven Overlay Passes</div>
+      <h2>Honing In on the Three H-Columns</h2>
+      <p class="sec-desc">
+        At 700 pixels tall, the dimension text on Sheet <code>06-a6</code> around the three north perimeter piers (<code>B</code>, <code>C</code>, and <code>D</code>) was illegible. Rather than guessing, we projected Python test polygons onto the scan and refined the generator across seven passes&mdash;then carried the same loop into 3D.
+      </p>
+
+      <div class="hcol-strip">
+        <figure class="hcol-step">
+          <img src="code/hcol_1_grid.png" alt="Rotated 1-foot measuring grid over H-Column B on Sheet 06-a6" />
+          <figcaption>
+            <strong>Pass 0 &middot; Rotated 1-ft Grid</strong>
+            Grid aligned to Ray B (<code>138.3&deg;</code>) reveals the column is turned <code>90&deg;</code>: radial web, splayed curtain-wall flanges.
+          </figcaption>
+        </figure>
+        <figure class="hcol-step">
+          <img src="code/hcol_2_v1.png" alt="First symmetric polygon attempt missing outer brick flange on Sheet 06-a6" />
+          <figcaption>
+            <strong>Pass 1 &middot; Symmetric Trial</strong>
+            First <code>get_h_pier_polygons_ft()</code> assumed equal offsets&mdash;landing <code>1&prime;-8&Prime;</code> shy of the outer brick flange.
+          </figcaption>
+        </figure>
+        <figure class="hcol-step">
+          <img src="code/hcol_3_v4.png" alt="Fourth pass adding cyan curtain-wall chord lines on Sheet 06-a6" />
+          <figcaption>
+            <strong>Pass 4 &middot; Facade Chords</strong>
+            Plotting the cyan curtain-wall chords showed why the two flanges splay at different angles to meet each window bay.
+          </figcaption>
+        </figure>
+        <figure class="hcol-step">
+          <img src="code/hcol_4_v7.png" alt="Seventh pass locking red H-column polygon directly onto Sheet 06-a6 ink" />
+          <figcaption>
+            <strong>Pass 7 &middot; Locked to Ink</strong>
+            Per-flange lengths and radial web offset register cleanly onto Aalto&rsquo;s masonry outline.
+          </figcaption>
+        </figure>
+      </div>
+
+      <figure class="hcol-wide">
+        <img src="code/hcol_5_plan_bcd.png" alt="All three irregular H-columns B, C, and D registered simultaneously across Sheet 05-a5" />
+        <figcaption>Cross-checking the same Python function across Sheet <code>05-a5</code>: all three columns (<code>B</code>, <code>C</code>, and <code>D</code>&mdash;no two alike) lock simultaneously onto the faceted north curtain wall.</figcaption>
+      </figure>
+
+      <div class="catch-pair">
+        <figure class="catch-fig">
+          <span class="pill-tag">First 3D Extrusion</span>
+          <img src="code/hcol_6_3d_early.jpg" alt="Early 3D extrusion of the three north H-columns before clerestory sill and Mt. Hood window" />
+          <figcaption>Commit <code>58266f5</code>: stepped fins in place, but Level 3 glass drops too low, parapet caps shimmer, and Column D is solid.</figcaption>
+        </figure>
+        <figure class="catch-fig">
+          <span class="pill-tag after">Refined 3D Form</span>
+          <img src="renders/studio_07_north_h_columns.png" alt="Final 3D North H-columns with +7'-2' brick clerestory wall and Mt. Hood window in H-Column D" />
+          <figcaption>Sheets <code>11-a11</code> &amp; <code>12-a12</code> applied: <code>+7&prime;-2&Prime;</code> brick clerestory band, clean scupper pockets, and Column D&rsquo;s eye-level Mt. Hood window.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="block" id="catches">
+      <div class="sec-kicker">05 &middot; Caught in the Viewport</div>
+      <h2>Four More Bugs Visual Inspection Exposed</h2>
+      <p class="sec-desc">
+        Even when code runs cleanly and every mesh is watertight, architectural logic can still clash in 3D space. Here are four real issues spotted in viewport screenshots and fixed in Python.
+      </p>
+
+      <div class="catches">
+        <article class="catch-card">
+          <div class="catch-head">
+            <div class="sec-kicker">Catch 01 &middot; Diagonal Wall Math</div>
+            <h3>Carrel Panels &amp; Staircase Bleeding Through the East Flank</h3>
+            <p>Early radial stack and stair placement ignored the inward thickness of the angled East brick wall (<code>PT_E &rarr; PT_LOUNGE_JUNC</code>), leaving two white carrel partitions and a stair stringer poking outside. Shifting both along the wall&rsquo;s inward normal tucked them cleanly inside.</p>
+          </div>
+          <div class="catch-pair">
+            <figure class="catch-fig">
+              <span class="pill-tag">Before</span>
+              <img src="code/catch1_east_before.jpg" alt="Before fix: two white panels and stair poking through the East brick wall" loading="lazy" />
+              <figcaption>Two white carrel panels and the East stair bleeding through exterior brick.</figcaption>
+            </figure>
+            <figure class="catch-fig">
+              <span class="pill-tag after">After</span>
+              <img src="code/catch1_east_after.jpg" alt="After fix: clean East brick flank wall and upward roof step" loading="lazy" />
+              <figcaption>Inward normal offset applied; clean masonry flank and upward Fan roof step.</figcaption>
+            </figure>
+          </div>
+        </article>
+
+        <article class="catch-card">
+          <div class="catch-head">
+            <div class="sec-kicker">Catch 02 &middot; Section Re-read</div>
+            <h3>Inverted Roof Step Between the Lobby and the Fan</h3>
+            <p>Our first pass stepped the South Wing roof <em>up</em> above a flat grey Fan roof. Checking Sheet <code>13-a13</code> Section A-A and aerial photos showed the opposite: the Fan&rsquo;s <code>3&prime;-11&Prime;</code> structural plenum steps <code>+2&prime;-7&Prime;</code> <em>above</em> the lower Lobby roof, while the SE Auditorium rises higher still.</p>
+          </div>
+          <div class="catch-pair">
+            <figure class="catch-fig">
+              <span class="pill-tag">Before</span>
+              <img src="code/catch2_roofstep_before.jpg" alt="Before fix: grey roof with South Wing stepping higher than the Fan roof" loading="lazy" />
+              <figcaption>Uniform grey roof with the step reversed (South roof higher than Fan).</figcaption>
+            </figure>
+            <figure class="catch-fig">
+              <span class="pill-tag after">After</span>
+              <img src="code/catch2_roofstep_after.jpg" alt="After fix: terracotta Fan roof stepping up above South Wing and dark Auditorium roof" loading="lazy" />
+              <figcaption>True three-tier hierarchy: lower Lobby, higher Fan, and taller dark-membrane Auditorium.</figcaption>
+            </figure>
+          </div>
+        </article>
+
+        <article class="catch-card">
+          <div class="catch-head">
+            <div class="sec-kicker">Catch 03 &middot; Coplanar Z-Fighting (v0.4.1)</div>
+            <h3>Shadow Tearing Across the Auditorium Roof</h3>
+            <p>Turning on <code>4096&times;4096</code> solar shadows revealed jagged brown triangles across the SE Auditorium roof. The closed-loop brick wall builder had capped its own interior footprint at <code>z = +5.69 m</code>&mdash;the exact elevation of the dark roof membrane. Dropping internal wall caps below the slab cured it.</p>
+          </div>
+          <div class="catch-pair">
+            <figure class="catch-fig">
+              <span class="pill-tag">Before</span>
+              <img src="code/catch3_audroof_before.jpg" alt="Before fix: coplanar triangle artifacts across the Auditorium roof" loading="lazy" />
+              <figcaption>Coplanar brick cap fighting the dark membrane slab at <code>z = +5.69 m</code>.</figcaption>
+            </figure>
+            <figure class="catch-fig">
+              <span class="pill-tag after">After</span>
+              <img src="code/catch3_audroof_after.jpg" alt="After fix: clean slate-grey Auditorium roof membrane" loading="lazy" />
+              <figcaption>Wall loop extruded as a hollow perimeter ring; crisp shadow and membrane.</figcaption>
+            </figure>
+          </div>
+        </article>
+
+        <article class="catch-card">
+          <div class="catch-head">
+            <div class="sec-kicker">Catch 04 &middot; Detail Sheet Check (v0.4.2)</div>
+            <h3>Continuing the Step Parapet Behind the Daylight Scoop</h3>
+            <p>Looking down from the South roof showed the copper-coped brick step parapet stopping abruptly at the two ends of the curved skylight. Sheet <code>18-a18 Detail 4</code> showed the parapet continues unbroken along the <code>24&prime;-0&Prime;</code> arc right behind the scoop&rsquo;s plaster springing.</p>
+          </div>
+          <div class="catch-pair">
+            <figure class="catch-fig">
+              <span class="pill-tag">Before</span>
+              <img src="code/catch4_parapet_before.jpg" alt="Before fix: step parapet stopping at the two ends of the curved scoop" loading="lazy" />
+              <figcaption>Step parapet interrupted at <code>45&deg;</code> and <code>156&deg;</code> where the scoop begins.</figcaption>
+            </figure>
+            <figure class="catch-fig">
+              <span class="pill-tag after">After</span>
+              <img src="code/catch4_parapet_after.jpg" alt="After fix: continuous copper-capped parapet running behind the scoop arc" loading="lazy" />
+              <figcaption>Continuous brick parapet and copper coping running behind the full scoop arc.</figcaption>
+            </figure>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Enlarged image view">
+    <img id="lightboxImg" src="" alt="" />
+  </div>
+
+  <footer class="suite-footer">
+    <div class="suite-footer-inner">
+      <span>Mount Angel Abbey Library &middot; Alvar Aalto (1970) &middot; phi ARCHITECT</span>
+      <nav class="footer-links" aria-label="Footer Suite Navigation">
+        <a href="index.html">Overview</a>
+        <a href="journey.html">Journey</a>
+        <a href="making-of.html">Making the Model</a>
+        <a href="code.html">Code</a>
+        <a href="photo-compare.html">Photo vs. Model</a>
+        <a href="drawings.html">Blueprints</a>
+        <a href="visitor-guide.html">Visitor Guide</a>
+        <a href="library-3d.html">3D Model</a>
+        <a href="https://github.com/phiarchitect/mount_angel">Source</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const STAGES = [
+        {
+          title: 'Stage 0 · Initial FreeCAD Parametric Blockout',
+          note: 'First Python pass (commit a244e26): a flat rectangular South Wing, thin radial fan floor, 4 skylight drums, and wireframe regulating rays.',
+          commit: 'a244e26 · FreeCAD blockout',
+          imgs: {
+            hero: 'code/stage0_hero.jpg',
+            cutaway: 'code/stage0_cutaway.jpg',
+            mezz: 'code/stage0_mezz.jpg'
+          }
+        },
+        {
+          title: 'Stage 1 · First 8-Layer IngeTrazo Build',
+          note: 'First full IngeTrazo pass (commit 3cd1d23): 3-story curtain wall and scoop in place, but Level 3 glass runs to the floor, triangulation lines show on every face, lamps are simple cones, and the South Wing is empty.',
+          commit: '3cd1d23 · ~53,000 faces',
+          imgs: {
+            hero: 'code/stage1_hero.jpg',
+            cutaway: 'code/stage1_cutaway.jpg',
+            mezz: 'code/stage1_mezz.jpg'
+          }
+        },
+        {
+          title: 'Stage 2 · Coplanar Edge Stripping, Mezzanine Desks & Mushroom Lamps',
+          note: 'Internal mesh diagonals stripped; irregular 90°-turned H-columns, -4\'-6" Mezzanine workstations, open bronze Control guardrail, curved Reference Bookwall, and angled-arm oblate mushroom lamps added.',
+          commit: '40afa60 · ~61,000 faces',
+          imgs: {
+            hero: 'code/stage2_hero.jpg',
+            cutaway: 'code/stage2_cutaway.jpg',
+            mezz: 'code/stage2_mezz.jpg'
+          }
+        },
+        {
+          title: 'Stage 3 · +7\'-2" Clerestory Wall, Mt. Hood Window & Stairwell Bookcases',
+          note: 'Blueprint re-reads raised the Level 3 north wall to a +7\'-2" high clerestory band, carved H-Column D\'s eye-level Mt. Hood window, and replaced open stairwell railings with counter-height bookcases.',
+          commit: 'ba018da · ~64,000 faces',
+          imgs: {
+            hero: 'code/stage3_hero.jpg',
+            cutaway: 'code/stage3_cutaway.jpg',
+            mezz: 'code/stage3_mezz.jpg'
+          }
+        },
+        {
+          title: 'Stage 4 · Full Campus, Three-Tier Roofs & Parametric Millwork',
+          note: 'Abbey hilltop campus context, three-tier terracotta and dark-membrane roofs with the 3\'-11" structural plenum, 1"×1" radial ceiling slats, glazed Director/Media wall, and South Wing interiors.',
+          commit: 'v0.4.5 · 134,373 faces',
+          imgs: {
+            hero: 'renders/studio_01_hillside_hero.png',
+            cutaway: 'renders/studio_03_roof_cutaway_axon.png',
+            mezz: 'renders/studio_04_mezzanine_counter_pov.png'
+          }
+        }
+      ];
+
+      const CAM_LABELS = {
+        hero: 'NORTH BLUFF',
+        cutaway: 'ROOF-OFF CUTAWAY',
+        mezz: 'MEZZANINE COUNTER'
+      };
+
+      let curStage = 4;
+      let curCam = 'hero';
+
+      const imgEl = document.getElementById('stageImg');
+      const badgeEl = document.getElementById('stageBadge');
+      const titleEl = document.getElementById('stageTitle');
+      const noteEl = document.getElementById('stageNote');
+      const commitEl = document.getElementById('stageCommit');
+      const stageBtns = document.querySelectorAll('[data-stage]');
+      const camBtns = document.querySelectorAll('[data-cam]');
+
+      function render() {
+        const s = STAGES[curStage];
+        imgEl.src = s.imgs[curCam];
+        badgeEl.textContent = 'STAGE ' + curStage + ' · ' + CAM_LABELS[curCam];
+        titleEl.textContent = s.title;
+        noteEl.textContent = s.note;
+        commitEl.textContent = s.commit;
+        stageBtns.forEach(b => b.classList.toggle('is-active', Number(b.dataset.stage) === curStage));
+        camBtns.forEach(b => b.classList.toggle('is-active', b.dataset.cam === curCam));
+      }
+
+      stageBtns.forEach(b => b.addEventListener('click', () => { curStage = Number(b.dataset.stage); render(); }));
+      camBtns.forEach(b => b.addEventListener('click', () => { curCam = b.dataset.cam; render(); }));
+
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lightboxImg');
+      document.querySelectorAll('.stage-frame img, .catch-fig img, .hcol-step img, .hcol-wide img').forEach(el => {
+        el.addEventListener('click', () => {
+          lbImg.src = el.src;
+          lbImg.alt = el.alt;
+          lb.classList.add('is-open');
+        });
+      });
+      lb.addEventListener('click', () => lb.classList.remove('is-open'));
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') lb.classList.remove('is-open');
+      });
+    })();
+  </script>
+</body>
+</html>

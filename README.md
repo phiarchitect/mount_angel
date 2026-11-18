@@ -21,6 +21,7 @@ Nothing needs to be installed. The site works in any modern web browser.
 | **[3D Model](https://phiarchitect.github.io/mount_angel/library-3d.html)** | Walk around and through the library. Cut it open to see the levels and set the sun to any day and hour. Press **F** for full screen and **M** to hide the menus. |
 | **[The Journey](https://phiarchitect.github.io/mount_angel/journey.html)** | Fr. Barnabas's March 1966 trip to meet Aalto: a map, the buildings he saw, and his hopes for the library. |
 | **[Making the Model](https://phiarchitect.github.io/mount_angel/making-of.html)** | How the drawings were read and measured, and what we learned about Aalto's design along the way. |
+| **[Building with Code](https://phiarchitect.github.io/mount_angel/code.html)** | How Python functions and IngeTrazo built the 3D forms, with early passes and bugs caught along the way. |
 | **[Photo vs. Model](https://phiarchitect.github.io/mount_angel/photo-compare.html)** | Eight photographs of the library set beside matching views of the model, so you can judge its accuracy for yourself. |
 | **[Blueprints](https://phiarchitect.github.io/mount_angel/drawings.html)** | All 47 of Aalto's sheets (plans, sections, details, furniture and structure) in one place. |
 | **[Visitor Guide](https://phiarchitect.github.io/mount_angel/visitor-guide.html)** | A fold-out rack card and lobby posters with floor plans, a section through the skylight and a campus map, ready to print. |
