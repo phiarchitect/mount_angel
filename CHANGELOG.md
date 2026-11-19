@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.1] - 2026-11-19
+
+### Fixed
+- Level 3 reading stools are now three-legged Artek **Stool 60**s (L-legs at 120°), as seen in the photos. The model previously built the four-legged E60. The furniture and making-of pages are corrected to match, and all static renders have been regenerated (model is now 133,921 faces).
+
 ## [0.6.0] - 2026-11-19
 
 ### Added
