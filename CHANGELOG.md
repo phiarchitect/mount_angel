@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.2] - 2026-11-19
+
+### Added
+- `scripts/capture_furniture_renders.py`: re-renders furniture-page close-ups from recorded cameras. It starts with the Stool 60 shot; the other close-ups don't have cameras yet.
+
+### Fixed
+- Furniture page Stool 60 close-up (`docs/furniture/render_03_stool60.jpg`) re-rendered so it shows the three-legged stools along the Level 3 workbench.
+
 ## [0.6.1] - 2026-11-19
 
 ### Fixed
