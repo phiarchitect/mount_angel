@@ -1,0 +1,102 @@
+{
+  "prefix": "seg01_hilltop",
+  "html": "../../docs/library-3d.html",
+  "injected_js_file": "../library_choreography.js",
+  "query_params": {
+    "studio": "1",
+    "hud": "0"
+  },
+  "width": 2560,
+  "height": 1440,
+  "duration_sec": 28.0,
+  "fps": 30,
+  "warmup_frames": 0,
+  "thumb_sec": 22.0,
+  "audio_wav": "seg01_hilltop.wav",
+  "wide_mp4": "seg01_hilltop.mp4",
+  "wide_thumb": "seg01_hilltop_thumb.png",
+  "render_short": false,
+  "ambient_drone": false,
+  "hideLayers": ["0_Regulating_Grid"],
+  "caster": "envelope",
+  "keyframes": [
+    {
+      "t": 0.0,
+      "tx": 12.0,
+      "ty": -12.0,
+      "tz": 2.0,
+      "yaw": -2.27,
+      "pitch": 0.072,
+      "dist": 145.0,
+      "fov": 44.0,
+      "doy": 172,
+      "hour": 7.25,
+      "comment": "Dawn establish: wide Abbey Quad, Aquinas Hall, Bell Tower, and Mt. Hood centered over the Library"
+    },
+    {
+      "t": 4.5,
+      "tx": 2.0,
+      "ty": 1.0,
+      "tz": 1.6,
+      "yaw": -2.04,
+      "pitch": 0.16,
+      "dist": 80.0,
+      "fov": 44.0,
+      "doy": 172,
+      "hour": 7.80,
+      "comment": "4.5s speech cue: camera clears Quad roofs to focus directly on the Library with Mt. Hood in upper-right sky"
+    },
+    {
+      "t": 11.0,
+      "tx": -1.5,
+      "ty": 3.0,
+      "tz": 1.8,
+      "yaw": -1.32,
+      "pitch": 0.30,
+      "dist": 48.0,
+      "fov": 44.0,
+      "doy": 172,
+      "hour": 8.65,
+      "comment": "Post-speech glide over the Quad lawn past the South Entry Pergolas & 12 conical skylights"
+    },
+    {
+      "t": 16.5,
+      "tx": -2.0,
+      "ty": 5.5,
+      "tz": 2.4,
+      "yaw": -0.30,
+      "pitch": 0.36,
+      "dist": 38.0,
+      "fov": 44.0,
+      "doy": 172,
+      "hour": 9.40,
+      "comment": "Clean passage West and above the East Monastery wing out toward the northern bluff"
+    },
+    {
+      "t": 22.0,
+      "tx": 1.5,
+      "ty": 7.0,
+      "tz": -0.4,
+      "yaw": 0.38,
+      "pitch": 0.27,
+      "dist": 54.0,
+      "fov": 44.0,
+      "doy": 172,
+      "hour": 10.05,
+      "comment": "Crossing the East bluff rim past the Periodical Lounge window and Daylight Scoop"
+    },
+    {
+      "t": 28.0,
+      "tx": 1.8,
+      "ty": 7.5,
+      "tz": -1.8,
+      "yaw": 0.84,
+      "pitch": 0.22,
+      "dist": 62.0,
+      "fov": 44.0,
+      "doy": 172,
+      "hour": 10.65,
+      "comment": "North-East hillside hero hold: 3-story terraced fan, splayed H-columns, hemlock louvers, and curved Daylight Scoop"
+    }
+  ]
+}

@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.0] - 2026-11-19
+
+### Added
+- **Panoramic sky & mountain horizon** in `docs/library-3d.html`: camera-aware 3D sky shader with Mt. Hood, Jefferson, Adams and St. Helens placed at their true bearings (rotated to the Abbey's 28.5° reference-north grid), the western Cascade crest, and the Silverton Hills / Coast Range foothills, all lit by the sun-path model.
+- **Tilt-shift lens** (`shiftx` / `shifty` URL parameters) and fixed-size rendering for exact-aspect captures. The far clip plane now scales with camera distance, and fog thins for telephoto views.
+- `window.__mountAngelStudio` bridge for scripted film rendering.
+- **Fly-through film workspace** (`videos/`): `STUDIO.md` production guide, camera choreography, score composer, clearance checker and film assembler, with 7 segment folders. Rendered media is git-ignored.
+- `scripts/capture_photo_matches.py`: renders every Photo vs. Model shot at the photo's exact aspect ratio, with optional 50/50 overlays.
+- Mezzanine-level reference photo (`docs/photos/MA-121713-578-web-1400x700.jpg`).
+
+### Changed
+- **Photo vs. Model** (`docs/photo-compare.html`): shots 01–03 recalibrated. Shot 06 now uses a new photo taken from the mezzanine looking up at the control peninsula rail (the old one repeated Shot 05's spot). Shot 07 camera moved to head height at the foot of the west stair. Shot 08 camera moved to the east side of the scoop, looking up and west. Shots 06–08 are first-pass alignments.
+
+### Removed
+- Shot 04 from Photo vs. Model: its photo was the same image as Shot 03.
+
 ## [0.4.6] - 2026-11-18
 
 ### Added
