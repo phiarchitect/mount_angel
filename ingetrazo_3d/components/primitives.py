@@ -1198,7 +1198,7 @@ def add_counter_wall_bracket(
 
 
 def add_artek_stool_60(mesh, pt_ft: tuple[float, float], z_floor_m: float, rot_deg: float = 0.0):
-    """Alvar Aalto Artek E60 4-legged bent-birch backless reading stool (`Angel-090508` Level 3 counter)."""
+    """Alvar Aalto Artek Stool 60: 3-legged bent-birch backless reading stool (`Angel-090508` Level 3 counter)."""
     birch = {**MATERIALS["birch_wood"], "furniture": True}
     lino = {**MATERIALS["black_linoleum"], "furniture": True}
 
@@ -1206,8 +1206,9 @@ def add_artek_stool_60(mesh, pt_ft: tuple[float, float], z_floor_m: float, rot_d
     add_cylinder_ft(mesh, pt_ft, 0.168 / FT_TO_M, z_floor_m + 0.448, z_floor_m + 0.458, lino, sides=14)
 
     cx, cy = xy_m(pt_ft)
-    for k in range(4):
-        ang = math.radians(rot_deg + 45.0 + 90.0 * k)
+    # 3 steam-bent "Aalto knee" L-legs at 120° (the 4-legged E60 is a different model)
+    for k in range(3):
+        ang = math.radians(rot_deg + 60.0 + 120.0 * k)
         ca, sa = math.cos(ang), math.sin(ang)
         leg_pts = [
             (cx + 0.178 * ca, cy + 0.178 * sa, z_floor_m),

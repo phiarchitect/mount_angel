@@ -61,7 +61,7 @@ Everything below is for anyone updating the model or the website.
    - Seven sheets are registered: 03, 04, 05, 06, 07, 13 and S4.
    - The script writes vector overlays (`docs/overlays/sheet_*.svg`) and proof images (`docs/overlays/proofs/`).
 2. **Building the 3D model**: [`ingetrazo_3d/`](ingetrazo_3d/)
-   - Uses IngeTrazo (phi-WORKS) to build a watertight model with 134,761 faces. The outputs are `mount_angel_library.igz`, `.obj` and `.mtl`, plus the web scene `docs/overlays/library_3d_scene.json`.
+   - Uses IngeTrazo (phi-WORKS) to build a watertight model with 133,921 faces. The outputs are `mount_angel_library.igz`, `.obj` and `.mtl`, plus the web scene `docs/overlays/library_3d_scene.json`.
 3. **The website**: [`docs/`](docs/)
    - Plain HTML, CSS and WebGL2, with no build step. GitHub Pages serves it directly from `docs/`.
    - All pages share the header in `suite.css`.

@@ -169,7 +169,7 @@
     <nav class="jump-strip" aria-label="Featured Furniture Pieces">
       <a class="jump-pill" href="#lamp">01 &middot; Parapet Mushroom Lamp</a>
       <a class="jump-pill" href="#workbench">02 &middot; Linoleum Workbench &amp; T-Brackets</a>
-      <a class="jump-pill" href="#seating">03 &middot; Artek Stool E60 &amp; Chair 69</a>
+      <a class="jump-pill" href="#seating">03 &middot; Artek Stool 60 &amp; Chair 69</a>
       <a class="jump-pill" href="#bookcases">04 &middot; Radial Bookcases &amp; 5-Batten Screens</a>
       <a class="jump-pill" href="#stair-bookwall">05 &middot; Stairwell Counters &amp; Curved Bookwall</a>
       <a class="jump-pill" href="#control-desk">06 &middot; Slatted Control Desk &amp; Guardrail</a>
@@ -278,29 +278,29 @@ shade_profile = [
       </div>
     </section>
 
-    <!-- 03 · ARTEK STOOL E60 & CHAIR 69 -->
+    <!-- 03 · ARTEK STOOL 60 & CHAIR 69 -->
     <section class="piece" id="seating">
       <div class="sec-kicker">03 &middot; Steam-Bent Birch Seating &middot; Two Postures</div>
-      <h2>Artek Stool E60 vs. Reading Chair 69</h2>
+      <h2>Artek Stool 60 vs. Reading Chair 69</h2>
       <p class="piece-intro">
         Comparing photographs of the upper rim and the sunken gallery showed why Aalto specified two different bent-birch seats: backless stools up top to keep sightlines open across the well, and broad backrest chairs down below for longer study.
       </p>
 
       <ul class="obs-list">
-        <li><strong>Level 3 Rim &mdash; Stool E60:</strong> Four steam-bent birch L-legs (<code>45&deg; + 90&deg;k</code>) under a circular birch and black-linoleum seat that tucks flush beneath the counter when unoccupied.</li>
+        <li><strong>Level 3 Rim &mdash; Stool 60:</strong> Three steam-bent birch L-legs (<code>60&deg; + 120&deg;k</code>) under a circular birch and black-linoleum seat that tucks flush beneath the counter when unoccupied.</li>
         <li><strong>Mezzanine &mdash; Chair 69:</strong> Two front L-legs (<code>&plusmn;42&deg;</code>) paired with two splayed rear stiles (<code>&plusmn;145&deg;</code>) rising into a <code>114&deg;</code> curved steam-bent birch backrest band, each rotated slightly (<code>&minus;6&deg;..+6&deg;</code>) so the row feels lived-in.</li>
       </ul>
 
       <div class="pair-grid">
         <figure class="plate">
           <span class="plate-tag obs">Photo Observation</span>
-          <img src="furniture/obs_03_stool60_photo.jpg" alt="Monk reading at the Level 3 workbench on an Artek E60 four-legged bent-birch stool" />
-          <figcaption>Level 3 well rim: 4-legged backless Artek E60 stools with matte-black circular tops keep the horizon clear.</figcaption>
+          <img src="furniture/obs_03_stool60_photo.jpg" alt="Monk reading at the Level 3 workbench on a three-legged Artek Stool 60" />
+          <figcaption>Level 3 well rim: 3-legged backless Artek Stool 60s with matte-black circular tops keep the horizon clear.</figcaption>
         </figure>
         <figure class="plate">
           <span class="plate-tag mod">3D Solid in Code</span>
-          <img src="furniture/render_03_stool60.jpg" alt="3D render of Artek E60 four-legged bent-birch stools along the Level 3 curved counter" />
-          <figcaption>Parametric E60 stools along the Level 3 counter; Chair 69 (seen in section 02 above) uses the same L-leg kernel plus rear stiles.</figcaption>
+          <img src="furniture/render_03_stool60.jpg" alt="3D render of three-legged Artek Stool 60s along the Level 3 curved counter" />
+          <figcaption>Parametric Stool 60s along the Level 3 counter; Chair 69 (seen in section 02 above) uses the same L-leg kernel plus rear stiles.</figcaption>
         </figure>
       </div>
 
@@ -309,11 +309,11 @@ shade_profile = [
           <span>primitives.py &middot; add_artek_stool_60() &amp; add_artek_chair_69()</span>
           <a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/primitives.py#L1200-L1271">View full functions &nearr;</a>
         </div>
-<pre class="code-body"><span class="cm"># Stool E60: birch seat disc + black linoleum pad + 4 steam-bent L-legs</span>
+<pre class="code-body"><span class="cm"># Stool 60: birch seat disc + black linoleum pad + 3 steam-bent L-legs</span>
 <span class="fn">add_cylinder_ft</span>(mesh, pt_ft, <span class="nu">0.175</span> / FT_TO_M, z_floor_m + <span class="nu">0.422</span>, z_floor_m + <span class="nu">0.448</span>, birch, sides=<span class="nu">14</span>)
 <span class="fn">add_cylinder_ft</span>(mesh, pt_ft, <span class="nu">0.168</span> / FT_TO_M, z_floor_m + <span class="nu">0.448</span>, z_floor_m + <span class="nu">0.458</span>, lino, sides=<span class="nu">14</span>)
-<span class="kw">for</span> k <span class="kw">in</span> <span class="fn">range</span>(<span class="nu">4</span>):
-    ca, sa = math.<span class="fn">cos</span>(ang0 + k * math.pi / <span class="nu">2</span>), math.<span class="fn">sin</span>(ang0 + k * math.pi / <span class="nu">2</span>)
+<span class="kw">for</span> k <span class="kw">in</span> <span class="fn">range</span>(<span class="nu">3</span>):
+    ca, sa = math.<span class="fn">cos</span>(ang0 + k * <span class="nu">2</span> * math.pi / <span class="nu">3</span>), math.<span class="fn">sin</span>(ang0 + k * <span class="nu">2</span> * math.pi / <span class="nu">3</span>)
     <span class="fn">add_polytube_m</span>(mesh, [(cx+<span class="nu">.178</span>*ca, cy+<span class="nu">.178</span>*sa, z0), (cx+<span class="nu">.166</span>*ca, cy+<span class="nu">.166</span>*sa, z0+<span class="nu">.39</span>),
                           (cx+<span class="nu">.075</span>*ca, cy+<span class="nu">.075</span>*sa, z0+<span class="nu">.432</span>)], <span class="nu">0.015</span>, birch, sides=<span class="nu">6</span>)
 
