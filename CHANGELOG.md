@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.0] - 2026-11-19
+
+### Added
+- **Scoop skylight header beams**: three plaster beams run through the main skylight along radial guide rays B, C and D from WP3, spanning radius 25.8–40.0 ft from WP3A at z 3.85–4.55 m (Sheet 48-s17, Main Skylight Frame Details / Detail B). Beam size is estimated from the photos.
+- `scripts/capture_studio_renders.py`: standalone studio-render capture. It shoots one camera at a time, checks that the scene JSON finished loading, and retries with a longer wait if it didn't.
+
+### Changed
+- Scoop columns Well_1, Well_2 and Well_3 snapped onto rays B, C and D, and cut to stop at the underside of the beams (z 3.85 m).
+- All 20 studio renders and 7 Photo vs. Model renders regenerated with the beams, all at 2560×1440.
+
+### Fixed
+- Studio renders that had captured a "Scene Load Error: Failed to fetch" frame (sky and ground only) have been re-shot.
+
 ## [0.5.0] - 2026-11-19
 
 ### Added

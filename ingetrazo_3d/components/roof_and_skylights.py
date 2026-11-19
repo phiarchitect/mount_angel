@@ -270,6 +270,35 @@ def build_roof_and_skylights(scene):
         steps=36,
     )
 
+    # Radial Skylight Header Beams across the Daylight Scoop (`Sheet 48-s17: MAIN SKYLIGHT FRAME DETAILS`
+    # & Detail B "HEADER BEAM TO CONC COLUMN"): plaster-cased WF beams running along Radial Axes B, C, D
+    # from WP3, emerging from the concave vault (R ≈ 25.8 ft from WP3A) and crossing beneath the north
+    # glazing to bury into the curb at R = 40.0 ft. Each bears on its well column (`Well_1/2/3`).
+    beam_z0, beam_z1 = 3.85, 4.55
+    beam_w_ft = 1.33
+    for ray_deg in (G.RAY_B_DEG, G.RAY_C_DEG, G.RAY_D_DEG):
+        ux, uy = math.cos(math.radians(ray_deg)), math.sin(math.radians(ray_deg))
+        ox, oy = G.WP3[0] - G.WP3A[0], G.WP3[1] - G.WP3A[1]
+        b = ox * ux + oy * uy
+        c0 = ox * ox + oy * oy
+
+        def _t_at_r(r_ft: float) -> float:
+            # Distance along the ray from WP3 at which radius from WP3A equals r_ft
+            return -b + math.sqrt(b * b - c0 + r_ft * r_ft)
+
+        t0, t1 = _t_at_r(25.8), _t_at_r(40.0)
+        t_mid = 0.5 * (t0 + t1)
+        add_oriented_box_ft(
+            mesh,
+            (G.WP3[0] + t_mid * ux, G.WP3[1] + t_mid * uy),
+            t1 - t0,
+            beam_w_ft,
+            ray_deg,
+            beam_z0,
+            beam_z1,
+            MATERIALS["white_plaster"],
+        )
+
     # Watertight Copper/Plaster End-Cheek Gables closing East (45°) & West (156°) Scoop Ends
     # (`Sheet 18-a18 Detail 4: 16 OZ COPPER FASCIA & WALL` — matches every exact vertex of `vault_profile`,
     # glazing slope, curb sill, lower fan roof slab, and upper step parapet with ZERO gaps!)
