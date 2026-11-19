@@ -1,0 +1,102 @@
+{
+  "prefix": "seg05_entering_the_fan",
+  "html": "../../docs/library-3d.html",
+  "injected_js_file": "../library_choreography.js",
+  "query_params": {
+    "studio": "1",
+    "hud": "0"
+  },
+  "width": 2560,
+  "height": 1440,
+  "duration_sec": 28.0,
+  "fps": 30,
+  "warmup_frames": 0,
+  "thumb_sec": 14.0,
+  "audio_wav": "seg05_entering_the_fan.wav",
+  "wide_mp4": "seg05_entering_the_fan.mp4",
+  "wide_thumb": "seg05_entering_the_fan_thumb.png",
+  "render_short": false,
+  "ambient_drone": false,
+  "hideLayers": ["0_Regulating_Grid"],
+  "caster": "envelope",
+  "keyframes": [
+    {
+      "t": 0.0,
+      "tx": -0.8,
+      "ty": -6.2,
+      "tz": 1.88,
+      "yaw": -2.14,
+      "pitch": 0.03,
+      "dist": 6.2,
+      "fov": 54.0,
+      "doy": 135,
+      "hour": 9.20,
+      "comment": "Upper Lobby (+0.61 m floor) beside the 32-batten birch privacy screen looking NNE toward wide birch Entry Steps & slatted wood ceiling"
+    },
+    {
+      "t": 6.5,
+      "tx": 7.15,
+      "ty": 3.85,
+      "tz": 1.74,
+      "yaw": -2.35,
+      "pitch": -0.008,
+      "dist": 8.35,
+      "fov": 53.0,
+      "doy": 135,
+      "hour": 9.71,
+      "comment": "Bottom of wide Entry Steps beneath 1x1 radial wood-slatted ceiling sector, curved Control Desk left and 14-bay birch glass wall ahead-right"
+    },
+    {
+      "t": 14.0,
+      "tx": 8.35,
+      "ty": 13.75,
+      "tz": 1.66,
+      "yaw": -1.96,
+      "pitch": 0.004,
+      "dist": 11.75,
+      "fov": 49.0,
+      "doy": 135,
+      "hour": 10.30,
+      "comment": "Alcove Mt. Hood vista beside Control Peninsula looking past stairwell birch bookcase + 4 mushroom lamps down the 65.6 deg Ray D radial aisle"
+    },
+    {
+      "t": 20.5,
+      "tx": 10.90,
+      "ty": 22.10,
+      "tz": 2.00,
+      "yaw": -2.075,
+      "pitch": -0.008,
+      "dist": 8.35,
+      "fov": 48.5,
+      "doy": 135,
+      "hour": 10.81,
+      "comment": "Gliding down the open 14-ft Ray D radial avenue between the 57.5 deg and 73.8 deg slatted birch bookcases toward the fluted column gate"
+    },
+    {
+      "t": 24.2,
+      "tx": 12.15,
+      "ty": 24.45,
+      "tz": 2.12,
+      "yaw": -2.045,
+      "pitch": -0.002,
+      "dist": 7.40,
+      "fov": 49.0,
+      "doy": 135,
+      "hour": 11.10,
+      "comment": "Passing cleanly between the paired fluted concrete columns into the sunlit perimeter reading gallery"
+    },
+    {
+      "t": 28.0,
+      "tx": 13.80,
+      "ty": 25.48,
+      "tz": 2.18,
+      "yaw": -2.04,
+      "pitch": 0.006,
+      "dist": 6.48,
+      "fov": 50.0,
+      "doy": 135,
+      "hour": 11.40,
+      "comment": "Arriving inside sunlit perimeter gallery facing H-Column D square window (left) and Bay D-E tall curtain wall with snow-capped Mt. Hood centered in glass pane (right)"
+    }
+  ]
+}

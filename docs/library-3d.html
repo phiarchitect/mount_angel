@@ -832,6 +832,14 @@
     }
 
     const canvas = document.getElementById("glCanvas");
+    let fixedW = params.has("w") ? parseInt(params.get("w"), 10) : (params.has("__studio_w") ? parseInt(params.get("__studio_w"), 10) : 0);
+    let fixedH = params.has("h") ? parseInt(params.get("h"), 10) : (params.has("__studio_h") ? parseInt(params.get("__studio_h"), 10) : 0);
+    if (fixedW > 0 && fixedH > 0) {
+      canvas.style.width = fixedW + "px";
+      canvas.style.height = fixedH + "px";
+      canvas.style.right = "auto";
+      canvas.style.bottom = "auto";
+    }
     const gl = canvas.getContext("webgl2", {
       antialias: true,
       alpha: false,
@@ -1150,20 +1158,236 @@
     `;
 
     const FS_SKY = `#version 300 es
-      precision mediump float;
+      precision highp float;
       in vec2 vUV;
       uniform float uSunAltDeg;
+      uniform vec3 uSunDir;
+      uniform vec3 uSunColor;
+      uniform vec3 uCamFwd;
+      uniform vec3 uCamRight;
+      uniform vec3 uCamUp;
+      uniform float uTanHalfFov;
+      uniform float uAspect;
+      uniform vec2 uShift;
+      uniform int uIsOrtho;
       out vec4 fragColor;
+
+      float angDiff(float a, float b) {
+        return mod(a - b + 540.0, 360.0) - 180.0;
+      }
+
+      float hash2(vec2 p) {
+        return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+      }
+
+      float vnoise2(vec2 p) {
+        vec2 i = floor(p);
+        vec2 f = fract(p);
+        vec2 u = f * f * (3.0 - 2.0 * f);
+        return mix(
+          mix(hash2(i), hash2(i + vec2(1.0, 0.0)), u.x),
+          mix(hash2(i + vec2(0.0, 1.0)), hash2(i + vec2(1.0, 1.0)), u.x),
+          u.y
+        );
+      }
+
+      // 100% seamless 360-degree periodic ridge FBM on unit horizon circle
+      float fbmCircle(vec2 dirXY, float freq, float seed) {
+        vec2 p = dirXY * freq + vec2(seed, seed * 1.37);
+        return 0.56 * vnoise2(p) + 0.29 * vnoise2(p * 2.07 + 13.1) + 0.15 * vnoise2(p * 4.19 + 29.7);
+      }
+
       void main() {
-        float dayT = smoothstep(-5.0, 22.0, uSunAltDeg);
-        float goldT = smoothstep(-2.0, 6.0, uSunAltDeg) * (1.0 - smoothstep(8.0, 26.0, uSunAltDeg));
-        vec3 horizonDay = mix(vec3(0.83, 0.87, 0.91), vec3(0.95, 0.78, 0.62), goldT * 0.65);
-        vec3 zenithDay  = mix(vec3(0.44, 0.59, 0.78), vec3(0.36, 0.50, 0.72), goldT * 0.45);
-        vec3 horizon    = mix(vec3(0.20, 0.25, 0.36), horizonDay, dayT);
-        vec3 zenith     = mix(vec3(0.08, 0.12, 0.21), zenithDay, dayT);
-        vec3 ground     = mix(vec3(0.16, 0.19, 0.25), vec3(0.66, 0.71, 0.75), dayT);
-        float t = clamp((vUV.y - 0.35) / 0.65, 0.0, 1.0);
-        vec3 col = vUV.y >= 0.35 ? mix(horizon, zenith, pow(t, 0.75)) : mix(ground, horizon, vUV.y / 0.35);
+        float dayT = smoothstep(-5.5, 22.0, uSunAltDeg);
+        float goldT = smoothstep(-3.0, 8.0, uSunAltDeg) * (1.0 - smoothstep(9.0, 26.0, uSunAltDeg));
+        float alpenT = smoothstep(-3.0, 2.5, uSunAltDeg) * (1.0 - smoothstep(4.5, 14.0, uSunAltDeg));
+
+        vec3 horizonDay = mix(vec3(0.82, 0.87, 0.92), vec3(0.96, 0.78, 0.62), goldT * 0.70);
+        vec3 zenithDay  = mix(vec3(0.39, 0.56, 0.78), vec3(0.31, 0.46, 0.70), goldT * 0.45);
+        vec3 horizon    = mix(vec3(0.16, 0.21, 0.33), horizonDay, dayT);
+        vec3 zenith     = mix(vec3(0.07, 0.10, 0.19), zenithDay, dayT);
+        vec3 groundBase = mix(vec3(0.14, 0.17, 0.23), vec3(0.60, 0.66, 0.69), dayT);
+
+        // Keep clean drafting background in orthographic architectural section/plan views
+        if (uIsOrtho == 1) {
+          float tOrtho = clamp((vUV.y - 0.35) / 0.65, 0.0, 1.0);
+          vec3 colOrtho = vUV.y >= 0.35 ? mix(horizon, zenith, pow(tOrtho, 0.75)) : mix(groundBase, horizon, vUV.y / 0.35);
+          fragColor = vec4(colOrtho, 1.0);
+          return;
+        }
+
+        vec2 ndc = vUV * 2.0 - 1.0;
+        vec3 ray = normalize(
+          uCamFwd +
+          (ndc.x - uShift.x) * uAspect * uTanHalfFov * uCamRight +
+          (ndc.y - uShift.y) * uTanHalfFov * uCamUp
+        );
+
+        float elevDeg = degrees(asin(clamp(ray.z, -1.0, 1.0)));
+        vec2 dirXY = normalize(ray.xy + vec2(1e-6, 0.0));
+        float azXY = degrees(atan(dirXY.y, dirXY.x)); // +X = 0 deg (118.5 ESE), +Y = 90 deg (28.5 NNE)
+        vec3 sDir = normalize(uSunDir);
+        float sunCos = clamp(dot(ray, sDir), -1.0, 1.0);
+
+        // 1. Atmospheric Sky Dome + Solar Mie Glow & Subtle High Cirrus
+        float skyT = clamp(elevDeg / 58.0, 0.0, 1.0);
+        vec3 skyCol = mix(horizon, zenith, pow(skyT, 0.66));
+
+        float mie = pow(max(0.0, sunCos), 7.0) * (0.16 + 0.28 * goldT) * smoothstep(-4.0, 6.0, uSunAltDeg);
+        float sunDisc = pow(max(0.0, sunCos), 380.0) * 0.40 * smoothstep(-1.0, 4.0, uSunAltDeg);
+        vec3 glowHue = mix(vec3(1.0, 0.94, 0.84), vec3(1.0, 0.68, 0.44), goldT);
+        skyCol += glowHue * (mie + sunDisc);
+
+        if (elevDeg > 1.5) {
+          float cirrusBand = smoothstep(2.5, 15.0, elevDeg) * (1.0 - smoothstep(24.0, 54.0, elevDeg));
+          float cWave = fbmCircle(dirXY, 4.5, 7.3 + elevDeg * 0.12);
+          float wisps = smoothstep(0.56, 0.84, cWave) * cirrusBand * (0.06 + 0.06 * goldT) * dayT;
+          skyCol = mix(skyCol, mix(vec3(0.95, 0.97, 1.0), vec3(1.0, 0.82, 0.68), goldT), wisps);
+        }
+
+        // Below-horizon distant Willamette Valley floor + soft morning/evening mist
+        vec3 valleyTint = mix(vec3(0.13, 0.16, 0.21), vec3(0.52, 0.58, 0.55), dayT);
+        float valleyDepth = clamp(-elevDeg / 14.0, 0.0, 1.0);
+        float patchNoise = vnoise2(dirXY * 28.0 + vec2(elevDeg * 1.8));
+        valleyTint *= (0.96 + 0.07 * patchNoise);
+        vec3 mistBand = mix(horizon, glowHue, goldT * 0.24);
+        vec3 col = elevDeg >= 0.0
+          ? skyCol
+          : mix(mistBand, valleyTint, pow(valleyDepth, 0.58));
+
+        // 2. Surveyed Cascade Stratovolcanoes & Foothills (28.5 deg NNE Abbey Grid Rotation)
+        if (elevDeg > -2.5 && elevDeg < 8.5) {
+          float px = clamp(fwidth(elevDeg), 0.015, 0.10);
+
+          // Cascade range envelope centered ENE (azXY = 35 deg), spanning SE (-65) to N (+135)
+          float dCascCenter = abs(angDiff(azXY, 35.0));
+          float cascEnv = 1.0 - smoothstep(68.0, 112.0, dCascCenter);
+          float cascH = 0.22 + cascEnv * (0.62 + 0.62 * fbmCircle(dirXY, 9.5, 5.7));
+
+          // --- A. High Glaciated Cascade Volcanoes (90 - 162 km, rising out of Cascade crest) ---
+          float peakH = -10.0;
+          float peakCenter = 50.3;
+          float peakDistKm = 93.0;
+          float snowLine = 1.25;
+
+          // Mt. Hood (Wy'east): 92.7 km, True 68.2 ENE -> XY = 50.3 deg
+          float dHood = angDiff(azXY, 50.3);
+          if (abs(dHood) < 9.5) {
+            float wH = dHood > 0.0 ? 4.10 : 5.35; // Steeper N Coe/Eliot ridge, longer S Timberline apron
+            float uH = abs(dHood) / wH;
+            float coneH = uH < 1.0 ? pow(1.0 - uH, 1.58) : 0.0;
+            float apronH = 0.42 * exp(-0.09 * dHood * dHood);
+            float hornH = 0.22 * exp(-11.0 * dHood * dHood);
+            float barrettN = 0.085 * exp(-5.5 * (dHood - 0.95) * (dHood - 0.95));
+            float craterNotchS = -0.065 * exp(-14.0 * (dHood + 0.52) * (dHood + 0.52))
+                                 + 0.052 * exp(-18.0 * (dHood + 0.85) * (dHood + 0.85));
+            float h = 0.72 + 2.55 * max(coneH, apronH * 0.65) + hornH + barrettN + craterNotchS;
+            if (h > peakH) { peakH = h; peakCenter = 50.3; peakDistKm = 92.7; snowLine = 1.32; }
+          }
+
+          // Mt. Jefferson (Seekseekqua): 90.0 km, True 118.8 ESE -> XY = -0.3 deg
+          float dJeff = angDiff(azXY, -0.3);
+          if (abs(dJeff) < 8.0) {
+            float uJ = abs(dJeff) / 4.20;
+            float coneJ = uJ < 1.0 ? pow(1.0 - uJ, 1.62) : 0.0;
+            float apronJ = 0.36 * exp(-0.11 * dJeff * dJeff);
+            float pinnacleJ = 0.22 * exp(-15.0 * dJeff * dJeff)
+                            + 0.08 * exp(-9.0 * (dJeff - 0.68) * (dJeff - 0.68));
+            float h = 0.66 + 2.28 * max(coneJ, apronJ * 0.60) + pinnacleJ;
+            if (h > peakH) { peakH = h; peakCenter = -0.3; peakDistKm = 90.0; snowLine = 1.30; }
+          }
+
+          // Mt. Adams (Pahto): 161.8 km, True 38.4 NE -> XY = 80.1 deg
+          float dAdams = angDiff(azXY, 80.1);
+          if (abs(dAdams) < 6.0) {
+            float uA = abs(dAdams) / 3.80;
+            float domeA = uA < 1.0 ? pow(1.0 - pow(uA, 1.85), 0.95) : 0.0;
+            float h = 0.58 + 1.18 * domeA;
+            if (h > peakH) { peakH = h; peakCenter = 80.1; peakDistKm = 161.8; snowLine = 0.98; }
+          }
+
+          // Mt. St. Helens (Lawetlat'la): 133.3 km, True 20.3 NNE -> XY = 98.2 deg
+          float dHelens = angDiff(azXY, 98.2);
+          if (abs(dHelens) < 5.0) {
+            float uS = abs(dHelens) / 3.10;
+            float rawCone = uS < 1.0 ? (1.0 - pow(uS, 1.32)) : 0.0;
+            float rimFlat = min(rawCone, 0.66) / 0.66;
+            float craterDip = -0.05 * exp(-4.5 * dHelens * dHelens);
+            float h = 0.50 + 0.88 * rimFlat + craterDip;
+            if (h > peakH) { peakH = h; peakCenter = 98.2; peakDistKm = 133.3; snowLine = 0.88; }
+          }
+
+          // Three Sisters: 134.8 km -> XY = -24.0 deg
+          float dSis = angDiff(azXY, -24.0);
+          if (abs(dSis) < 5.5) {
+            float h = 0.58 + 0.88 * exp(-0.85 * (dSis + 1.0) * (dSis + 1.0))
+                    + 0.78 * exp(-1.1 * (dSis - 0.35) * (dSis - 0.35))
+                    + 0.82 * exp(-0.95 * (dSis - 1.55) * (dSis - 1.55));
+            if (h > peakH) { peakH = h; peakCenter = -24.0; peakDistKm = 135.0; snowLine = 0.96; }
+          }
+
+          if (peakH > 0.05) {
+            float maskPeak = smoothstep(elevDeg - px, elevDeg + px, peakH);
+            if (maskPeak > 0.001) {
+              float dRel = angDiff(azXY, peakCenter);
+              vec2 toViewer = -dirXY;
+              vec2 leftCCW = vec2(-dirXY.y, dirXY.x);
+              float ridgeFlutes = 0.14 * (fbmCircle(dirXY, 42.0, 11.2) - 0.5);
+              float flank = clamp(dRel / 2.6 + ridgeFlutes, -1.0, 1.0);
+              vec2 hNrm = normalize(toViewer * 0.72 + leftCCW * (flank * 0.85));
+              vec3 pNrm = normalize(vec3(hNrm * 0.82, 0.57));
+
+              float nDotL = max(0.0, dot(pNrm, sDir));
+              float rimBacklight = pow(max(0.0, dot(dirXY, normalize(sDir.xy + vec2(1e-5)))), 3.0)
+                                 * smoothstep(peakH - 0.45, peakH, elevDeg);
+
+              // Smooth glacial snow lobes (no high-freq vertical stripes)
+              float glacierLobe = 0.18 * (fbmCircle(dirXY, 26.0, 3.4) - 0.48);
+              float snowMask = smoothstep(snowLine - 0.18, snowLine + 0.30, elevDeg + glacierLobe);
+
+              vec3 rockAlbedo = vec3(0.32, 0.36, 0.48);
+              vec3 snowShadow = mix(vec3(0.60, 0.69, 0.85), vec3(0.68, 0.58, 0.76), alpenT);
+              vec3 snowLit = mix(vec3(0.99, 0.995, 1.00), vec3(1.00, 0.72, 0.58), alpenT * 0.92);
+              vec3 surfSnow = mix(snowShadow, snowLit, clamp(nDotL * 1.25 + 0.18, 0.0, 1.0));
+              surfSnow += glowHue * (rimBacklight * 0.34 * smoothstep(-2.0, 15.0, uSunAltDeg));
+
+              vec3 surfRock = mix(rockAlbedo * 0.75, rockAlbedo * 1.22, nDotL);
+              vec3 peakLit = mix(surfRock, surfSnow, snowMask);
+              peakLit *= mix(0.28, 1.0, dayT);
+
+              // Aerial perspective: snowcap stays luminous while rocky lower base melts into horizon haze
+              float baseHaze = clamp(0.42 + (peakDistKm - 90.0) * 0.0034 - 0.08 * alpenT, 0.36, 0.76);
+              float hazeAmt = mix(clamp(baseHaze + 0.24, 0.0, 0.86), baseHaze, snowMask);
+              vec3 peakFinal = mix(peakLit, horizon, hazeAmt);
+              col = mix(col, peakFinal, maskPeak);
+            }
+          }
+
+          // --- B. Mid-Distance Western Cascade Crest (40 - 65 km, seamless 360) ---
+          float maskCasc = smoothstep(elevDeg - px, elevDeg + px, cascH);
+          if (maskCasc > 0.001) {
+            vec3 cascShade = mix(vec3(0.14, 0.18, 0.28), vec3(0.44, 0.54, 0.70), dayT);
+            cascShade = mix(cascShade, glowHue * 0.65, (goldT * 0.22 + alpenT * 0.18) * max(0.2, sunCos * 0.5 + 0.5));
+            float baseMist = smoothstep(cascH, cascH - 0.52, elevDeg) * (0.30 + 0.26 * goldT);
+            vec3 cascFinal = mix(cascShade, horizon, clamp(0.66 + baseMist * 0.22, 0.0, 0.92));
+            col = mix(col, cascFinal, maskCasc);
+          }
+
+          // --- C. Near Foothills: Silverton/Abiqua Hills (East) & Oregon Coast Range (West) ---
+          float eastHills = 1.0 - smoothstep(55.0, 105.0, abs(angDiff(azXY, 25.0)));
+          float coastRange = 1.0 - smoothstep(42.0, 88.0, abs(angDiff(azXY, 185.0)));
+          float nearH = 0.16
+            + eastHills * (0.26 + 0.34 * fbmCircle(dirXY, 12.5, 19.4))
+            + coastRange * (0.26 + 0.34 * fbmCircle(dirXY, 10.5, 63.1));
+          float maskNear = smoothstep(elevDeg - px, elevDeg + px, nearH);
+          if (maskNear > 0.001) {
+            vec3 firShadow = mix(vec3(0.11, 0.15, 0.21), vec3(0.34, 0.44, 0.50), dayT);
+            float ridgeCrest = smoothstep(nearH - 0.24, nearH, elevDeg);
+            vec3 nearFinal = mix(firShadow, horizon, 0.56 + 0.16 * (1.0 - ridgeCrest));
+            col = mix(col, nearFinal, maskNear);
+          }
+        }
+
         fragColor = vec4(col, 1.0);
       }
     `;
@@ -1223,14 +1447,14 @@
     gl.vertexAttribPointer(1, 4, gl.FLOAT, false, 28, 12);
     gl.bindVertexArray(null);
 
-    // --- Minimal 4x4 Matrix Math (Z-Up Camera, Perspective + Orthographic) ---
-    function perspective(fovDeg, aspect, near, far) {
+    // --- Minimal 4x4 Matrix Math (Z-Up Camera, Perspective + Tilt-Shift + Orthographic) ---
+    function perspective(fovDeg, aspect, near, far, shiftX = 0.0, shiftY = 0.0) {
       const f = 1.0 / Math.tan((fovDeg * Math.PI) / 360.0);
       const nf = 1.0 / (near - far);
       return new Float32Array([
         f / aspect, 0, 0, 0,
         0, f, 0, 0,
-        0, 0, (far + near) * nf, -1,
+        shiftX, shiftY, (far + near) * nf, -1,
         0, 0, 2 * far * near * nf, 0
       ]);
     }
@@ -1338,6 +1562,8 @@
       pitch: 0.25,
       dist: 66.0,
       fov: 44,
+      shiftX: 0.0,
+      shiftY: 0.0,
       ortho: false
     };
 
@@ -1662,6 +1888,8 @@
       cam.pitch = p.pitch;
       cam.dist = p.dist;
       cam.fov = p.fov;
+      cam.shiftX = p.shiftX || 0.0;
+      cam.shiftY = p.shiftY || 0.0;
       cam.ortho = Boolean(p.ortho);
 
       if (p.section) {
@@ -2044,9 +2272,9 @@
 
     function drawScene() {
       rafPending = false;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const w = Math.floor(window.innerWidth * dpr);
-      const h = Math.floor(window.innerHeight * dpr);
+      const dpr = (fixedW > 0 && fixedH > 0) ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+      const w = (fixedW > 0) ? fixedW : Math.floor(window.innerWidth * dpr);
+      const h = (fixedH > 0) ? fixedH : Math.floor(window.innerHeight * dpr);
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w; canvas.height = h;
       }
@@ -2089,21 +2317,41 @@
       gl.clearStencil(0);
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 
-      // 1. Dynamic Solar Sky Background
-      gl.disable(gl.DEPTH_TEST);
-      gl.disable(gl.BLEND);
-      gl.useProgram(progSky);
-      gl.uniform1f(gl.getUniformLocation(progSky, "uSunAltDeg"), sunState.altDeg);
-      gl.bindVertexArray(emptyVao);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-
-      if (gpuLayers.length === 0) return;
-
       const aspect = w / Math.max(h, 1);
       const cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch);
       const dirX = cp * Math.cos(cam.yaw);
       const dirY = cp * Math.sin(cam.yaw);
       const dirZ = sp;
+
+      let fx = -dirX, fy = -dirY, fz = -dirZ;
+      const fl = Math.hypot(fx, fy, fz) || 1.0;
+      fx /= fl; fy /= fl; fz /= fl;
+      let rx = fy, ry = -fx, rz = 0.0;
+      const rl = Math.hypot(rx, ry, rz);
+      if (rl < 1e-4) { rx = 1.0; ry = 0.0; rz = 0.0; } else { rx /= rl; ry /= rl; }
+      const ux = ry * fz - rz * fy;
+      const uy = rz * fx - rx * fz;
+      const uz = rx * fy - ry * fx;
+      const tanHalfFov = Math.tan((cam.fov * Math.PI) / 360.0);
+
+      // 1. Dynamic 3D Panoramic Solar Sky & Cascade / Mt. Hood Horizon
+      gl.disable(gl.DEPTH_TEST);
+      gl.disable(gl.BLEND);
+      gl.useProgram(progSky);
+      gl.uniform1f(gl.getUniformLocation(progSky, "uSunAltDeg"), sunState.altDeg);
+      gl.uniform3fv(gl.getUniformLocation(progSky, "uSunDir"), sunState.dir);
+      gl.uniform3fv(gl.getUniformLocation(progSky, "uSunColor"), sunState.sunColor);
+      gl.uniform3f(gl.getUniformLocation(progSky, "uCamFwd"), fx, fy, fz);
+      gl.uniform3f(gl.getUniformLocation(progSky, "uCamRight"), rx, ry, rz);
+      gl.uniform3f(gl.getUniformLocation(progSky, "uCamUp"), ux, uy, uz);
+      gl.uniform1f(gl.getUniformLocation(progSky, "uTanHalfFov"), tanHalfFov);
+      gl.uniform1f(gl.getUniformLocation(progSky, "uAspect"), aspect);
+      gl.uniform2f(gl.getUniformLocation(progSky, "uShift"), cam.shiftX || 0.0, cam.shiftY || 0.0);
+      gl.uniform1i(gl.getUniformLocation(progSky, "uIsOrtho"), cam.ortho ? 1 : 0);
+      gl.bindVertexArray(emptyVao);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+      if (gpuLayers.length === 0) return;
 
       const viewDist = cam.ortho ? 260.0 : cam.dist;
       const viewEye = [
@@ -2121,10 +2369,11 @@
       let proj;
       if (cam.ortho) {
         const halfH = cam.dist * Math.tan((cam.fov * Math.PI) / 360.0);
-        proj = orthographic(halfH * aspect, halfH, 1.0, 750.0);
+        proj = orthographic(halfH * aspect, halfH, 1.0, 1200.0);
       } else {
         const near = Math.max(0.22, Math.min(3.5, cam.dist * 0.04));
-        proj = perspective(cam.fov, aspect, near, 750.0);
+        const far = Math.max(750.0, cam.dist + 500.0);
+        proj = perspective(cam.fov, aspect, near, far, cam.shiftX || 0.0, cam.shiftY || 0.0);
       }
       const view = lookAtZUp(viewEye, cam.target);
       const mvp = mul4(proj, view);
@@ -2136,12 +2385,13 @@
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, shadowTex);
 
+      const teleFog = Math.min(1.0, Math.tan((cam.fov * Math.PI) / 360.0) / Math.tan((44.0 * Math.PI) / 360.0));
       gl.useProgram(progSolid);
       gl.uniformMatrix4fv(gl.getUniformLocation(progSolid, "uMVP"), false, mvp);
       gl.uniform3fv(gl.getUniformLocation(progSolid, "uEye"), litEye);
       gl.uniform1i(gl.getUniformLocation(progSolid, "uClipEnabled"), clipEnabled);
       gl.uniform4fv(gl.getUniformLocation(progSolid, "uClipPlane"), clipPlane);
-      gl.uniform1f(gl.getUniformLocation(progSolid, "uFogScale"), cam.ortho ? 0.0 : 1.0);
+      gl.uniform1f(gl.getUniformLocation(progSolid, "uFogScale"), cam.ortho ? 0.0 : teleFog);
       gl.uniform3fv(gl.getUniformLocation(progSolid, "uSunDir"), sunState.dir);
       gl.uniform3fv(gl.getUniformLocation(progSolid, "uSunColor"), sunState.sunColor);
       gl.uniform1f(gl.getUniformLocation(progSolid, "uSunUp"), sunState.sunUp);
@@ -2258,6 +2508,8 @@
         if (params.has("pitch"))   { cam.pitch = parseFloat(params.get("pitch")); dirtySun = true; }
         if (params.has("dist"))    { cam.dist = parseFloat(params.get("dist")); dirtySun = true; }
         if (params.has("fov"))     { cam.fov = parseFloat(params.get("fov")); dirtySun = true; }
+        if (params.has("shiftx"))  { cam.shiftX = parseFloat(params.get("shiftx")); dirtySun = true; }
+        if (params.has("shifty"))  { cam.shiftY = parseFloat(params.get("shifty")); dirtySun = true; }
         if (params.has("ortho"))   { cam.ortho = params.get("ortho") === "1"; dirtySun = true; }
         if (params.has("tx"))      { cam.target[0] = parseFloat(params.get("tx")); dirtySun = true; }
         if (params.has("ty"))      { cam.target[1] = parseFloat(params.get("ty")); dirtySun = true; }
@@ -2286,6 +2538,36 @@
         document.getElementById("camTitle").textContent = "Scene Load Error";
         document.getElementById("camDesc").textContent = String(err);
       });
+
+    window.__mountAngelStudio = {
+      canvas,
+      gl,
+      cam,
+      sun,
+      sec,
+      layerVisible,
+      PRESETS,
+      isLoaded: () => gpuLayers.length >= 8,
+      applyPreset,
+      rebuildHeliodonGeometry,
+      syncSunUi,
+      syncSectionUi,
+      syncUiCheckboxes,
+      renderAtSize(w, h) {
+        if (w > 0 && h > 0) {
+          fixedW = w;
+          fixedH = h;
+          canvas.style.width = w + "px";
+          canvas.style.height = h + "px";
+          canvas.style.right = "auto";
+          canvas.style.bottom = "auto";
+        }
+        if (sun.heliodon) {
+          rebuildHeliodonGeometry();
+        }
+        drawScene();
+      }
+    };
   })();
   </script>
 </body>

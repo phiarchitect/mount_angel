@@ -17,3 +17,13 @@ ENV/
 .DS_Store
 *.swp
 *~
+
+# PHOTON Studio generated media & scratch (Tier 2 & Tier 3)
+videos/**/*.mp4
+videos/**/*.wav
+videos/**/*.mid
+videos/**/*_narration.json
+videos/**/.tts_cache/
+videos/**/frames/
+videos/**/test_frames/
+videos/**/render.log
