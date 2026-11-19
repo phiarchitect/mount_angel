@@ -131,11 +131,13 @@ class AaltoGeometry:
     R_MEZZ_DESK = 46.2          # Outer edge of continuous curved reading counter
 
     # --- Structural Round Columns (18" diameter = 0.75 ft radius) ---
+    # Well_1/2/3 sit on Radial Axes B, C, D from WP3 (r ≈ 34.9–35.6 ft) and carry the
+    # skylight header beams that cross the Daylight Scoop along those rays (Sheet 48-s17 Detail B).
     WELL_COLS_FT = {
         "Well_W_South": (-30.26, 1.60),
-        "Well_1_WNW":   (-23.12, 21.72),
-        "Well_2_NNW":   (-5.24, 32.97),
-        "Well_3_NNE":   (15.23, 30.68),
+        "Well_1_WNW":   (-23.03, 21.82),   # Ray B 137.35°, r = 34.85 ft from WP3
+        "Well_2_NNW":   (-4.20, 33.18),    # Ray C 101.00°, r = 35.64 ft from WP3
+        "Well_3_NNE":   (16.93, 29.97),    # Ray D  65.72°, r = 34.85 ft from WP3
         "Well_4_ENE":   (32.57, 18.93),
         "South_W1":     (-54.37, 6.87),
     }

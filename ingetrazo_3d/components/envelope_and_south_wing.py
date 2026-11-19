@@ -410,13 +410,13 @@ def build_envelope_and_south_wing(scene):
     me = grp_env.mesh
 
     # 6 Multi-Story Well & Throat Columns:
-    #   - `Well_1_WNW`, `Well_2_NNW`, `Well_3_NNE` rise inside the Curved North Daylight Scoop
-    #     (`R ≈ 31.2 ft`, `64°..142°`) terminating cleanly inside the concave plaster reflector vault (`+5.65 m`,
-    #     Sheet 18-a18 Detail 4 & Sheet 48-s17 Detail B: "HEADER BEAM TO CONC COLUMN")!
+    #   - `Well_1_WNW`, `Well_2_NNW`, `Well_3_NNE` rise inside the Curved North Daylight Scoop on Radial
+    #     Axes B, C, D and stop at the soffit of the radial skylight header beams (`+3.85 m`,
+    #     Sheet 48-s17 Detail B: "HEADER BEAM TO CONC COLUMN"; beams built in `roof_and_skylights`).
     #   - `Well_W_South`, `Well_4_ENE`, `South_W1` terminate at the South interior ceiling soffit (`z_s_ceil = +3.30 m`).
     scoop_well_cols = {"Well_1_WNW", "Well_2_NNW", "Well_3_NNE"}
     for cname, cpt in G.WELL_COLS_FT.items():
-        z_top = 5.65 if cname in scoop_well_cols else z_s_ceil
+        z_top = 3.85 if cname in scoop_well_cols else z_s_ceil
         add_cylinder_ft(ms, cpt, 0.78, z_l1, z_top, MATERIALS["white_column"], sides=18)
 
     # 6 Paired Twin 18"Ø Columns straddling WP #3 Radial Axes B, C, D (5'-4" c/c, Sheet 06-a6 & Sheet 47-s16 Detail D):
