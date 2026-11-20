@@ -1,53 +1,65 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1149 700" width="1149" height="700" class="aalto-vector-svg">
   <g class="vec-layer" data-layer="regulating">
-    <line x1="-232.27" y1="703.75" x2="1370.70" y2="681.93" stroke="#38bdf8" stroke-width="1.1" stroke-dasharray="6,5" stroke-linecap="round"/>
-    <line x1="711.71" y1="703.34" x2="207.44" y2="251.36" stroke="#00e5ff" stroke-width="1.8" stroke-dasharray="8,4" stroke-linecap="round"/>
-    <text x="238.17" y="269.42" fill="#00e5ff" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">AXIS B (137.4°)</text>
-    <line x1="711.71" y1="703.34" x2="573.46" y2="40.42" stroke="#00e5ff" stroke-width="1.8" stroke-dasharray="8,4" stroke-linecap="round"/>
-    <text x="585.52" y="69.25" fill="#00e5ff" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">AXIS C (101.0°)</text>
-    <line x1="711.71" y1="703.34" x2="981.74" y2="82.33" stroke="#00e5ff" stroke-width="1.8" stroke-dasharray="8,4" stroke-linecap="round"/>
-    <text x="972.96" y="109.01" fill="#00e5ff" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">AXIS D (65.7°)</text>
-    <line x1="693.58" y1="691.15" x2="729.96" y2="723.83" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3,3" stroke-linecap="round"/>
-    <line x1="729.96" y1="723.83" x2="79.28" y2="594.75" stroke="#fb923c" stroke-width="1.8" stroke-dasharray="7,4" stroke-linecap="round"/>
-    <text x="138.50" y="600.51" fill="#fb923c" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">AXIS A (168.0°)</text>
-    <line x1="729.96" y1="723.83" x2="1360.21" y2="206.50" stroke="#fb923c" stroke-width="1.8" stroke-dasharray="7,4" stroke-linecap="round"/>
-    <text x="1322.48" y="236.57" fill="#fb923c" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">AXIS E (38.6°)</text>
-    <polyline points="879.88,541.34 872.91,532.50 865.50,524.03 857.67,515.95 849.43,508.28 840.82,501.04 831.84,494.25 822.53,487.93 812.90,482.10 802.99,476.76 792.82,471.94 782.42,467.65 771.81,463.89 761.03,460.68 750.09,458.02 739.03,455.93 727.88,454.41 716.66,453.46 705.42,453.08 694.16,453.28 682.94,454.06 671.76,455.41 660.67,457.33 649.70,459.81 638.86,462.85 628.19,466.44 617.73,470.57 607.48,475.24 597.49,480.42 587.78,486.10 578.37,492.27 569.29,498.92 560.56,506.02 552.20,513.56 544.24,521.52 536.70,529.88 529.60,538.61 522.95,547.69 516.77,557.10 511.09,566.81 505.90,576.80 501.24,587.04 497.11,597.51 493.51,608.17 490.47,619.01" fill="none" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="5,4" stroke-linejoin="round"/>
-    <text x="743.94" y="450.92" fill="#c084fc" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">R = 31'-10"</text>
-    <circle cx="693.58" cy="691.15" r="4.20" fill="#00e5ff" fill-opacity="0.35" stroke="#00e5ff" stroke-width="2.0"/>
-    <text x="699.58" y="687.15" fill="#00e5ff" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">WP #4 (0,0)</text>
-    <circle cx="711.71" cy="703.34" r="4.20" fill="#38bdf8" fill-opacity="0.35" stroke="#38bdf8" stroke-width="2.0"/>
-    <text x="717.71" y="699.34" fill="#38bdf8" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">WP #3</text>
-    <circle cx="703.70" cy="673.04" r="4.20" fill="#c084fc" fill-opacity="0.35" stroke="#c084fc" stroke-width="2.0"/>
-    <text x="709.70" y="669.04" fill="#c084fc" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">WP #3A</text>
+    <line x1="-222.01" y1="698.50" x2="1365.56" y2="689.60" stroke="#38bdf8" stroke-width="1.1" stroke-dasharray="6,5" stroke-linecap="round"/>
+    <line x1="692.86" y1="693.37" x2="228.13" y2="264.55" stroke="#00e5ff" stroke-width="1.8" stroke-dasharray="8,4" stroke-linecap="round"/>
+    <text x="257.85" y="282.36" fill="#00e5ff" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">AXIS B (137.0°)</text>
+    <line x1="692.86" y1="693.37" x2="584.18" y2="56.78" stroke="#00e5ff" stroke-width="1.8" stroke-dasharray="8,4" stroke-linecap="round"/>
+    <text x="594.84" y="84.93" fill="#00e5ff" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">AXIS C (99.4°)</text>
+    <line x1="692.86" y1="693.37" x2="992.99" y2="53.96" stroke="#00e5ff" stroke-width="1.8" stroke-dasharray="8,4" stroke-linecap="round"/>
+    <text x="983.70" y="79.41" fill="#00e5ff" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">AXIS D (64.5°)</text>
+    <line x1="692.86" y1="693.37" x2="712.12" y2="728.58" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3,3" stroke-linecap="round"/>
+    <line x1="712.12" y1="728.58" x2="65.87" y2="598.27" stroke="#fb923c" stroke-width="1.8" stroke-dasharray="7,4" stroke-linecap="round"/>
+    <text x="130.22" y="605.23" fill="#fb923c" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">AXIS A (168.3°)</text>
+    <line x1="712.12" y1="728.58" x2="1355.64" y2="176.91" stroke="#fb923c" stroke-width="1.8" stroke-dasharray="7,4" stroke-linecap="round"/>
+    <text x="1314.67" y="211.32" fill="#fb923c" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">AXIS E (40.3°)</text>
+    <polyline points="876.12,543.69 869.41,535.03 862.26,526.73 854.69,518.80 846.74,511.27 838.40,504.16 829.72,497.48 820.70,491.25 811.38,485.50 801.77,480.23 791.91,475.45 781.82,471.19 771.52,467.45 761.04,464.24 750.42,461.57 739.67,459.45 728.82,457.88 717.91,456.87 706.97,456.41 696.01,456.52 685.07,457.19 674.19,458.41 663.37,460.20 652.67,462.53 642.10,465.40 631.69,468.82 621.46,472.76 611.45,477.22 601.69,482.18 592.19,487.64 582.98,493.58 574.08,499.98 565.53,506.82 557.34,514.10 549.53,521.78 542.12,529.86 535.14,538.30 528.59,547.09 522.51,556.20 516.90,565.61 511.78,575.30 507.16,585.23 503.05,595.39 499.47,605.74 496.42,616.27" fill="none" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="5,4" stroke-linejoin="round"/>
+    <text x="744.58" y="454.44" fill="#c084fc" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">R = 31'-10"</text>
+    <circle cx="692.86" cy="693.37" r="4.20" fill="#00e5ff" fill-opacity="0.35" stroke="#00e5ff" stroke-width="2.0"/>
+    <text x="698.86" y="689.37" fill="#00e5ff" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">WP #3 (0,0)</text>
+    <circle cx="712.12" cy="728.58" r="4.20" fill="#fb923c" fill-opacity="0.35" stroke="#fb923c" stroke-width="2.0"/>
+    <text x="718.12" y="724.58" fill="#fb923c" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">WP #2</text>
+    <circle cx="703.58" cy="670.53" r="4.20" fill="#c084fc" fill-opacity="0.35" stroke="#c084fc" stroke-width="2.0"/>
+    <text x="709.58" y="666.53" fill="#c084fc" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">WP #3A</text>
+    <circle cx="93.36" cy="603.81" r="3.70" fill="#fde047" fill-opacity="0.40" stroke="#fde047" stroke-width="1.8"/>
+    <text x="99.36" y="599.81" fill="#fde047" font-family="Inter, monospace, sans-serif" font-size="9" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">WP #4</text>
+    <circle cx="262.90" cy="296.63" r="3.70" fill="#fde047" fill-opacity="0.40" stroke="#fde047" stroke-width="1.8"/>
+    <text x="268.90" y="292.63" fill="#fde047" font-family="Inter, monospace, sans-serif" font-size="9" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">WP #5</text>
+    <circle cx="590.27" cy="92.42" r="3.70" fill="#fde047" fill-opacity="0.40" stroke="#fde047" stroke-width="1.8"/>
+    <text x="596.27" y="88.42" fill="#fde047" font-family="Inter, monospace, sans-serif" font-size="9" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">WP #6</text>
+    <circle cx="591.84" cy="101.61" r="3.70" fill="#fde047" fill-opacity="0.40" stroke="#fde047" stroke-width="1.8"/>
+    <text x="597.84" y="97.61" fill="#fde047" font-family="Inter, monospace, sans-serif" font-size="9" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">WP #7</text>
+    <circle cx="975.95" cy="90.26" r="3.70" fill="#fde047" fill-opacity="0.40" stroke="#fde047" stroke-width="1.8"/>
+    <text x="981.95" y="86.26" fill="#fde047" font-family="Inter, monospace, sans-serif" font-size="9" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">WP #8</text>
+    <circle cx="971.99" cy="98.70" r="3.70" fill="#fde047" fill-opacity="0.40" stroke="#fde047" stroke-width="1.8"/>
+    <text x="977.99" y="94.70" fill="#fde047" font-family="Inter, monospace, sans-serif" font-size="9" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">WP #9</text>
   </g>
   <g class="vec-layer" data-layer="structure">
-    <polygon points="244.03,322.14 246.67,317.28 265.91,334.25 300.16,295.61 278.81,276.10 283.64,273.22 324.43,310.49 319.68,315.70 303.14,300.58 271.15,336.67 288.76,352.20 284.10,357.49" fill="#ef4444" fill-opacity="0.32" stroke="#ef4444" stroke-width="2.0" stroke-linejoin="round"/>
-    <polygon points="558.92,108.67 563.80,105.75 569.75,133.05 623.17,121.88 618.79,99.51 624.25,99.37 634.56,152.01 627.64,153.37 622.61,127.64 572.55,138.11 577.10,159.02 570.21,160.52" fill="#ef4444" fill-opacity="0.32" stroke="#ef4444" stroke-width="2.0" stroke-linejoin="round"/>
-    <polygon points="946.30,91.07 952.21,90.92 942.33,114.40 995.35,128.83 1004.39,108.54 1009.54,110.24 987.88,158.84 981.44,155.98 991.48,133.44 941.80,119.93 929.61,148.90 923.12,146.16" fill="#ef4444" fill-opacity="0.32" stroke="#ef4444" stroke-width="2.0" stroke-linejoin="round"/>
-    <circle cx="484.35" cy="682.94" r="5.87" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
-    <circle cx="531.79" cy="543.25" r="5.87" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
-    <circle cx="654.27" cy="463.84" r="5.87" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
-    <circle cx="795.92" cy="477.74" r="5.87" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
-    <circle cx="916.84" cy="557.29" r="5.87" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
-    <circle cx="317.27" cy="648.80" r="5.87" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
-    <circle cx="398.56" cy="442.24" r="5.87" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
-    <circle cx="423.07" cy="414.95" r="5.87" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
-    <circle cx="610.18" cy="301.14" r="5.87" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
-    <circle cx="646.71" cy="294.43" r="5.87" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
-    <circle cx="866.40" cy="289.02" r="5.87" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
-    <circle cx="899.37" cy="299.62" r="5.87" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
-    <polygon points="262.33,338.28 303.74,291.58 332.09,317.48 327.33,322.69 303.14,300.58 271.15,336.67 296.54,359.06 291.87,364.35" fill="none" stroke="#fda4af" stroke-width="1.4" stroke-dasharray="4,3" stroke-linejoin="round"/>
-    <polygon points="564.47,134.16 628.44,120.77 636.55,162.18 629.64,163.54 622.61,127.64 572.55,138.11 579.30,169.15 572.41,170.64" fill="none" stroke="#fda4af" stroke-width="1.4" stroke-dasharray="4,3" stroke-linejoin="round"/>
-    <polygon points="937.08,112.97 1000.62,130.26 983.66,168.31 977.22,165.44 991.48,133.44 941.80,119.93 925.59,158.45 919.10,155.72" fill="none" stroke="#fda4af" stroke-width="1.4" stroke-dasharray="4,3" stroke-linejoin="round"/>
-    <text x="433.83" y="408.91" fill="#fda4af" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">PAIRED 18"Ø COLS (5'-4" c/c)</text>
-    <text x="289.64" y="267.22" fill="#fecdd3" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">H-COL B (WP #5)</text>
-    <text x="630.25" y="93.37" fill="#fecdd3" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">H-COL C (WP #6/#7)</text>
-    <text x="1015.54" y="104.24" fill="#fecdd3" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">H-COL D (WP #8/#9)</text>
+    <polygon points="248.00,323.63 250.62,318.88 266.67,332.22 301.13,294.87 287.83,281.08 292.45,278.20 329.42,316.53 324.58,321.20 304.08,299.95 271.94,334.78 293.26,352.49 288.96,357.67" fill="#ef4444" fill-opacity="0.32" stroke="#ef4444" stroke-width="2.0" stroke-linejoin="round"/>
+    <polygon points="560.72,110.85 565.50,107.87 570.58,130.26 621.93,121.49 619.55,100.79 624.90,100.63 630.90,152.98 624.22,153.75 621.18,127.31 573.20,135.50 578.93,160.76 572.37,162.24" fill="#ef4444" fill-opacity="0.32" stroke="#ef4444" stroke-width="2.0" stroke-linejoin="round"/>
+    <polygon points="941.07,91.29 946.90,91.12 938.94,110.43 986.48,132.75 1000.76,106.02 1006.08,107.38 982.29,151.87 976.36,148.70 982.56,137.10 938.07,116.22 924.64,148.79 918.42,146.23" fill="#ef4444" fill-opacity="0.32" stroke="#ef4444" stroke-width="2.0" stroke-linejoin="round"/>
+    <circle cx="483.24" cy="682.43" r="5.72" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
+    <circle cx="530.05" cy="543.14" r="5.72" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
+    <circle cx="653.23" cy="461.24" r="5.72" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
+    <circle cx="795.05" cy="475.67" r="5.72" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
+    <circle cx="915.96" cy="558.09" r="5.72" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
+    <circle cx="315.08" cy="648.52" r="5.72" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
+    <circle cx="396.01" cy="443.86" r="5.72" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
+    <circle cx="421.16" cy="418.25" r="5.72" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
+    <circle cx="608.20" cy="304.05" r="5.72" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
+    <circle cx="642.90" cy="294.14" r="5.72" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
+    <circle cx="863.13" cy="288.40" r="5.72" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
+    <circle cx="897.75" cy="299.08" r="5.72" fill="#f43f5e" fill-opacity="0.45" stroke="#f43f5e" stroke-width="2.0"/>
+    <polygon points="263.06,336.14 304.75,290.95 336.43,323.79 331.58,328.46 304.08,299.95 271.94,334.78 301.02,358.94 296.72,364.12" fill="none" stroke="#fda4af" stroke-width="1.4" stroke-dasharray="4,3" stroke-linejoin="round"/>
+    <polygon points="565.32,131.16 627.18,120.60 632.05,163.01 625.36,163.77 621.18,127.31 573.20,135.50 581.17,170.60 574.61,172.09" fill="none" stroke="#fda4af" stroke-width="1.4" stroke-dasharray="4,3" stroke-linejoin="round"/>
+    <polygon points="934.11,108.17 991.31,135.01 977.54,160.77 971.60,157.60 982.56,137.10 938.07,116.22 920.79,158.12 914.57,155.56" fill="none" stroke="#fda4af" stroke-width="1.4" stroke-dasharray="4,3" stroke-linejoin="round"/>
+    <text x="429.16" y="412.25" fill="#fda4af" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">PAIRED 18"Ø COLS (5'-4" c/c)</text>
+    <text x="298.45" y="272.20" fill="#fecdd3" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">H-COL B (WP #5)</text>
+    <text x="630.90" y="94.63" fill="#fecdd3" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">H-COL C (WP #6/#7)</text>
+    <text x="1012.08" y="101.38" fill="#fecdd3" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">H-COL D (WP #8/#9)</text>
   </g>
   <g class="vec-layer" data-layer="walls">
-    <polyline points="128.81,584.36 262.33,338.28 303.74,291.58 564.47,134.16 628.44,120.77 937.08,112.97 1000.62,130.26 1303.85,230.51" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="6,4" stroke-linejoin="round"/>
-    <polyline points="156.90,610.00 94.87,597.02 244.03,322.14 246.67,317.28 265.91,334.25 300.16,295.61 278.81,276.10 283.64,273.22 558.92,108.67 563.80,105.75 569.75,133.05 623.17,121.88 618.79,99.51 624.25,99.37 946.30,91.07 952.21,90.92 942.33,114.40 995.35,128.83 1004.39,108.54 1009.54,110.24 1349.59,222.66 1048.40,459.65" fill="none" stroke="#10b981" stroke-width="2.6" stroke-linejoin="round"/>
-    <polyline points="484.35,682.94 531.79,543.25 654.27,463.84 795.92,477.74 916.84,557.29" fill="none" stroke="#22c55e" stroke-width="2.4" stroke-linejoin="round"/>
+    <polyline points="122.66,590.50 263.06,336.14 304.75,290.95 565.32,131.16 627.18,120.60 934.11,108.17 991.31,135.01 1284.37,209.65" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="6,4" stroke-linejoin="round"/>
+    <polyline points="148.64,614.96 93.36,603.81 248.00,323.63 250.62,318.88 266.67,332.22 301.13,294.87 287.83,281.08 292.45,278.20 560.72,110.85 565.50,107.87 570.58,130.26 621.93,121.49 619.55,100.79 624.90,100.63 941.07,91.29 946.90,91.12 938.94,110.43 986.48,132.75 1000.76,106.02 1006.08,107.38 1338.10,191.94 1042.41,445.43" fill="none" stroke="#10b981" stroke-width="2.6" stroke-linejoin="round"/>
+    <polyline points="483.24,682.43 530.05,543.14 653.23,461.24 795.05,475.67 915.96,558.09" fill="none" stroke="#22c55e" stroke-width="2.4" stroke-linejoin="round"/>
   </g>
 </svg>

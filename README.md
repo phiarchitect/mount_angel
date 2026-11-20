@@ -46,7 +46,7 @@ Corrections are welcome. If you notice anything in the model that doesn't match 
 
 All drawings and photographs remain the property of their owners. They are used here for study and documentation.
 
-Made by **phi ARCHITECT**. Release history is in the [CHANGELOG](CHANGELOG.md). This is version 0.4.6.
+Made by **phi ARCHITECT**. Release history is in the [CHANGELOG](CHANGELOG.md). This is version 0.7.0.
 
 ---
 
@@ -57,11 +57,11 @@ Everything below is for anyone updating the model or the website.
 ### How it fits together
 
 1. **Measuring the drawings**: [`src/phiarchitect/mountangel/vectors.py`](src/phiarchitect/mountangel/vectors.py)
-   - Every key sheet is scaled and aligned to one shared coordinate system. The origin is Working Point #4 on the Level 3 floor, on survey grid line 6, with +X east, +Y north and +Z up.
+   - Every key sheet is scaled and aligned to one shared coordinate system. The origin is archival Working Point #3 (`0'-0"`, `0'-0"`) on the Level 3 floor and survey grid line 6, with `WP #2` (`+2'-10"`, `-5'-3"`) anchoring flanks A & E and `WP #3A` (`3'-9"` along Ray D) anchoring the circular Reading Well and North Daylight Scoop (+X east, +Y north, +Z up).
    - Seven sheets are registered: 03, 04, 05, 06, 07, 13 and S4.
    - The script writes vector overlays (`docs/overlays/sheet_*.svg`) and proof images (`docs/overlays/proofs/`).
 2. **Building the 3D model**: [`ingetrazo_3d/`](ingetrazo_3d/)
-   - Uses IngeTrazo (phi-WORKS) to build a watertight model with 133,921 faces. The outputs are `mount_angel_library.igz`, `.obj` and `.mtl`, plus the web scene `docs/overlays/library_3d_scene.json`.
+   - Uses IngeTrazo (phi-WORKS) to build a watertight model with 166,645 faces (`0` unpaired edges). The outputs are `mount_angel_library.igz`, `.obj` and `.mtl`, plus the web scene `docs/overlays/library_3d_scene.json`.
 3. **The website**: [`docs/`](docs/)
    - Plain HTML, CSS and WebGL2, with no build step. GitHub Pages serves it directly from `docs/`.
    - All pages share the header in `suite.css`.
@@ -70,14 +70,14 @@ Everything below is for anyone updating the model or the website.
 
 | Module | Builds |
 |---|---|
-| `regulating_lines.py` | Working points, structural rays A–E and the regulating arcs |
+| `regulating_lines.py` | Working points (`WP #3`, `WP #2`, `WP #3A`), structural rays A–E and the regulating arcs |
 | `site_terrain.py` | The hillside bluff, plaza and Abbey campus context (church and bell tower, monastery, Aquinas Hall, seminary) |
-| `lower_levels.py` | Levels 1 and 2, the retaining wall, the reference gallery and the flanking stairs |
-| `level3_reading_room.py` | The Level 3 mezzanine, reading well rim, reading counter and lamps, control desk and periodical lounge |
-| `aalto_bookcases.py` | Parametric Aalto bookcases for every level |
+| `lower_levels.py` | Levels 1 (`-28'-6"`), Level 2 (`-14'-0"`), the `-5'-4"` Mezzanine reference gallery (3-shelf bookwalls), retaining wall, and `10R+16R` flanking stairs |
+| `level3_reading_room.py` | The Level 3 reading room (`0'-0"`), reading well rim, reading counter and lamps, control desk, 3-riser Lobby steps (`+1'-4"`), and periodical lounge |
+| `aalto_bookcases.py` | Parametric Aalto bookcases for every level (3-shelf Mezzanine & stair counters, 6-shelf full-height stacks) |
 | `south_wing_interiors.py` | Lobby, wood screen, restrooms, glazed office wall, rare-book vault and auditorium |
-| `envelope_and_south_wing.py` | Brick curtain walls, hemlock sun louvers, H-columns, columns and the entry canopy |
-| `roof_and_skylights.py` | The three roof tiers and parapets, the north daylight scoop, the wood-slatted ceiling and 12 conical skylights |
+| `envelope_and_south_wing.py` | Brick curtain walls, hemlock sun louvers, irregular H-columns (B, C, D), columns and the entry canopy |
+| `roof_and_skylights.py` | The three roof tiers and parapets, the `+21'-4"` north daylight scoop, `18WF50` header beams, wood-slatted ceiling, 14 conical skylights and 3 outer-fan exhaust fans |
 | `primitives.py` | Shared mesh helpers and materials |
 
 ### Repository layout

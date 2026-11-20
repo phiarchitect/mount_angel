@@ -262,15 +262,15 @@
 
     <div class="stat-strip" aria-label="Codebase Summary">
       <div class="stat-box">
-        <div class="stat-val">7,165</div>
-        <div class="stat-lbl">Lines of Python</div>
+        <div class="stat-val">7,231</div>
+        <div class="stat-lbl">Lines of CAD Python</div>
       </div>
       <div class="stat-box">
         <div class="stat-val">9</div>
         <div class="stat-lbl">Modular Builders</div>
       </div>
       <div class="stat-box">
-        <div class="stat-val">134,373</div>
+        <div class="stat-val">166,645</div>
         <div class="stat-lbl">Faces &middot; 8 Layers</div>
       </div>
       <div class="stat-box">
@@ -290,14 +290,14 @@
         <div class="tier">
           <span class="tier-tag">Tier 1 &middot; Survey Truth</span>
           <h3>Working Points &amp; Elevations</h3>
-          <p>Stores Aalto&rsquo;s four Working Points, radial angles, grid lines, and section heights in canonical decimal feet relative to <code>WP #4 = (0, 0)</code> on the main floor.</p>
-          <a class="file-link" href="https://github.com/phiarchitect/mount_angel/blob/main/src/phiarchitect/mountangel/vectors.py">vectors.py (1,076 lines) &rarr;</a>
+          <p>Stores Aalto&rsquo;s polycentric Working Points (<code>WP #1&ndash;#10</code>), analytical radial angles, grid lines, and archival section datums in decimal feet relative to <code>WP #3 = (0, 0)</code> on the main floor.</p>
+          <a class="file-link" href="https://github.com/phiarchitect/mount_angel/blob/main/src/phiarchitect/mountangel/vectors.py">vectors.py (1,242 lines) &rarr;</a>
         </div>
         <div class="tier">
           <span class="tier-tag">Tier 2 &middot; Solid Kernel</span>
           <h3>Watertight Primitives</h3>
           <p>Converts feet to metres, triangulates polygons with holes, extrudes mitered walls and revolved lamps, adds <code>2.5 mm</code> clearances, and applies the 35-material palette.</p>
-          <a class="file-link" href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/primitives.py">primitives.py (1,272 lines) &rarr;</a>
+          <a class="file-link" href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/primitives.py">primitives.py (1,273 lines) &rarr;</a>
         </div>
         <div class="tier">
           <span class="tier-tag">Tier 3 &middot; Architecture</span>
@@ -374,7 +374,7 @@
             </tr>
             <tr>
               <td><a href="https://github.com/phiarchitect/mount_angel/blob/main/ingetrazo_3d/components/roof_and_skylights.py">roof_and_skylights.py</a></td>
-              <td><code>7_Roof_And_Daylight_Scoop</code> &mdash; 3-tier roofs, <code>3&prime;-11&Prime;</code> plenum, scoop &amp; 12 skylights.</td>
+              <td><code>7_Roof_And_Daylight_Scoop</code> &mdash; 3-tier roofs, <code>3&prime;-11&Prime;</code> plenum, scoop, 14 skylights &amp; 3 exhaust fans.</td>
             </tr>
           </tbody>
         </table>
@@ -416,7 +416,7 @@
       <div class="sec-kicker">03 &middot; Iterative Refinement</div>
       <h2>Five Passes Through the Same Cameras</h2>
       <p class="sec-desc">
-        Because camera presets stayed locked across Git commits, we can step straight from the first grey massing study to the finished campus model. Click a stage or switch cameras below.
+        Because camera presets stayed locked across Git commits, we can step straight from the first grey massing study to the blueprint-calibrated model. Click a stage or switch cameras below.
       </p>
 
       <div class="stepper-wrap">
@@ -426,7 +426,7 @@
             <button type="button" class="tab-btn" data-stage="1">1 &middot; First Pass</button>
             <button type="button" class="tab-btn" data-stage="2">2 &middot; Millwork &amp; Lamps</button>
             <button type="button" class="tab-btn" data-stage="3">3 &middot; Clerestory &amp; Window</button>
-            <button type="button" class="tab-btn is-active" data-stage="4">4 &middot; Full Campus (v0.4.5)</button>
+            <button type="button" class="tab-btn is-active" data-stage="4">4 &middot; Blueprint-True (v0.7.0)</button>
           </div>
           <div class="cam-tabs" role="tablist" aria-label="Camera Views">
             <button type="button" class="tab-btn is-active" data-cam="hero">North Bluff</button>
@@ -442,10 +442,10 @@
 
         <div class="stage-caption">
           <div>
-            <h3 id="stageTitle">Full Campus, Three-Tier Roofs &amp; Parametric Millwork</h3>
-            <p id="stageNote">Abbey hilltop campus context, three-tier terracotta and dark-membrane roofs with the 3&prime;-11&Prime; structural plenum, 1&Prime;&times;1&Prime; radial ceiling slats, glazed Director/Media wall, and South Wing interiors (134,373 faces).</p>
+            <h3 id="stageTitle">True Polycentric Geometry, Exact Elevations &amp; Full Campus</h3>
+            <p id="stageNote">Archival WP #3/#2/#3A radial system, exact floor datums (&minus;28&prime;-6&Prime; to +21&prime;-4&Prime;), 3-shelf Mezzanine bookwalls, 6-shelf radial stacks, 14 conical skylights, 3 outer-fan exhaust fans, and full Abbey campus context (166,645 faces).</p>
           </div>
-          <span class="stage-commit" id="stageCommit">v0.4.5 &middot; 134,373 faces</span>
+          <span class="stage-commit" id="stageCommit">v0.7.0 &middot; 166,645 faces</span>
         </div>
       </div>
     </section>
@@ -508,10 +508,10 @@
     </section>
 
     <section class="block" id="catches">
-      <div class="sec-kicker">05 &middot; Caught in the Viewport</div>
-      <h2>Four More Bugs Visual Inspection Exposed</h2>
+      <div class="sec-kicker">05 &middot; Caught in the Viewport &amp; Overlays</div>
+      <h2>Seven Bugs Visual Inspection Exposed</h2>
       <p class="sec-desc">
-        Even when code runs cleanly and every mesh is watertight, architectural logic can still clash in 3D space. Here are four real issues spotted in viewport screenshots and fixed in Python.
+        Even when code runs cleanly and every mesh is watertight, architectural logic can still drift from Aalto&rsquo;s drawings or photographs. Here are seven real issues spotted in viewport renders and blueprint proofs&mdash;and fixed at the source in Python.
       </p>
 
       <div class="catches">
@@ -594,6 +594,66 @@
             </figure>
           </div>
         </article>
+
+        <article class="catch-card">
+          <div class="catch-head">
+            <div class="sec-kicker">Catch 05 &middot; Polycentric Working Points &amp; 2% Plan Scale (v0.7.0)</div>
+            <h3>Re-Locking the Three Radial Hubs on Sheet 06-a6</h3>
+            <p>Close inspection of the radial guide lines showed our early fitted origins drifting by up to <code>2&deg;</code> and shrinking the building ~2% in plan. Re-reading Aalto&rsquo;s <code>W.P. DIMENSIONS</code> table on Sheet <code>06-a6</code> restored the exact 3-hub system: <code>WP #3 = (0, 0)</code> for Rays B/C/D (<code>137.0&deg;</code>, <code>99.4&deg;</code>, <code>64.5&deg;</code>), <code>WP #2 = (+2&prime;-10&Prime;, &minus;5&prime;-3&Prime;)</code> for Flanks A &amp; E (<code>168.3&deg;</code>, <code>40.3&deg;</code>), and <code>WP #3A</code> exactly <code>3&prime;-9&Prime;</code> along Ray D for the circular well and scoop. Every well column now sits within <code>0.0000&Prime;</code> of its ray.</p>
+          </div>
+          <div class="catch-pair">
+            <figure class="catch-fig">
+              <span class="pill-tag">Before (v0.6.2)</span>
+              <img src="code/calib_plan06_before.jpg" alt="Before fix: Sheet 06-a6 overlay with drifted radial guide lines and ~2% scale shrinkage" loading="lazy" />
+              <figcaption>Fitted origins drifted off Aalto&rsquo;s printed radial axes and paired-column centers.</figcaption>
+            </figure>
+            <figure class="catch-fig">
+              <span class="pill-tag after">After (v0.7.0)</span>
+              <img src="code/calib_plan06_after.jpg" alt="After fix: Sheet 06-a6 overlay with archival WP #3, WP #2, WP #3A rays locked sub-pixel to ink" loading="lazy" />
+              <figcaption>Analytical <code>WP #3 / #2 / #3A</code> derivation locks every ray, column, and H-pier onto the scan.</figcaption>
+            </figure>
+          </div>
+        </article>
+
+        <article class="catch-card">
+          <div class="catch-head">
+            <div class="sec-kicker">Catch 06 &middot; The Missing Third Mezzanine Shelf (v0.7.0)</div>
+            <h3>Auditing Vertical Floor Datums from a Single Photograph</h3>
+            <p>Looking across the Reading Well in our photo comparison revealed a telling clue: photographs showed <strong>three full open shelves</strong> on the Mezzanine bookcases, while our model only showed two. Checking Sheets <code>13-a13</code>, <code>17-a17</code>, and <code>22-a22</code> exposed two compounding errors: the Mezzanine was <code>10&Prime;</code> too high (<code>&minus;4&prime;-6&Prime;</code> instead of archival <code>&minus;5&prime;-4&Prime;</code>, with Level 2 at <code>&minus;14&prime;-0&Prime;</code>, Level 1 at <code>&minus;28&prime;-6&Prime;</code>, and <code>10R + 16R</code> stairs), and <code>aalto_bookcases.py</code> divided vertical span by <code>n_tiers &minus; 1</code> instead of <code>n_tiers</code>, quietly dropping one shelf on every unit. Fixing both restored 3-shelf Mezzanine bookwalls tucked under Level 3&rsquo;s <code>4&Prime;</code> drop lip and 6-shelf full-height stacks.</p>
+          </div>
+          <div class="catch-pair">
+            <figure class="catch-fig">
+              <span class="pill-tag">Before (2 Shelves · &minus;4&prime;-6&Prime;)</span>
+              <img src="code/calib_mezz_before.jpg" alt="Before fix: Mezzanine Reference Bookwall showing only two shelves beneath an oversized plaster band" loading="lazy" />
+              <figcaption>Mezzanine 10&Prime; too high + off-by-one shelf bug left only 2 shelves under an empty plaster band.</figcaption>
+            </figure>
+            <figure class="catch-fig">
+              <span class="pill-tag after">After (3 Shelves · &minus;5&prime;-4&Prime;)</span>
+              <img src="code/calib_mezz_after.jpg" alt="After fix: Mezzanine Reference Bookwall showing all three shelves and six-shelf Level 3 radial stacks" loading="lazy" />
+              <figcaption>True <code>&minus;5&prime;-4&Prime;</code> datum + shelf-spacing fix: 3 full Mezzanine shelves &amp; 6-shelf Level 3 stacks.</figcaption>
+            </figure>
+          </div>
+        </article>
+
+        <article class="catch-card">
+          <div class="catch-head">
+            <div class="sec-kicker">Catch 07 &middot; Roof Plan &amp; Framing Forensics (v0.7.0)</div>
+            <h3>Fourteen Conical Skylights &amp; Three Outer-Fan Exhaust Fans</h3>
+            <p>Reviewing the Roof Plan proof (<code>07-a7</code>) caught two subtle roof errors: every conical skylight needed to shift <code>3&ndash;4&prime;</code> South, and two more domes lined the West elevator corridor (<strong>14 conical skylights</strong> total, up from 12). Meanwhile, three bright white circular units along the outer fan edge beside Rays B, C, and D looked like skylights from the air&mdash;until cross-checking Roof Framing Sheet <code>36-s5</code> and Reflected Ceiling Plan <code>10-a10</code> proved they are <strong>three rooftop <code>EXHAUST FAN</code> mushroom hoods</strong> with no ceiling wells below.</p>
+          </div>
+          <div class="catch-pair">
+            <figure class="catch-fig">
+              <span class="pill-tag after">Section A-A Locked (0.10 px)</span>
+              <img src="code/calib_sec13_after.jpg" alt="Sheet 13-a13 Section A-A proof locked to exact archival floor and roof elevations" loading="lazy" />
+              <figcaption>Sheet <code>13-a13</code> calibrated to exact archival datums (<code>+1&prime;-4&Prime;</code> Lobby to <code>&minus;28&prime;-6&Prime;</code> Level 1).</figcaption>
+            </figure>
+            <figure class="catch-fig">
+              <span class="pill-tag after">Roof 07-a7 · 14 Skylights + 3 Exhaust Fans</span>
+              <img src="code/calib_roof07_after.jpg" alt="Sheet 07-a7 Roof Plan proof locking all 14 yellow conical skylights and 3 cyan outer-fan exhaust fans" loading="lazy" />
+              <figcaption>All 14 conical skylights (yellow) and 3 outer-fan exhaust hoods (cyan) locked onto <code>07-a7</code>.</figcaption>
+            </figure>
+          </div>
+        </article>
       </div>
     </section>
   </main>
@@ -645,7 +705,7 @@
         },
         {
           title: 'Stage 2 · Coplanar Edge Stripping, Mezzanine Desks & Mushroom Lamps',
-          note: 'Internal mesh diagonals stripped; irregular 90°-turned H-columns, -4\'-6" Mezzanine workstations, open bronze Control guardrail, curved Reference Bookwall, and angled-arm oblate mushroom lamps added.',
+          note: 'Internal mesh diagonals stripped; irregular 90°-turned H-columns, Mezzanine workstations, open bronze Control guardrail, curved Reference Bookwall, and angled-arm oblate mushroom lamps added.',
           commit: '40afa60 · ~61,000 faces',
           imgs: {
             hero: 'code/stage2_hero.jpg',
@@ -664,9 +724,9 @@
           }
         },
         {
-          title: 'Stage 4 · Full Campus, Three-Tier Roofs & Parametric Millwork',
-          note: 'Abbey hilltop campus context, three-tier terracotta and dark-membrane roofs with the 3\'-11" structural plenum, 1"×1" radial ceiling slats, glazed Director/Media wall, and South Wing interiors.',
-          commit: 'v0.4.5 · 134,373 faces',
+          title: 'Stage 4 · True Polycentric Geometry, Exact Elevations & Full Campus',
+          note: 'Archival WP #3/#2/#3A radial system, exact floor datums (-28\'-6" to +21\'-4"), 3-shelf Mezzanine bookwalls, 6-shelf radial stacks, 14 conical skylights, 3 outer-fan exhaust fans, and full Abbey campus context.',
+          commit: 'v0.7.0 · 166,645 faces',
           imgs: {
             hero: 'renders/studio_01_hillside_hero.png',
             cutaway: 'renders/studio_03_roof_cutaway_axon.png',

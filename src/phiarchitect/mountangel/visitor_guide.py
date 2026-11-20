@@ -24,7 +24,7 @@ def render_visitor_guide_html() -> str:
     directory_items = [
         (
             "1",
-            "+2'-0\"",
+            "+1'-4\"",
             "Restrooms &amp; 32-Batten Wood Screen",
             "Lobby West",
             "Floor-to-ceiling vertical wood battens screen the Men's &amp; Women's restroom alcove without breaking the Lobby's serene plaster plane.",
@@ -32,7 +32,7 @@ def render_visitor_guide_html() -> str:
         ),
         (
             "2",
-            "+2'-0\"",
+            "+1'-4\"",
             "Rare Book &amp; Lecture Auditorium",
             "Lobby East · Rm 327",
             "Splayed acoustic walls, sweeping curved AV projection booth, quarter-circle SE birch stage, and Aalto's 3-wave undulating ceiling.",
@@ -75,20 +75,20 @@ def render_visitor_guide_html() -> str:
             "0'-0\"",
             "15 Radiating Birch Bookstacks",
             "Main North Fan",
-            "Variable-length (16.3'–20.0') Aalto birch bookcases with recessed linoleum plinths and 5-batten vertical directory stanchions.",
+            "Variable-length (16.3'–20.0') 6-shelf Aalto birch bookcases with recessed linoleum plinths and 5-batten vertical directory stanchions.",
             "section_plan_l3",
         ),
         (
             "8",
             "0'-0\"",
             "H-Column D Mt. Hood Window",
-            "NE Perimeter · 65.7°",
+            "NE Perimeter · 64.5°",
             "Eye-level square aperture punched between the tapered legs of irregular H-Column D, framing Mt. Hood across the Pudding River valley.",
             "alcove_mthood",
         ),
         (
             "9",
-            "+2'-0\"",
+            "+1'-4\"",
             "Cataloging &amp; Technical Wing",
             "West Wing · Staff",
             "Monastic cataloging, acquisitions, and bindery workrooms lit from above by perforated conical rooftop skylights.",
@@ -96,15 +96,15 @@ def render_visitor_guide_html() -> str:
         ),
         (
             "10",
-            "-4'-6\"",
+            "-5'-4\"",
             "Mezzanine Reference Gallery",
             "Via Well Stairs",
-            "Reached by radial U-turn switchback stairs; pairs a curved inner Reference Bookwall with cantilevered outer linoleum study stations.",
+            "Reached by 10-riser radial U-turn switchback stairs; pairs a 3-shelf curved Reference Bookwall with cantilevered outer linoleum study stations.",
             "sunken_well",
         ),
         (
             "11",
-            "-12'-6\"",
+            "-14'-0\"",
             "Level 2 Stacks &amp; Study Carrels",
             "Lower North Fan",
             "Double ring of radial bookstacks, 20 perimeter carrel alcoves, and view windows shaded by exterior hemlock sun louvers.",
@@ -112,7 +112,7 @@ def render_visitor_guide_html() -> str:
         ),
         (
             "12",
-            "-26'-6\"",
+            "-28'-6\"",
             "Level 1 Archival Base Deck",
             "Bluff Toe · Staff",
             "Deepest terraced stack deck anchored into the northern hillside behind Aalto's five-chord concrete retaining wall.",
@@ -1711,11 +1711,11 @@ def render_visitor_guide_html() -> str:
           <div class="rc-section-box">
             <div class="rc-box-hdr">
               <strong>Section A&ndash;A &middot; Skylights &amp; Bluff</strong>
-              <span>EL. +21&prime;-6&Prime; to -26&prime;-6&Prime;</span>
+              <span>EL. +21&prime;-4&Prime; to -28&prime;-6&Prime;</span>
             </div>
             {svgs["sec_rack"]}
             <p class="rc-caption">
-              Entered modestly from the South Abbey Quad (<strong>+2&prime;-0&Prime;</strong>), the library cascades three terraced stories down the northern hillside beneath a curved <strong>+21&prime;-6&Prime; Daylight Scoop</strong> and twelve perforated conical skylights.
+              Entered modestly from the South Abbey Quad (<strong>+1&prime;-4&Prime;</strong>), the library cascades three terraced stories down the northern hillside beneath a curved <strong>+21&prime;-4&Prime; Daylight Scoop</strong> and fourteen perforated conical skylights.
             </p>
           </div>
 
@@ -1726,7 +1726,7 @@ def render_visitor_guide_html() -> str:
             </figure>
             <figure class="vignette-card">
               <img src="renders/studio_05_sunken_well_scoop.png" alt="Mezzanine Workstations and Sunken Reading Well" loading="lazy">
-              <figcaption>Sunken Reading Well &amp; -4&prime;-6&Prime; Mezzanine</figcaption>
+              <figcaption>Sunken Reading Well &amp; -5&prime;-4&Prime; Mezzanine</figcaption>
             </figure>
           </div>
 
@@ -1748,7 +1748,7 @@ def render_visitor_guide_html() -> str:
             </div>
             <div class="rc-hl-card">
               <span class="rc-hl-num">04 &middot; HORIZON</span>
-              <h4>65.7&deg; Mt. Hood Vista</h4>
+              <h4>64.5&deg; Mt. Hood Vista</h4>
               <p>Walk to northeast H-Column D: an eye-level square window frames Oregon&rsquo;s volcanic peak between tapered concrete legs.</p>
             </div>
           </div>
@@ -1774,12 +1774,12 @@ def render_visitor_guide_html() -> str:
               <div class="rc-kicker">Where Things Are</div>
               <h3>Visitor Floor Plans</h3>
             </div>
-            <span class="yah-pill">&#9733; LOBBY (+2&prime;-0&Prime;)</span>
+            <span class="yah-pill">&#9733; LOBBY (+1&prime;-4&Prime;)</span>
           </div>
 
           <div class="rc-section-box" style="padding:8px 8px 6px">
             <div class="rc-box-hdr">
-              <strong>Main Entrance &amp; Fan Reading Level (+2&prime;-0&Prime; / 0&prime;-0&Prime;)</strong>
+              <strong>Main Entrance &amp; Fan Reading Level (+1&prime;-4&Prime; / 0&prime;-0&Prime;)</strong>
               <span>North Up &uarr;</span>
             </div>
             {svgs["l3_rack"]}
@@ -1820,7 +1820,7 @@ def render_visitor_guide_html() -> str:
     <section class="posters-section">
       <div class="section-banner">
         <h2>Piece II &mdash; Lobby Orientation Poster Suite <span class="spec-pill">24&Prime; &times; 36&Prime; (2:3 Architectural Exhibition Boards)</span></h2>
-        <span class="sub">Coordinated 3-poster orientation sequence for the South Entrance Lobby (+2&prime;-0&Prime;)</span>
+        <span class="sub">Coordinated 3-poster orientation sequence for the South Entrance Lobby (+1&prime;-4&Prime;)</span>
       </div>
 
       <div class="poster-grid">
@@ -1835,13 +1835,13 @@ def render_visitor_guide_html() -> str:
               <div class="ps-series-tag">Lobby Orientation &middot; Board I of III</div>
               <h3>Welcome &amp; Building Directory</h3>
               <p>
-                Oriented <strong>Heads-Up North</strong> to match your view from the South Entrance Lobby: step straight ahead down four wide treads into the Control Area and two-story Reading Well.
+                Oriented <strong>Heads-Up North</strong> to match your view from the South Entrance Lobby: step straight ahead down three wide risers into the Control Area and two-story Reading Well.
               </p>
             </div>
             <div class="ps-meta-block">
               <strong>MOUNT ANGEL ABBEY LIBRARY</strong><br>
               ALVAR AALTO, ARCHITECT (1964&ndash;1970)<br>
-              45.07&deg; N &middot; 122.79&deg; W &middot; EL. +2&prime;-0&Prime; LOBBY
+              45.07&deg; N &middot; 122.79&deg; W &middot; EL. +1&prime;-4&Prime; LOBBY
             </div>
           </header>
 
@@ -1862,7 +1862,7 @@ def render_visitor_guide_html() -> str:
 
           <div class="ps-frame">
             <div class="ps-frame-hdr">
-              <h4>Main Entrance &amp; Fan Reading Deck (Level 3 &middot; +2&prime;-0&Prime; Lobby / 0&prime;-0&Prime; Reading Room)</h4>
+              <h4>Main Entrance &amp; Fan Reading Deck (Level 3 &middot; +1&prime;-4&Prime; Lobby / 0&prime;-0&Prime; Reading Room)</h4>
               <span>&#9733; You Are Here in South Lobby &middot; Hover or Click Any Pin 1&ndash;12</span>
             </div>
             {svgs["l3_poster"]}
@@ -1872,7 +1872,7 @@ def render_visitor_guide_html() -> str:
             <div class="ps-frame">
               <div class="ps-frame-hdr">
                 <h4>Terraced Hillside Decks Below</h4>
-                <span>Mezzanine (-4&prime;-6&Prime;) &middot; Level 2 (-12&prime;-6&Prime;) &middot; Level 1 (-26&prime;-6&Prime;)</span>
+                <span>Mezzanine (-5&prime;-4&Prime;) &middot; Level 2 (-14&prime;-0&Prime;) &middot; Level 1 (-28&prime;-6&Prime;)</span>
               </div>
               {svgs["lower"]}
             </div>
@@ -1914,7 +1914,7 @@ def render_visitor_guide_html() -> str:
             <div class="ps-meta-block">
               <strong>LONGITUDINAL SECTION A&ndash;A</strong><br>
               SOUTH PORTICO TO NORTH BLUFF<br>
-              TOTAL DROP: 48&prime;-0&Prime; (+21&prime;-6&Prime; TO -26&prime;-6&Prime;)
+              TOTAL DROP: 49&prime;-10&Prime; (+21&prime;-4&Prime; TO -28&prime;-6&Prime;)
             </div>
           </header>
 
@@ -1932,7 +1932,7 @@ def render_visitor_guide_html() -> str:
               <h5>Perforated Conical Skylights</h5>
               {svgs["cone"]}
               <p>
-                Twelve rooftop copper-capped cones funnel sunlight through an inner perforated diffuser cone and white plaster throat, emerging cleanly through 1&Prime;&times;1&Prime; radial hemlock ceiling slats without UV hotspots.
+                Fourteen rooftop copper-capped cones funnel sunlight through an inner perforated diffuser cone and white plaster throat, emerging cleanly through 1&Prime;&times;1&Prime; radial hemlock ceiling slats without UV hotspots.
               </p>
             </div>
 
@@ -1941,7 +1941,7 @@ def render_visitor_guide_html() -> str:
               <h5>Parapet Lamps &amp; Linoleum Counter</h5>
               {svgs["lamp"]}
               <p>
-                Along both the Level 3 well rim and -4&prime;-6&Prime; Mezzanine parapet, angled white stems clear the raised birch curb to suspend oblate mushroom reflectors over cantilevered matte-black linoleum counters.
+                Along both the Level 3 well rim and -5&prime;-4&Prime; Mezzanine parapet, angled white stems clear the raised birch curb to suspend oblate mushroom reflectors over cantilevered matte-black linoleum counters.
               </p>
             </div>
 
@@ -1950,7 +1950,7 @@ def render_visitor_guide_html() -> str:
               <h5>Irregular H-Column D &amp; Vista</h5>
               {svgs["hpier"]}
               <p>
-                Four monumental perimeter H-piers rotate along Aalto&rsquo;s compass rays to shelter quiet carrel alcoves; only H-Column D opens at eye level to frame Mt. Hood at <strong>65.7&deg; ENE</strong>.
+                Three monumental perimeter H-piers rotate along Aalto&rsquo;s compass rays to shelter quiet carrel alcoves; only H-Column D opens at eye level to frame Mt. Hood at <strong>64.5&deg; ENE</strong>.
               </p>
             </div>
           </div>
@@ -2001,7 +2001,7 @@ def render_visitor_guide_html() -> str:
           <div class="ps-frame">
             <div class="ps-frame-hdr">
               <h4>Four Shifted Compass Origins &amp; Three-Tier Roof Hierarchy</h4>
-              <span>WP #4 (0,0) &middot; WP #3 (0,+1&prime;) &middot; WP #3A (+1.5&prime;,+2.6&prime;) &middot; WP_DESK (-1.2&prime;,+2.2&prime;)</span>
+              <span>WP #3 (0,0) &middot; WP #2 (+2&prime;-10&Prime;,-5&prime;-3&Prime;) &middot; WP #3A (+1&prime;-7&Prime;,+3&prime;-5&Prime;) &middot; WP_DESK (-1&prime;-2&Prime;,+2&prime;-2&Prime;)</span>
             </div>
             {svgs["polycentric"]}
           </div>
@@ -2046,7 +2046,7 @@ def render_visitor_guide_html() -> str:
                 <span class="rc-hl-num">SIGNATURE IV &middot; SCULPTURAL SOUND</span>
                 <h5>Rare Book Auditorium (Rm 327)</h5>
                 <p>
-                  Beneath its own taller <strong>+18&prime;-8&Prime;</strong> dark-membrane roof, a three-wave undulating plaster shell projects unamplified voice from the quarter-circle SE birch stage across fanned seating rows.
+                  Beneath its own taller <strong>+17&prime;-10&Prime;</strong> dark-membrane roof, a three-wave undulating plaster shell projects unamplified voice from the quarter-circle SE birch stage across fanned seating rows.
                 </p>
               </div>
             </div>
@@ -2054,7 +2054,7 @@ def render_visitor_guide_html() -> str:
 
           <footer class="ps-colophon">
             <span>MOUNT ANGEL ABBEY &middot; ST. BENEDICT, OREGON</span>
-            <span>EXPLORE THE FULL 134,737-FACE 3D DIGITAL MAQUETTE AT LIBRARY-3D.HTML</span>
+            <span>EXPLORE THE FULL 166,645-FACE 3D DIGITAL MAQUETTE AT LIBRARY-3D.HTML</span>
             <span>SHEET III &middot; GEOMETRY &amp; CRAFT</span>
           </footer>
         </article>

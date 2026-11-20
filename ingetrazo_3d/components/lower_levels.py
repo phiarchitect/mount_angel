@@ -80,7 +80,7 @@ def _add_bookstack_range(
         z_floor_m=z_floor_m,
         height_m=height_m,
         double_sided=True,
-        n_shelf_tiers=5,
+        n_shelf_tiers=6,
         canopy_style=canopy_style,
         end_slats=end_slats,
         populate_books=True,
@@ -90,13 +90,14 @@ def _add_bookstack_range(
 
 def build_lower_levels(scene):
     G = AaltoGeometry
-    z_l1 = m_ft(G.Z_L1_FT)              # -8.08 m
-    z_l2 = m_ft(G.Z_L2_FT)              # -3.81 m
-    z_gal = m_ft(G.Z_REF_GALLERY_FT)    # -1.37 m (-4'-6" Mezzanine / Reading Level)
-    z_l3 = m_ft(G.Z_L3_FT)              #  0.00 m
+    z_l1 = m_ft(G.Z_L1_FT)              # -8.69 m (-28'-6" / EL. +100'-0")
+    z_l2 = m_ft(G.Z_L2_FT)              # -4.27 m (-14'-0" / EL. +114'-6")
+    z_gal = m_ft(G.Z_REF_GALLERY_FT)    # -1.63 m ( -5'-4" / EL. +123'-2" Mezzanine / Reading Level)
+    z_l3 = m_ft(G.Z_L3_FT)              #  0.00 m (  0'-0" / EL. +128'-6")
+    mezz_slab_m = m_ft(1.0)             #  0.305 m (1'-0" concrete slab per Sheet 46-s15 Detail N2)
 
     # =========================================================================
-    # LAYER 2: LEVEL 1 DOWNHILL BASE (-8.08 m)
+    # LAYER 2: LEVEL 1 DOWNHILL BASE (-8.69 m / -28'-6")
     # =========================================================================
     grp_l1 = create_scene_group(scene, "2_Level_1_Base")
     m1 = grp_l1.mesh
@@ -117,15 +118,15 @@ def build_lower_levels(scene):
     # South retaining wall closing Level 1 core along Grid 6
     add_wall_strip_ft(
         m1,
-        [(-67.5, 10.2), G.WELL_COLS_FT["Well_W_South"], (10.5, 0.5), G.WELL_COLS_FT["Well_4_ENE"], (43.5, 24.5)],
+        [(-69.5, 10.2), G.WELL_COLS_FT["Well_W_South"], (10.8, 0.5), G.WELL_COLS_FT["Well_4_ENE"], (44.5, 25.0)],
         1.20,
         z_l1,
         z_l2 - 0.28,
         MATERIALS["concrete"],
     )
 
-    # Level 1 Archival Radial Bookstacks (canopy_style="slate_grey", end_slats="none")
-    for idx, stk in enumerate(get_radial_bookstacks_ft(38.5, 70.5)):
+    # Level 1 Archival Radial Bookstacks (6 open shelves, canopy_style="slate_grey", end_slats="none")
+    for idx, stk in enumerate(get_radial_bookstacks_ft(38.5, 72.5)):
         p0, p1, p2, p3 = stk
         p_in = ((p0[0] + p3[0]) * 0.5, (p0[1] + p3[1]) * 0.5)
         p_out = ((p1[0] + p2[0]) * 0.5, (p1[1] + p2[1]) * 0.5)
@@ -145,7 +146,7 @@ def build_lower_levels(scene):
             z_floor_m=z_l1,
             height_m=2.15,
             double_sided=True,
-            n_shelf_tiers=5,
+            n_shelf_tiers=6,
             canopy_style="slate_grey",
             end_slats="none",
             populate_books=True,
@@ -153,12 +154,12 @@ def build_lower_levels(scene):
         )
 
     # =========================================================================
-    # LAYER 3: LEVEL 2 STACKS, MEZZANINE (-4'-6") & SWITCHBACK STAIRS
+    # LAYER 3: LEVEL 2 STACKS (-14'-0"), MEZZANINE (-5'-4") & SWITCHBACK STAIRS
     # =========================================================================
     grp_l2 = create_scene_group(scene, "3_Level_2_Middle")
     m2 = grp_l2.mesh
 
-    # Level 2 Concrete Floor Slab (-3.81 m, inset 0.52 ft inside exterior face brick veneer)
+    # Level 2 Concrete Floor Slab (-4.27 m, inset 0.52 ft inside exterior face brick veneer)
     add_extruded_polygon_ft(
         m2,
         offset_polyline_right_ft(get_level2_envelope_ft(), 0.52, closed=True),
@@ -168,10 +169,17 @@ def build_lower_levels(scene):
         MATERIALS["concrete"],
     )
 
-    # South Retaining Wall of Level 2 along Grid 4 (Y = -21.0) & West Bindery
+    # South Retaining Wall of Level 2 along Grid 4 & West Bindery
     add_wall_strip_ft(
         m2,
-        [(61.5, -8.8), (61.5, -21.0), (-91.5, -21.0), (-91.5, -28.0), (-126.5, -28.0), (-126.5, 1.5)],
+        [
+            (G.X_AUD_E, G.GRID_Y["5"]),
+            (G.X_AUD_E, G.GRID_Y["4"]),
+            (G.X_SOUTH_STEP, G.GRID_Y["4"]),
+            (G.X_SOUTH_STEP, G.GRID_Y["3"]),
+            (G.X_WEST_WING, G.GRID_Y["3"]),
+            (G.X_WEST_WING, G.GRID_Y["6"]),
+        ],
         1.10,
         z_l2,
         z_l3 - 0.25,
@@ -187,7 +195,7 @@ def build_lower_levels(scene):
         42.0,
         161.0,
         z_l2,
-        z_gal - 0.22,
+        z_gal - mezz_slab_m,
         MATERIALS["white_plaster"],
         steps=36,
     )
@@ -204,8 +212,8 @@ def build_lower_levels(scene):
         ]
         add_extruded_polygon_ft(m2, desk_quad, z_l2 + 0.70, z_l2 + 0.76, {**MATERIALS["birch_wood"], "furniture": True})
 
-    # Level 2 Inner Ring of Radial Bookstacks (R = 34.4..47.4 ft, between well stairs; `Sheet 29-f1` & `IMG_5143`)
-    inner_l2_stacks = get_radial_bookstacks_ft(34.4, 47.4)[2:13]
+    # Level 2 Inner Ring of Radial Bookstacks (R = 34.5..48.0 ft, between well stairs; `Sheet 29-f1` & `IMG_5143`)
+    inner_l2_stacks = get_radial_bookstacks_ft(34.5, 48.0)[2:13]
     for idx, stk in enumerate(inner_l2_stacks):
         p0, p1, p2, p3 = stk
         p_in = ((p0[0] + p3[0]) * 0.5, (p0[1] + p3[1]) * 0.5)
@@ -226,15 +234,15 @@ def build_lower_levels(scene):
             z_floor_m=z_l2,
             height_m=2.15,
             double_sided=True,
-            n_shelf_tiers=5,
+            n_shelf_tiers=6,
             canopy_style="slate_grey",
             end_slats="none",
             populate_books=True,
             seed=idx * 19 + 201,
         )
 
-    # Level 2 Outer Ring of Radial Bookstacks (R = 51.4..68.5 ft; `Sheet 29-f1`)
-    for idx, stk in enumerate(get_radial_bookstacks_ft(51.4, 68.5)):
+    # Level 2 Outer Ring of Radial Bookstacks (R = 51.8..70.0 ft; `Sheet 29-f1`)
+    for idx, stk in enumerate(get_radial_bookstacks_ft(51.8, 70.0)):
         p0, p1, p2, p3 = stk
         p_in = ((p0[0] + p3[0]) * 0.5, (p0[1] + p3[1]) * 0.5)
         p_out = ((p1[0] + p2[0]) * 0.5, (p1[1] + p2[1]) * 0.5)
@@ -254,7 +262,7 @@ def build_lower_levels(scene):
             z_floor_m=z_l2,
             height_m=2.15,
             double_sided=True,
-            n_shelf_tiers=5,
+            n_shelf_tiers=6,
             canopy_style="slate_grey",
             end_slats="none",
             populate_books=True,
@@ -262,17 +270,19 @@ def build_lower_levels(scene):
         )
 
     # =========================================================================
-    # MEZZANINE / READING LEVEL (-4'-6" / -1.37 m) (`Angel-090508`, `IMG_5143`)
+    # MEZZANINE / READING LEVEL (-5'-4" / -1.626 m / EL. +123'-2")
+    # Sheet 46-s15 Detail N2: 1'-0" concrete slab spanning 9'-10" (R = 22'-0" .. 31'-10"),
+    # 3-shelf reference bookcases (`1.24 m` tall) tucked cleanly beneath Level 3 4" plaster lip (`13-a13` Det. 9).
     # =========================================================================
-    # 1. Semicircular Mezzanine Structural Slab + Slate-Blue Wool Carpet Deck (R = 21.5..32.25 ft)
+    # 1. Semicircular Mezzanine Structural Slab (1'-0" thick) + Slate-Blue Wool Carpet Deck (R = 20.8..32.25 ft)
     add_arc_band_ft(
         m2,
         G.WP3A,
-        21.5,
+        G.R_GALLERY_RAIL - 1.20,
         G.R_WELL_L2_WALL + 0.42,
         41.8,
         161.5,
-        z_gal - 0.22,
+        z_gal - mezz_slab_m,
         z_gal - 0.02,
         MATERIALS["white_plaster"],
         steps=40,
@@ -280,7 +290,7 @@ def build_lower_levels(scene):
     add_arc_band_ft(
         m2,
         G.WP3A,
-        21.5,
+        G.R_GALLERY_RAIL - 1.20,
         G.R_WELL_L2_WALL + 0.42,
         41.8,
         161.5,
@@ -290,22 +300,24 @@ def build_lower_levels(scene):
         steps=40,
     )
 
-    # 2. Inner (-R) Arc: Curved 4-Shelf Birch Reference Bookwall tucked under Control Peninsula (`Angel-090508`)
+    # 2. Inner (-R) Arc: Curved 3-Shelf Birch Reference Bookwall tucked under Control Peninsula (`13-a13` Det. 9, `mezzaninewithdictionaryweb2`)
+    # Bookcase height 1.24 m -> top at -1.626 + 1.24 = -0.386 m, flush under the -0.38 m Level 3 plaster soffit lip!
+    mezz_bc_height_m = 1.24
     add_aalto_curved_bookwall_ft(
         m2,
         center_ft=G.WP3A,
-        radius_ft=22.25,
+        radius_ft=G.R_GALLERY_RAIL - 0.35,  # 21.65 ft centerline -> front book face at ~22.22 ft
         deg_start=42.2,
         deg_end=161.1,
         z_floor_m=z_gal,
-        height_m=1.08,
+        height_m=mezz_bc_height_m,
         depth_ft=1.15,
-        n_shelf_tiers=4,
+        n_shelf_tiers=3,
         face_inward=False,
         seed=42,
     )
 
-    # Straight Radial 4-Shelf End Bookcases closing East (41.8°) & West (161.5°) Mezzanine Ends
+    # Straight Radial 3-Shelf End Bookcases closing East (41.8°) & West (161.5°) Mezzanine Ends
     # (`Sheet 13-a13: EAST @ STAIR #2 / WEST @ STAIR #1` & visible behind columns in `mezzaninewithdictionaryweb2`!)
     for end_deg, in_sign, slat_side in ((41.8, 1.0, "start"), (161.5, -1.0, "end")):
         rad_e = math.radians(end_deg)
@@ -314,15 +326,15 @@ def build_lower_levels(scene):
         cx0, cy0 = G.WP3A
         # White plaster end backing wall under Level 3 stairwell edge
         back_quad = [
-            (cx0 + 21.8 * urx - 0.28 * itx, cy0 + 21.8 * ury - 0.28 * ity),
+            (cx0 + (G.R_GALLERY_RAIL - 0.90) * urx - 0.28 * itx, cy0 + (G.R_GALLERY_RAIL - 0.90) * ury - 0.28 * ity),
             (cx0 + 32.1 * urx - 0.28 * itx, cy0 + 32.1 * ury - 0.28 * ity),
             (cx0 + 32.1 * urx + 0.05 * itx, cy0 + 32.1 * ury + 0.05 * ity),
-            (cx0 + 21.8 * urx + 0.05 * itx, cy0 + 21.8 * ury + 0.05 * ity),
+            (cx0 + (G.R_GALLERY_RAIL - 0.90) * urx + 0.05 * itx, cy0 + (G.R_GALLERY_RAIL - 0.90) * ury + 0.05 * ity),
         ]
-        add_extruded_polygon_ft(m2, back_quad, z_gal - 0.22, z_l3 - 0.28, MATERIALS["white_plaster"])
+        add_extruded_polygon_ft(m2, back_quad, z_gal - mezz_slab_m, z_l3 - 0.28, MATERIALS["white_plaster"])
 
-        # 4-shelf birch bookcase (R = 22.95..31.45 ft, L = 8.50 ft, D = 1.05 ft) under plaster spandrel beam
-        r_mid = 27.20
+        # 3-shelf birch bookcase (R = 22.35..31.45 ft, L = 9.10 ft, D = 1.05 ft, H = 1.24 m) under plaster spandrel beam
+        r_mid = 26.90
         c_x = cx0 + r_mid * urx + 0.58 * itx
         c_y = cy0 + r_mid * ury + 0.58 * ity
         ang = end_deg if in_sign > 0 else (end_deg + 180.0) % 360.0
@@ -330,31 +342,31 @@ def build_lower_levels(scene):
         add_aalto_bookcase_ft(
             m2,
             center_ft=(c_x, c_y),
-            length_ft=8.50,
+            length_ft=9.10,
             depth_ft=1.05,
             angle_deg=ang,
             z_floor_m=z_gal,
-            height_m=1.08,
+            height_m=mezz_bc_height_m,
             double_sided=False,
-            n_shelf_tiers=4,
+            n_shelf_tiers=3,
             canopy_style="birch",
             end_slats=slat_side,
             populate_books=True,
             seed=int(end_deg * 10),
         )
 
-    # 3. Outer (+R) Arc: Mezzanine Parapet, Matte-Black Linoleum Workbench, Custom Lamps & Artek 69 Chairs (`IMG_5143`)
+    # 3. Outer (+R) Arc: Mezzanine Parapet (2'-9 1/2" per 46-s15 Det. N2), Matte-Black Workbench, Lamps & Artek 69 Chairs
     birch_furn = {**MATERIALS["birch_wood"], "furniture": True}
     mezz_deg0, mezz_deg1 = 55.8, 147.8
     r_mezz_in = G.R_WELL_L2_WALL - 0.18   # 31.65 ft (Mezzanine-facing plaster wall)
     r_mezz_out = G.R_WELL_L2_WALL + 0.42  # 32.25 ft (Well-facing plaster wall overlooking Level 2 stacks)
 
     # White plaster outer parapet wall + inner birch baseboard + raised birch book-stop curb
-    add_arc_band_ft(m2, G.WP3A, r_mezz_in, r_mezz_out, mezz_deg0, mezz_deg1, z_gal - 0.22, z_gal + 0.89, MATERIALS["white_plaster"], steps=38)
+    add_arc_band_ft(m2, G.WP3A, r_mezz_in, r_mezz_out, mezz_deg0, mezz_deg1, z_gal - mezz_slab_m, z_gal + 0.85, MATERIALS["white_plaster"], steps=38)
     add_arc_band_ft(m2, G.WP3A, r_mezz_in - 0.10, r_mezz_in + 0.02, mezz_deg0, mezz_deg1, z_gal, z_gal + 0.09, birch_furn, steps=38)
-    add_arc_band_ft(m2, G.WP3A, r_mezz_in - 0.05, r_mezz_out + 0.05, mezz_deg0, mezz_deg1, z_gal + 0.89, z_gal + 0.99, MATERIALS["birch_wood"], steps=38)
+    add_arc_band_ft(m2, G.WP3A, r_mezz_in - 0.05, r_mezz_out + 0.05, mezz_deg0, mezz_deg1, z_gal + 0.85, z_gal + 0.95, MATERIALS["birch_wood"], steps=38)
 
-    # Cantilevered Matte-Black Linoleum Workbench + Birch Bullnose (R = 29.42..31.66 ft)
+    # Cantilevered Matte-Black Linoleum Workbench + Birch Bullnose (R = 29.40..31.66 ft)
     lino_furn = {**MATERIALS["black_linoleum"], "furniture": True}
     add_arc_band_ft(m2, G.WP3A, 29.40, r_mezz_in + 0.02, mezz_deg0 + 0.2, mezz_deg1 - 0.2, z_gal + 0.70, z_gal + 0.745, birch_furn, steps=38)
     add_arc_band_ft(m2, G.WP3A, 29.52, r_mezz_in - 0.03, mezz_deg0 + 0.3, mezz_deg1 - 0.3, z_gal + 0.745, z_gal + 0.758, lino_furn, steps=38)
@@ -378,13 +390,13 @@ def build_lower_levels(scene):
         add_artek_chair_69(m2, chair_pt, facing_deg=st_deg + chair_swivels[i % len(chair_swivels)], z_floor_m=z_gal)
 
     # =========================================================================
-    # WEST & EAST RADIAL SWITCHBACK (U-TURN) WELL STAIRS + SE STAIR #2
+    # WEST & EAST RADIAL SWITCHBACK (U-TURN) WELL STAIRS + SE STAIR #2 (`22-a22`)
     # =========================================================================
-    # Upper flight (outer lane) descends inward (-R) from Level 3 (R = 43.6) -> Mezzanine (R = 32.3, Z = -1.37 m)
-    # alongside the Level 3 radial counter-height bookcase / plaster stairwell wall (`wall_side = +1` East, `-1` West).
-    # Lower flight (inner lane) descends outward (+R) from Mezzanine (R = 32.4) -> Level 2 (R = 44.8, Z = -3.81 m).
+    # Sheet 22-a22:
+    #   - Upper flight (outer lane): 10 risers @ 6.40" = 5'-4" (Level 3 0'-0" -> Mezzanine -5'-4")
+    #   - Lower flight (inner lane): 16 risers @ 6.50" = 8'-8" (Mezzanine -5'-4" -> Level 2 -14'-0")
     for ang_up, ang_dn, w_side in ((45.1, 52.0, 1), (158.2, 151.3, -1)):
-        p_l3_top = polar_pt(G.WP3A, 43.6, ang_up)
+        p_l3_top = polar_pt(G.WP3A, G.R_MEZZ_OPENING, ang_up)
         p_mezz_in = polar_pt(G.WP3A, 32.3, ang_up)
         add_stepped_stair_ft(
             m2,
@@ -393,13 +405,13 @@ def build_lower_levels(scene):
             width_ft=3.65,
             z_top_m=z_l3,
             z_bot_m=z_gal,
-            n_steps=9,
+            n_steps=10,
             tread_attrs=MATERIALS["carpet_blue"],
             wall_side=w_side,
         )
 
         p_mezz_out = polar_pt(G.WP3A, 32.4, ang_dn)
-        p_l2_bot = polar_pt(G.WP3A, 44.8, ang_dn)
+        p_l2_bot = polar_pt(G.WP3A, 45.2, ang_dn)
         add_stepped_stair_ft(
             m2,
             p_mezz_out,
@@ -407,20 +419,20 @@ def build_lower_levels(scene):
             width_ft=3.65,
             z_top_m=z_gal,
             z_bot_m=z_l2,
-            n_steps=14,
+            n_steps=16,
             tread_attrs=MATERIALS["carpet_blue"],
         )
 
-    # SE Stair #2 tucked inside Axis E diagonal brick wall (connecting L3 -> L2)
+    # SE Stair #2 tucked inside Axis E diagonal brick wall (connecting Level 3 0'-0" -> Level 2 -14'-0")
     dx_e = G.PT_E[0] - G.PT_LOUNGE_JUNC[0]
     dy_e = G.PT_E[1] - G.PT_LOUNGE_JUNC[1]
     L_e = math.hypot(dx_e, dy_e)
     uxe_w, uye_w = dx_e / L_e, dy_e / L_e
     nxe_w, nye_w = -uye_w, uxe_w  # Inward normal into Reading Room
     c_dist = 4.05  # 1.12 ft wall + 0.15 ft clearance + 2.78 ft half-width = 4.05 ft
-    st2_top = (G.PT_LOUNGE_JUNC[0] + 16.5 * uxe_w + c_dist * nxe_w, G.PT_LOUNGE_JUNC[1] + 16.5 * uye_w + c_dist * nye_w)
-    st2_bot = (G.PT_LOUNGE_JUNC[0] + 35.0 * uxe_w + c_dist * nxe_w, G.PT_LOUNGE_JUNC[1] + 35.0 * uye_w + c_dist * nye_w)
-    add_stepped_stair_ft(m2, st2_top, st2_bot, width_ft=5.8, z_top_m=z_l3, z_bot_m=z_l2, n_steps=18, wall_side=-1)
+    st2_top = (G.PT_LOUNGE_JUNC[0] + 15.0 * uxe_w + c_dist * nxe_w, G.PT_LOUNGE_JUNC[1] + 15.0 * uye_w + c_dist * nye_w)
+    st2_bot = (G.PT_LOUNGE_JUNC[0] + 34.5 * uxe_w + c_dist * nxe_w, G.PT_LOUNGE_JUNC[1] + 34.5 * uye_w + c_dist * nye_w)
+    add_stepped_stair_ft(m2, st2_top, st2_bot, width_ft=5.8, z_top_m=z_l3, z_bot_m=z_l2, n_steps=22, wall_side=-1)
 
     return grp_l1, grp_l2
 

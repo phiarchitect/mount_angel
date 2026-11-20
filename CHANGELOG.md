@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.0] - 2026-11-19
+
+### Added
+- **3 outer-fan rooftop exhaust fan hoods** (`FAN_ROOF_EXHAUST_FANS`) alongside Rays B, C, and D: cross-checked across Roof Plan `07-a7`, Roof Framing `36-s5` (`EXH. FAN` framed openings), Reflected Ceiling Plan `10-a10`, and `roof_tiers_aerial.jpg`, overlaid in cyan on `proof_sheet_07.png`, and modeled in `roof_and_skylights.py`.
+- **2 newly verified West staff/elevator corridor conical skylights** (`(-76.5, +2.0)` and `(-76.5, -12.0)`), bringing the South Wing roof to all **14 conical dome skylights** shown on `07-a7` and `10-a10`.
+- **Deep Calibration stories & before/after plates** (`docs/code/calib_*.jpg`) added to `docs/making-of.html` (Chapter II) and `docs/code.html` (Catches 05–07), documenting the polycentric Working Point rebuild, the missing third Mezzanine shelf audit, and the roof skylight/exhaust-fan forensics.
+- Recorded close-up cameras for shots `02`, `04`, `05`, and `06` in `scripts/capture_furniture_renders.py` alongside `03`.
+
+### Changed
+- **True archival polycentric radial geometry & plan scale** (`src/phiarchitect/mountangel/vectors.py`): re-anchored to archival `WP #3 = (0, 0)`, `WP #2 = (+2'-10", -5'-3")`, and `WP #3A` (`3'-9"` along Ray D), analytically deriving Rays A–E (`168.3°`, `137.0°`, `99.4°`, `64.5°`, `40.3°`), `Well_1/2/3` (`0.0000"` ray error), symmetric `Pair_B/C/D`, and `H-Col B/C/D`, removing the ~2% global plan scale shrinkage across all 7 calibrated blueprint overlays (`sheet_03..35.svg` & `proof_sheet_03..35.png`).
+- **Exact archival vertical floor, stair & roof datums**: corrected Level 1 (`-28'-6"`), Level 2 (`-14'-0"`), Mezzanine (`-5'-4"` with `1'-0"` concrete slab and `4"` Level 3 drop lip), Level 3 (`0'-0"`), Lobby (`+1'-4"`, 3 risers), South Roof (`+13'-8"`), Main Fan Roof (`+15'-3"..+16'-2"`), Auditorium Roof (`+17'-10"`), North Parapet (`+17'-11 3/8"`), and North Daylight Scoop (`+21'-4"`), plus exact `10R + 16R` U-turn well stairs and `22R` SE flank stair (`22-a22`).
+- **Rebuilt watertight 3D model** (`166,645` faces / `254,008` WebGL2 triangles, `0` unpaired edges), updated `docs/library-3d.html` (`WP3_M = [0, 0]`, `99.4°` radial cut, `Section B-B` shifted to `Y = -26'-5"` through all 6 skylight throats), regenerated `docs/visitor-guide.html`, and re-captured all 20 QHD studio renders, all 7 recalibrated Photo vs. Model comparisons, and all 5 updated Furniture close-ups.
+
+### Fixed
+- **Off-by-one bookcase shelf-spacing bug** in `ingetrazo_3d/components/aalto_bookcases.py` (`dz_tier = z_span / n_tiers`): Mezzanine curved and straight end bookcases now show all **3 full open shelves** seen in archival photographs, stairwell counters show **3 shelves**, and full-height radial stacks show **6 shelves**.
+- **Radial stack clearances around `Pair_B/C/D`** recomputed for `WP #3A`'s offset (`+2.37..+3.96 ft` clearance on all 6 paired columns).
+- **Conical skylight coordinates & West Cataloging throat flare**: shifted all conical skylights ~3–4 ft South to lock onto `07-a7` and `10-a10`, widened Control Desk slatted ceiling drum inner opening to `R = 5.0'`, and clamped the West Cataloging skylight throat flare cleanly inside the `Y = -29'-0"` buff-brick exterior wall.
+
 ## [0.6.2] - 2026-11-19
 
 ### Added

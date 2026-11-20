@@ -296,11 +296,13 @@ def add_aalto_bookcase_ft(
     # -------------------------------------------------------------------------
     # 6. Horizontal Birch Shelves (Detail 11)
     # -------------------------------------------------------------------------
+    # Distribute n_tiers evenly so every tier (including the top tier beneath the canopy)
+    # forms a full open book compartment (`n_shelf_tiers=3` -> 3 open rows of books).
     n_tiers = max(1, int(n_shelf_tiers))
     z_sh_bot = z_fl + h_plinth + TOL_M
     z_sh_max = z_top - t_canopy - TOL_M
-    z_span = z_sh_max - (z_sh_bot + SHELF_THICK_M)
-    dz_tier = z_span / (n_tiers - 1) if n_tiers > 1 else 0.0
+    z_span = z_sh_max - z_sh_bot
+    dz_tier = z_span / n_tiers
 
     shelf_z_levels: list[float] = [z_sh_bot + k * dz_tier for k in range(n_tiers)]
 

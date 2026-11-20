@@ -123,12 +123,18 @@ def build_emblem_svg() -> str:
     scoop = arc_pts(G.WP3A, G.R_SCOOP_RIDGE, 45.0, 156.0, 24)
     well = arc_pts(G.WP3A, G.R_MEZZ_OPENING, 42.0, 161.0, 24)
     rays = []
-    for deg in (G.RAY_A_DEG, G.RAY_B_DEG, G.RAY_C_DEG, G.RAY_D_DEG, G.RAY_E_DEG):
-        pa, pb = xy(G.WP3), xy(polar_pt(G.WP3, 84.0, deg))
+    for orig, deg in (
+        (G.WP2, G.RAY_A_DEG),
+        (G.WP3, G.RAY_B_DEG),
+        (G.WP3, G.RAY_C_DEG),
+        (G.WP3, G.RAY_D_DEG),
+        (G.WP2, G.RAY_E_DEG),
+    ):
+        pa, pb = xy(orig), xy(polar_pt(orig, 86.0, deg))
         rays.append(
             f'  <line x1="{pa[0]:.1f}" y1="{pa[1]:.1f}" x2="{pb[0]:.1f}" y2="{pb[1]:.1f}" class="wf-emblem-ray"/>'
         )
-    wp = xy(G.WP4)
+    wp = xy(G.WP3)
     return "\n".join(
         [
             '<svg viewBox="0 0 96 78" class="wf-svg wf-emblem-svg" role="img" aria-label="Mount Angel Library Polycentric Fan Emblem">',
@@ -150,15 +156,31 @@ def build_level3_wayfinding_svg(compact: bool = False) -> str:
     Library reads Left = West, Right = East, Straight Ahead = Sunken Reading Well & Fan.
     """
     w_vb, h_vb = (760, 535) if compact else (920, 648)
-    sc = w_vb / 246.0
-    ox = 138.0 * sc
-    oy = 100.5 * sc
+    sc = w_vb / 252.0
+    ox = 141.0 * sc
+    oy = 102.5 * sc
 
     def xy(pt: tuple[float, float]) -> tuple[float, float]:
         return (ox + pt[0] * sc, oy - pt[1] * sc)
 
     def pts_s(pts: list[tuple[float, float]]) -> str:
         return " ".join(f"{xy(p)[0]:.1f},{xy(p)[1]:.1f}" for p in pts)
+
+    x_w = G.X_WEST_WING
+    x_step = G.X_SOUTH_STEP
+    x_elev = G.X_ELEV_E
+    x_rest = G.X_RESTROOM_E
+    x_lob_e = G.X_LOBBY_E_G2
+    x_aud_sw = G.X_AUD_SW
+    x_lng_e = G.X_LOUNGE_E
+    x_aud_e = G.X_AUD_E
+    y_g6 = G.GRID_Y["6"]
+    y_g5 = G.GRID_Y["5"]
+    y_g4 = G.GRID_Y["4"]
+    y_g3 = G.GRID_Y["3"]
+    y_g2 = G.GRID_Y["2"]
+    y_g1 = G.GRID_Y["1"]
+    y_vest_s = y_g2 - 6.8
 
     out: list[str] = [
         f'<svg viewBox="0 0 {w_vb} {h_vb}" class="wf-svg wf-plan-l3" role="img" aria-label="Level 3 Main Reading Room &amp; Entrance Wayfinding Plan">',
@@ -170,32 +192,32 @@ def build_level3_wayfinding_svg(compact: bool = False) -> str:
     well_inner = list(reversed(arc_pts(G.WP3A, G.R_GALLERY_RAIL, 41.8, 161.5, 32)))
     well_ring = well_outer + well_inner
 
-    aud_poly = [(16.8, -50.8), (19.5, -59.5), (61.5, -59.5), (61.5, -21.0), (18.2, -21.0)]
-    lounge_poly = [(15.5, 3.6), (51.8, 32.8), (51.8, -8.8), (19.0, -8.8), (19.0, -4.8)]
+    aud_poly = [(x_lob_e, y_g2), (x_aud_sw, y_g1), (x_aud_e, y_g1), (x_aud_e, y_g4), (18.5, y_g4)]
+    lounge_poly = [G.PT_EAST_THROAT, G.PT_LOUNGE_JUNC, (x_lng_e, y_g5), (19.0, y_g5), (19.0, -4.8)]
     staff_west = [
-        (-126.5, 1.5),
-        (-77.5, 1.5),
-        (-77.5, -21.0),
-        (-43.0, -21.0),
-        (-43.0, -50.8),
-        (-91.5, -50.8),
-        (-91.5, -28.0),
-        (-126.5, -28.0),
+        (x_w, y_g6),
+        (x_elev, y_g6),
+        (x_elev, y_g4),
+        (-44.0, y_g4),
+        (-44.0, y_g2),
+        (x_step, y_g2),
+        (x_step, y_g3),
+        (x_w, y_g3),
     ]
 
     out.append('  <g class="layer-zones">')
     out.append(f'    <polygon points="{pts_s(env_l3)}" class="zone-quiet"/>')
     out.append(f'    <polygon points="{pts_s(staff_west)}" class="zone-staff"/>')
     out.append(
-        f'    <polygon points="{pts_s([(18.2, -21.0), (61.5, -21.0), (61.5, -8.8), (18.2, -8.8)])}" class="zone-staff"/>'
+        f'    <polygon points="{pts_s([(18.5, y_g4), (x_aud_e, y_g4), (x_aud_e, y_g5), (18.5, y_g5)])}" class="zone-staff"/>'
     )
     out.append(f'    <polygon points="{pts_s(lounge_poly)}" class="zone-lounge"/>')
     out.append(f'    <polygon points="{pts_s(aud_poly)}" class="zone-auditorium"/>')
     out.append(
-        f'    <polygon points="{pts_s([(-33.5, -50.8), (16.8, -50.8), (18.2, -21.0), (15.5, 3.6), (-18.5, 0.2), (-17.2, -21.0), (-33.5, -28.0)])}" class="zone-public"/>'
+        f'    <polygon points="{pts_s([(x_rest, y_g2), (x_lob_e, y_g2), (18.5, y_g4), G.PT_EAST_THROAT, G.PT_WEST_THROAT, (-17.5, y_g4), (x_rest, y_g3)])}" class="zone-public"/>'
     )
     out.append(
-        f'    <polygon points="{pts_s([(-18.0, -57.5), (0.0, -57.5), (0.0, -50.8), (-18.0, -50.8)])}" class="zone-public"/>'
+        f'    <polygon points="{pts_s([(-18.5, y_vest_s), (0.0, y_vest_s), (0.0, y_g2), (-18.5, y_g2)])}" class="zone-public"/>'
     )
     out.append(f'    <polygon points="{pts_s(well_ring)}" class="zone-well"/>')
     out.append("  </g>")
@@ -203,22 +225,22 @@ def build_level3_wayfinding_svg(compact: bool = False) -> str:
     # 2. Entry Plaza & Pergola Trellises (South Portico)
     out.append('  <g class="layer-site-plaza">')
     out.append(
-        f'    <polygon points="{pts_s([(-36.0, -68.0), (18.0, -68.0), (18.0, -50.8), (-36.0, -50.8)])}" class="wf-plaza"/>'
+        f'    <polygon points="{pts_s([(-36.5, -69.5), (18.5, -69.5), (18.5, y_g2), (-36.5, y_g2)])}" class="wf-plaza"/>'
     )
-    for x0, x1 in ((-35.0, -19.0), (1.0, 16.5)):
+    for x0, x1 in ((-35.5, -19.0), (0.5, 16.5)):
         out.append(
-            f'    <polygon points="{pts_s([(x0, -64.5), (x1, -64.5), (x1, -50.8), (x0, -50.8)])}" class="wf-pergola"/>'
+            f'    <polygon points="{pts_s([(x0, -65.5), (x1, -65.5), (x1, y_g2), (x0, y_g2)])}" class="wf-pergola"/>'
         )
         for gx in range(int(x0) + 4, int(x1), 4):
-            p_a, p_b = xy((gx, -64.5)), xy((gx, -50.8))
+            p_a, p_b = xy((gx, -65.5)), xy((gx, y_g2))
             out.append(
                 f'    <line x1="{p_a[0]:.1f}" y1="{p_a[1]:.1f}" x2="{p_b[0]:.1f}" y2="{p_b[1]:.1f}" class="wf-pergola-grid"/>'
             )
     out.append(
-        f'    <polygon points="{pts_s([(-19.0, -66.0), (1.0, -66.0), (1.0, -50.8), (-19.0, -50.8)])}" class="wf-canopy-marquee"/>'
+        f'    <polygon points="{pts_s([(-19.0, -67.0), (0.5, -67.0), (0.5, y_g2), (-19.0, y_g2)])}" class="wf-canopy-marquee"/>'
     )
     if not compact:
-        ep = xy((-9.0, -62.5))
+        ep = xy((-9.0, -63.5))
         out.append(
             f'    <text x="{ep[0]:.1f}" y="{ep[1]:.1f}" text-anchor="middle" class="wf-tech-lbl">SOUTH ENTRY PORTICO &amp; PERGOLAS ↑</text>'
         )
@@ -227,25 +249,25 @@ def build_level3_wayfinding_svg(compact: bool = False) -> str:
     # 3. Regulating Compass Lines & Rays (toggleable via .layer-reg)
     out.append('  <g class="layer-reg">')
     for deg in (G.RAY_B_DEG, G.RAY_C_DEG, G.RAY_D_DEG):
-        pa, pb = xy(G.WP3), xy(polar_pt(G.WP3, 96.0, deg))
+        pa, pb = xy(G.WP3), xy(polar_pt(G.WP3, 98.0, deg))
         out.append(
             f'    <line x1="{pa[0]:.1f}" y1="{pa[1]:.1f}" x2="{pb[0]:.1f}" y2="{pb[1]:.1f}" class="wf-reg-ray"/>'
         )
-    for deg, r_m in ((G.RAY_A_DEG, 94.0), (G.RAY_E_DEG, 114.0)):
-        pa, pb = xy(G.WP_LOWER), xy(polar_pt(G.WP_LOWER, r_m, deg))
+    for deg, r_m in ((G.RAY_A_DEG, 100.0), (G.RAY_E_DEG, 114.0)):
+        pa, pb = xy(G.WP2), xy(polar_pt(G.WP2, r_m, deg))
         out.append(
             f'    <line x1="{pa[0]:.1f}" y1="{pa[1]:.1f}" x2="{pb[0]:.1f}" y2="{pb[1]:.1f}" class="wf-reg-ray-alt"/>'
         )
     out.append(
         f'    <polyline points="{pts_s(arc_pts(G.WP3A, G.R_WELL_L2_WALL, 38.0, 164.0, 40))}" class="wf-reg-arc"/>'
     )
-    wp_px = xy(G.WP4)
+    wp_px = xy(G.WP3)
     out.append(
         f'    <circle cx="{wp_px[0]:.1f}" cy="{wp_px[1]:.1f}" r="3.2" class="wf-wp-dot"/>'
     )
     if not compact:
         out.append(
-            f'    <text x="{wp_px[0] + 6:.1f}" y="{wp_px[1] + 9:.1f}" class="wf-tech-lbl">WP #4 (0,0)</text>'
+            f'    <text x="{wp_px[0] + 6:.1f}" y="{wp_px[1] + 9:.1f}" class="wf-tech-lbl">WP #3 (0,0)</text>'
         )
     out.append("  </g>")
 
@@ -261,8 +283,9 @@ def build_level3_wayfinding_svg(compact: bool = False) -> str:
 
     for st in get_well_stairs_ft():
         out.append(f'    <polygon points="{pts_s(st)}" class="wf-stair"/>')
-    for sy in (-21.0, -20.05, -19.1, -18.15, -17.2):
-        pa, pb = xy((-16.2, sy)), xy((15.8, sy))
+    # 3-riser (+1'-4" -> 0'-0") Lobby-to-Entry steps per Sheet 13-a13 Det. 15
+    for sy in (y_g4, y_g4 + 1.05, y_g4 + 2.10):
+        pa, pb = xy((-16.5, sy)), xy((16.0, sy))
         out.append(
             f'    <line x1="{pa[0]:.1f}" y1="{pa[1]:.1f}" x2="{pb[0]:.1f}" y2="{pb[1]:.1f}" class="wf-stair-tread"/>'
         )
@@ -283,10 +306,10 @@ def build_level3_wayfinding_svg(compact: bool = False) -> str:
         tx, ty = r_sgn * (-ury), r_sgn * urx
         cx0, cy0 = G.WP3A
         bk = [
-            (cx0 + 22.8 * urx, cy0 + 22.8 * ury),
-            (cx0 + 44.1 * urx, cy0 + 44.1 * ury),
-            (cx0 + 44.1 * urx + 1.8 * tx, cy0 + 44.1 * ury + 1.8 * ty),
-            (cx0 + 22.8 * urx + 1.8 * tx, cy0 + 22.8 * ury + 1.8 * ty),
+            (cx0 + G.R_GALLERY_RAIL * urx, cy0 + G.R_GALLERY_RAIL * ury),
+            (cx0 + G.R_MEZZ_OPENING * urx, cy0 + G.R_MEZZ_OPENING * ury),
+            (cx0 + G.R_MEZZ_OPENING * urx + 1.8 * tx, cy0 + G.R_MEZZ_OPENING * ury + 1.8 * ty),
+            (cx0 + G.R_GALLERY_RAIL * urx + 1.8 * tx, cy0 + G.R_GALLERY_RAIL * ury + 1.8 * ty),
         ]
         out.append(f'    <polygon points="{pts_s(bk)}" class="wf-bookcase"/>')
 
@@ -316,21 +339,21 @@ def build_level3_wayfinding_svg(compact: bool = False) -> str:
         70.5,
     ]
     stack_angles = [
-        156.0,
-        149.5,
-        143.0,
-        130.5,
-        124.2,
-        118.0,
-        111.8,
-        105.5,
-        92.5,
-        86.2,
-        80.0,
-        73.8,
-        57.5,
-        51.2,
-        45.0,
+        159.0,
+        153.2,
+        147.8,
+        132.5,
+        126.6,
+        120.8,
+        115.0,
+        109.2,
+        93.4,
+        86.4,
+        79.4,
+        72.4,
+        56.5,
+        50.5,
+        44.5,
     ]
     for deg, r_end in zip(stack_angles, r_ends):
         rad = math.radians(deg)
@@ -357,7 +380,7 @@ def build_level3_wayfinding_svg(compact: bool = False) -> str:
             f'    <polygon points="{pts_s(_rect_pts(cx_c, cy_c, 5.8, 2.3, 0.0))}" class="wf-bookcase"/>'
         )
 
-    stage_c = (60.2, -58.2)
+    stage_c = (x_aud_e - 1.3, y_g1 + 1.3)
     stage_poly = [stage_c] + arc_pts(stage_c, 15.8, 90.0, 180.0, 18)
     out.append(f'    <polygon points="{pts_s(stage_poly)}" class="wf-stage"/>')
     out.append(
@@ -368,21 +391,21 @@ def build_level3_wayfinding_svg(compact: bool = False) -> str:
             f'    <polyline points="{pts_s(arc_pts(stage_c, r_seat, 98.0, 172.0, 16))}" class="wf-seat-arc"/>'
         )
 
-    pa_scr, pb_scr = xy((-29.08, -44.8)), xy((-29.08, -31.8))
+    pa_scr, pb_scr = xy((-30.0, -45.5)), xy((-30.0, -32.2))
     out.append(
         f'    <line x1="{pa_scr[0]:.1f}" y1="{pa_scr[1]:.1f}" x2="{pb_scr[0]:.1f}" y2="{pb_scr[1]:.1f}" class="wf-wood-screen"/>'
     )
 
     for j in range(14):
         f_t = (j + 0.5) / 14.0
-        fx = -17.2 + f_t * (-18.5 - (-17.2))
-        fy = -17.5 + f_t * (0.2 - (-17.5))
+        fx = -17.5 + f_t * (-19.0 - (-17.5))
+        fy = -18.0 + f_t * (0.2 - (-18.0))
         out.append(
             f'    <polygon points="{pts_s(_rect_pts(fx, fy, 1.3, 0.35, 94.2 + 28.0))}" class="wf-wood-fin"/>'
         )
 
     scoop_band = arc_pts(G.WP3A, G.R_SCOOP_RIDGE, 46.0, 155.0, 32) + list(
-        reversed(arc_pts(G.WP3A, 39.6, 46.0, 155.0, 32))
+        reversed(arc_pts(G.WP3A, G.R_SCOOP_OUTER, 46.0, 155.0, 32))
     )
     out.append(
         f'    <polygon points="{pts_s(scoop_band)}" class="wf-skylight-overhead"/>'
@@ -397,59 +420,62 @@ def build_level3_wayfinding_svg(compact: bool = False) -> str:
     # 5. Interior Partitions, Glazed Wall & Heavy Structural Envelope Walls
     out.append('  <g class="layer-walls">')
     for seg in (
-        [(-53.0, -28.0), (-33.5, -28.0)],
-        [(-53.0, -39.0), (-33.5, -39.0)],
-        [(-53.0, -50.8), (-53.0, -28.0)],
-        [(-33.5, -50.8), (-33.5, -45.5)],
-        [(-33.5, -42.5), (-33.5, -35.5)],
-        [(-33.5, -32.5), (-33.5, -28.0)],
+        [(-54.0, y_g3), (x_rest, y_g3)],
+        [(-54.0, -40.0), (x_rest, -40.0)],
+        [(-54.0, y_g2), (-54.0, y_g3)],
+        [(x_rest, y_g2), (x_rest, -46.2)],
+        [(x_rest, -43.2), (x_rest, -36.2)],
+        [(x_rest, -33.2), (x_rest, y_g3)],
     ):
         out.append(f'    <polyline points="{pts_s(seg)}" class="wf-wall-int"/>')
 
     serp = _catmull_rom(
         [
-            (-43.0, -20.6),
-            (-43.0, -11.0),
-            (-41.2, -5.2),
-            (-38.2, -1.2),
-            (-36.5, -0.5),
-            (-33.0, 1.0),
-            (-30.3, 1.6),
+            (-44.0, y_g4 + 0.4),
+            (-44.0, -11.0),
+            (-41.8, -5.2),
+            (-38.5, -1.2),
+            (-36.8, -0.5),
+            (-33.3, 1.0),
+            (-30.5, 1.6),
         ]
     )
     out.append(f'    <polyline points="{pts_s(serp)}" class="wf-wall-int-bold"/>')
 
     for seg in (
-        [(-77.5, 1.5), (-77.5, -21.0), (-43.0, -21.0)],
-        [(-77.5, -21.0), (-77.5, -50.8)],
+        [(x_elev, y_g6), (x_elev, y_g4), (-44.0, y_g4)],
+        [(x_elev, y_g4), (x_elev, y_g2)],
     ):
         out.append(f'    <polyline points="{pts_s(seg)}" class="wf-wall-int"/>')
 
     out.append(
-        f'    <line x1="{xy((15.5, 3.6))[0]:.1f}" y1="{xy((15.5, 3.6))[1]:.1f}" x2="{xy((51.8, 32.8))[0]:.1f}" y2="{xy((51.8, 32.8))[1]:.1f}" class="wf-glass-wall"/>'
+        f'    <line x1="{xy(G.PT_EAST_THROAT)[0]:.1f}" y1="{xy(G.PT_EAST_THROAT)[1]:.1f}" x2="{xy(G.PT_LOUNGE_JUNC)[0]:.1f}" y2="{xy(G.PT_LOUNGE_JUNC)[1]:.1f}" class="wf-glass-wall"/>'
     )
     for k in range(15):
         t = k / 14.0
-        mx, my = xy((15.5 + t * (51.8 - 15.5), 3.6 + t * (32.8 - 3.6)))
+        mx, my = xy((
+            G.PT_EAST_THROAT[0] + t * (G.PT_LOUNGE_JUNC[0] - G.PT_EAST_THROAT[0]),
+            G.PT_EAST_THROAT[1] + t * (G.PT_LOUNGE_JUNC[1] - G.PT_EAST_THROAT[1]),
+        ))
         out.append(
             f'    <circle cx="{mx:.1f}" cy="{my:.1f}" r="1.2" class="wf-mullion-dot"/>'
         )
     for seg in (
-        [(25.87, 11.94), (39.34, -4.80)],
-        [(15.50, 3.60), (16.9, -0.8), (19.0, -4.8), (51.2, -4.8)],
-        [(18.5, -8.8), (51.8, -8.8)],
-        [(18.2, -21.0), (41.5, -21.0)],
-        [(46.5, -21.0), (61.5, -21.0)],
-        [(25.5, -21.0), (25.5, -8.8)],
-        [(36.5, -21.0), (36.5, -8.8)],
-        [(16.8, -50.2), (17.15, -43.0)],
-        [(17.41, -37.5), (18.2, -21.0)],
-        [(18.4, -26.8), (21.0, -27.3), (24.5, -27.2), (28.5, -25.0), (31.5, -21.3)],
+        [(26.2, 12.1), (39.6, -4.8)],
+        [G.PT_EAST_THROAT, (17.2, -0.8), (19.0, -4.8), (x_lng_e - 0.5, -4.8)],
+        [(18.5, y_g5), (x_lng_e, y_g5)],
+        [(18.5, y_g4), (42.0, y_g4)],
+        [(47.0, y_g4), (x_aud_e, y_g4)],
+        [(26.0, y_g4), (26.0, y_g5)],
+        [(37.0, y_g4), (37.0, y_g5)],
+        [(x_lob_e, y_g2 + 0.5), (17.8, -43.5)],
+        [(18.0, -38.0), (18.5, y_g4)],
+        [(18.8, -27.2), (21.5, -27.7), (25.0, -27.5), (29.0, -25.3), (32.0, y_g4 - 0.3)],
     ):
         out.append(f'    <polyline points="{pts_s(seg)}" class="wf-wall-int"/>')
 
     out.append(
-        f'    <polygon points="{pts_s([(-18.0, -57.5), (0.0, -57.5), (0.0, -50.8), (-18.0, -50.8)])}" class="wf-glass-vestibule"/>'
+        f'    <polygon points="{pts_s([(-18.5, y_vest_s), (0.0, y_vest_s), (0.0, y_g2), (-18.5, y_g2)])}" class="wf-glass-vestibule"/>'
     )
 
     out.append(f'    <polygon points="{pts_s(env_l3)}" class="wf-wall-ext"/>')
@@ -468,15 +494,15 @@ def build_level3_wayfinding_svg(compact: bool = False) -> str:
     hp_d = get_h_pier_polygons_ft(level=3)[2]
     mh_orig = ((hp_d[2][0] + hp_d[3][0]) * 0.5, (hp_d[2][1] + hp_d[3][1]) * 0.5)
     mh_tip = (
-        mh_orig[0] + 19.0 * math.cos(math.radians(65.7)),
-        mh_orig[1] + 19.0 * math.sin(math.radians(65.7)),
+        mh_orig[0] + 19.0 * math.cos(math.radians(G.RAY_D_DEG)),
+        mh_orig[1] + 19.0 * math.sin(math.radians(G.RAY_D_DEG)),
     )
     p_mh0, p_mh1 = xy(mh_orig), xy(mh_tip)
     out.append(
         f'    <line x1="{p_mh0[0]:.1f}" y1="{p_mh0[1]:.1f}" x2="{p_mh1[0]:.1f}" y2="{p_mh1[1]:.1f}" class="wf-vista-arrow" marker-end="url(#wfArrowVista)"/>'
     )
     out.append(
-        f'    <text x="{p_mh1[0] - 10:.1f}" y="{p_mh1[1] - 6:.1f}" class="wf-vista-lbl">MT. HOOD VISTA (65.7°) ↗</text>'
+        f'    <text x="{p_mh1[0] - 10:.1f}" y="{p_mh1[1] - 6:.1f}" class="wf-vista-lbl">MT. HOOD VISTA ({G.RAY_D_DEG:.1f}°) ↗</text>'
     )
     out.append("  </g>")
 
@@ -569,9 +595,9 @@ def build_level3_wayfinding_svg(compact: bool = False) -> str:
 
 
 def build_lower_levels_svg() -> str:
-    """Side-by-side Mezzanine (-4'-6") / Level 2 (-12'-6") and Level 1 (-26'-6") plans."""
+    """Side-by-side Mezzanine (-5'-4") / Level 2 (-14'-0") and Level 1 (-28'-6") plans."""
     w_vb, h_vb = 900, 360
-    sc = 2.05
+    sc = 2.02
 
     def xy_l2(pt: tuple[float, float]) -> tuple[float, float]:
         return (235.0 + pt[0] * sc, 212.0 - pt[1] * sc)
@@ -594,7 +620,7 @@ def build_lower_levels_svg() -> str:
     env_l2 = get_level2_envelope_ft()
     out.append('  <g class="panel-l2">')
     out.append(
-        '    <text x="18" y="24" class="wf-subplan-kicker">MEZZANINE (-4\'-6") &amp; LEVEL 2 (-12\'-6")</text>'
+        '    <text x="18" y="24" class="wf-subplan-kicker">MEZZANINE (-5\'-4") &amp; LEVEL 2 (-14\'-0")</text>'
     )
     out.append(
         '    <text x="18" y="40" class="wf-subplan-sub">Reference Gallery, Well Core &amp; Study Carrels</text>'
@@ -611,7 +637,7 @@ def build_lower_levels_svg() -> str:
 
     out.append('    <g class="layer-reg">')
     for deg in (G.RAY_B_DEG, G.RAY_C_DEG, G.RAY_D_DEG):
-        pa, pb = xy_l2(G.WP3), xy_l2(polar_pt(G.WP3, 92.0, deg))
+        pa, pb = xy_l2(G.WP3), xy_l2(polar_pt(G.WP3, 94.0, deg))
         out.append(
             f'      <line x1="{pa[0]:.1f}" y1="{pa[1]:.1f}" x2="{pb[0]:.1f}" y2="{pb[1]:.1f}" class="wf-reg-ray"/>'
         )
@@ -656,8 +682,8 @@ def build_lower_levels_svg() -> str:
 
     out.append('    <g class="layer-pins">')
     for num, pt_w, title in [
-        ("10", (-16.0, 27.5), "Mezzanine Study Counter (-4 ft 6 in)"),
-        ("11", (10.0, 41.5), "Level 2 Reference &amp; Stacks (-12 ft 6 in)"),
+        ("10", (-16.0, 27.5), "Mezzanine Study Counter (-5 ft 4 in)"),
+        ("11", (10.0, 41.5), "Level 2 Reference &amp; Stacks (-14 ft 0 in)"),
     ]:
         px, py = xy_l2(pt_w)
         out.append(
@@ -677,7 +703,7 @@ def build_lower_levels_svg() -> str:
     env_l1 = get_level1_envelope_ft()
     out.append('  <g class="panel-l1">')
     out.append(
-        '    <text x="482" y="24" class="wf-subplan-kicker">LEVEL 1 BASE DECK (-26\'-6")</text>'
+        '    <text x="482" y="24" class="wf-subplan-kicker">LEVEL 1 BASE DECK (-28\'-6")</text>'
     )
     out.append(
         '    <text x="482" y="40" class="wf-subplan-sub">Pentagonal Retaining Wall &amp; Archival Collections</text>'
@@ -688,7 +714,7 @@ def build_lower_levels_svg() -> str:
 
     out.append('    <g class="layer-reg">')
     for deg in (G.RAY_B_DEG, G.RAY_C_DEG, G.RAY_D_DEG):
-        pa, pb = xy_l1(G.WP3), xy_l1(polar_pt(G.WP3, 92.0, deg))
+        pa, pb = xy_l1(G.WP3), xy_l1(polar_pt(G.WP3, 94.0, deg))
         out.append(
             f'      <line x1="{pa[0]:.1f}" y1="{pa[1]:.1f}" x2="{pb[0]:.1f}" y2="{pb[1]:.1f}" class="wf-reg-ray"/>'
         )
@@ -715,7 +741,7 @@ def build_lower_levels_svg() -> str:
     out.append('    <g class="layer-pins">')
     px12, py12 = xy_l1((-4.0, 54.0))
     out.append(
-        '      <g class="wf-pin" data-pin="12" tabindex="0" role="button" aria-label="12. Lower Archival Stacks (-26 ft 6 in)">'
+        '      <g class="wf-pin" data-pin="12" tabindex="0" role="button" aria-label="12. Lower Archival Stacks (-28 ft 6 in)">'
     )
     out.append(
         f'        <circle cx="{px12:.1f}" cy="{py12:.1f}" r="7.2" class="wf-pin-bg"/>'
@@ -733,10 +759,10 @@ def build_lower_levels_svg() -> str:
 
 def build_skylight_cross_section_svg(compact: bool = False) -> str:
     """Constructive Longitudinal Cross-Section (Section A-A) through Skylights & Bluff."""
-    w_vb, h_vb = (820, 355) if compact else (1080, 468)
-    sc = (w_vb - 96.0) / 180.0
+    w_vb, h_vb = (820, 365) if compact else (1080, 480)
+    sc = (w_vb - 96.0) / 182.0
     ox = 48.0 + 74.0 * sc
-    oy = 38.0 + 30.0 * sc
+    oy = 36.0 + 29.0 * sc
 
     def sz(s_ft: float, z_ft: float) -> tuple[float, float]:
         return (ox + s_ft * sc, oy - z_ft * sc)
@@ -744,63 +770,76 @@ def build_skylight_cross_section_svg(compact: bool = False) -> str:
     def pts_s(pts: list[tuple[float, float]]) -> str:
         return " ".join(f"{sz(s, z)[0]:.1f},{sz(s, z)[1]:.1f}" for s, z in pts)
 
+    z_lob = G.Z_LOBBY_FT              # +1.333 ft (+1'-4")
+    z_mezz = G.Z_REF_GALLERY_FT       # -5.333 ft (-5'-4")
+    z_l2 = G.Z_L2_FT                  # -14.0 ft (-14'-0")
+    z_l1 = G.Z_L1_FT                  # -28.5 ft (-28'-6")
+    z_sc = G.Z_SOUTH_CEIL_FT          # +10.458 ft (+10'-5 1/2")
+    z_sr = G.Z_SOUTH_ROOF_FT          # +13.667 ft (+13'-8")
+    z_sp = G.Z_SOUTH_PARAPET_FT       # +15.0 ft (+15'-0")
+    z_fc = G.Z_FAN_CEIL_FT            # +11.333 ft (+11'-4")
+    z_fr = G.Z_FAN_ROOF_HIGH_FT       # +16.167 ft (+16'-2")
+    z_fp = G.Z_FAN_PARAPET_N_FT       # +17.95 ft (+17'-11 3/8")
+    z_ap = G.Z_AUDITORIUM_PARAPET_FT  # +19.28 ft (+19'-3 3/8")
+    z_sk = G.Z_SCOOP_RIDGE_FT         # +21.333 ft (+21'-4")
+
     out: list[str] = [
         f'<svg viewBox="0 0 {w_vb} {h_vb}" class="wf-svg wf-section-aa" role="img" aria-label="Longitudinal Architectural Cross-Section Through Skylights and Hillside">',
     ]
 
     # 1. Earth Hillside Bluff Poché
     earth_poly = [
-        (-74.0, 1.8),
-        (-50.8, 1.8),
-        (-50.8, 0.9),
-        (-21.0, 0.9),
-        (-21.0, -13.6),
-        (33.0, -13.6),
-        (33.0, -27.7),
-        (85.8, -27.7),
-        (86.4, -28.2),
-        (104.0, -34.5),
-        (104.0, -36.5),
-        (-74.0, -36.5),
+        (-74.0, 1.15),
+        (-51.7, 1.15),
+        (-51.7, 0.35),
+        (-21.5, 0.35),
+        (-21.5, z_l2 - 1.1),
+        (33.0, z_l2 - 1.1),
+        (33.0, z_l1 - 1.2),
+        (87.0, z_l1 - 1.2),
+        (87.6, z_l1 - 1.6),
+        (106.0, z_l1 - 8.2),
+        (106.0, z_l1 - 10.2),
+        (-74.0, z_l1 - 10.2),
     ]
     out.append(f'  <polygon points="{pts_s(earth_poly)}" class="wf-earth"/>')
     out.append(
         f'  <polygon points="{pts_s(earth_poly)}" fill="url(#wfEarthHatch)" class="wf-earth-hatch"/>'
     )
     out.append(
-        f'  <polyline points="{pts_s([(-74.0, 1.8), (-50.8, 1.8)])}" class="wf-grade-line"/>'
+        f'  <polyline points="{pts_s([(-74.0, 1.15), (-51.7, 1.15)])}" class="wf-grade-line"/>'
     )
     out.append(
-        f'  <polyline points="{pts_s([(85.8, -28.0), (104.0, -34.5)])}" class="wf-grade-line"/>'
+        f'  <polyline points="{pts_s([(87.0, z_l1 - 1.4), (106.0, z_l1 - 8.2)])}" class="wf-grade-line"/>'
     )
 
-    aud_ghost = [(-50.8, 13.8), (-50.8, 20.2), (-21.0, 20.2), (-21.0, 13.8)]
+    aud_ghost = [(-51.7, z_sp), (-51.7, z_ap), (-21.5, z_ap), (-21.5, z_sp)]
     out.append(f'  <polygon points="{pts_s(aud_ghost)}" class="wf-aud-ghost"/>')
     if not compact:
-        pa_lbl = sz(-36.0, 18.0)
+        pa_lbl = sz(-36.6, z_ap - 1.8)
         out.append(
-            f'  <text x="{pa_lbl[0]:.1f}" y="{pa_lbl[1]:.1f}" text-anchor="middle" class="wf-ghost-lbl">AUDITORIUM ROOF (+20\'-2" BEYOND)</text>'
+            f'  <text x="{pa_lbl[0]:.1f}" y="{pa_lbl[1]:.1f}" text-anchor="middle" class="wf-ghost-lbl">AUDITORIUM PARAPET (+19\'-3" BEYOND)</text>'
         )
 
     # 2. Interior Daylight & Solar Ray-Tracing Cones (toggleable via .layer-solar)
     out.append('  <g class="layer-solar">')
     scoop_wash = [
-        (35.2, 21.3),
-        (39.6, 15.3),
-        (43.2, 11.33),
-        (45.8, 0.0),
-        (32.0, -4.5),
-        (31.8, -12.5),
-        (22.8, -12.5),
-        (22.8, 0.0),
-        (28.5, 13.2),
-        (31.8, 19.0),
+        (35.0, z_sk),
+        (41.2, 15.1),
+        (44.0, z_fc),
+        (46.0, 0.0),
+        (32.0, z_mezz),
+        (31.8, z_l2),
+        (22.0, z_l2),
+        (22.0, 0.0),
+        (28.0, 13.0),
+        (31.5, 18.8),
     ]
     out.append(f'    <polygon points="{pts_s(scoop_wash)}" fill="url(#wfSkyGlow)"/>')
-    for sc_x, z_flr, half_w in ((-21.2, 2.0, 9.5), (10.2, 0.0, 10.5)):
+    for sc_x, z_flr, half_w in ((-26.0, z_lob, 9.2), (8.8, 0.0, 10.2)):
         cone = [
-            (sc_x - 2.1, 15.6),
-            (sc_x + 2.1, 15.6),
+            (sc_x - 2.1, z_sr + 2.4),
+            (sc_x + 2.1, z_sr + 2.4),
             (sc_x + half_w, z_flr),
             (sc_x - half_w, z_flr),
         ]
@@ -808,27 +847,27 @@ def build_skylight_cross_section_svg(compact: bool = False) -> str:
 
     ray_paths = [
         (
-            [(43.5, 25.5), (37.2, 18.2), (30.8, 16.8), (36.5, -2.5)],
+            [(44.5, 25.5), (37.8, 18.2), (31.0, 16.6), (36.5, -2.5)],
             "wf-ray-sky",
             "wfArrowSky",
         ),
         (
-            [(41.0, 26.2), (36.0, 19.8), (29.5, 14.5), (26.5, -4.2)],
+            [(42.0, 26.2), (36.4, 19.6), (29.5, 14.3), (26.5, -4.5)],
             "wf-ray-sky",
             "wfArrowSky",
         ),
         (
-            [(94.0, 15.8), (85.0, 11.8), (74.5, 13.2), (61.0, 2.5)],
+            [(95.0, 15.8), (86.0, 11.8), (75.5, 13.2), (61.5, 2.5)],
             "wf-ray-sky",
             "wfArrowSky",
         ),
         (
-            [(14.8, 26.8), (10.5, 15.8), (8.6, 12.2), (10.8, 3.6)],
+            [(13.4, 26.8), (9.1, 16.0), (7.2, 12.2), (9.4, 3.6)],
             "wf-ray-sun",
             "wfArrowSun",
         ),
         (
-            [(-16.6, 26.8), (-20.9, 15.8), (-22.6, 12.2), (-20.2, 2.2)],
+            [(-21.4, 26.8), (-25.7, 16.0), (-27.4, 12.2), (-25.0, 2.0)],
             "wf-ray-sun",
             "wfArrowSun",
         ),
@@ -842,15 +881,15 @@ def build_skylight_cross_section_svg(compact: bool = False) -> str:
     # 3. Elevation Datum Lines (.layer-reg)
     out.append('  <g class="layer-reg">')
     for lbl, zf, s_start in [
-        ("+21'-6\" SCOOP RIDGE", 21.5, 34.0),
-        ("+16'-3\" FAN ROOF", 16.25, 40.0),
-        ("+2'-0\" LOBBY", 2.0, -52.0),
-        ("0'-0\" READING LEVEL", 0.0, -16.0),
-        ("-4'-6\" MEZZANINE", -4.5, 22.0),
-        ("-12'-6\" LEVEL 2", -12.5, -21.0),
-        ("-26'-6\" LEVEL 1", -26.5, 33.0),
+        ("+21'-4\" SCOOP RIDGE", z_sk, 34.0),
+        ("+16'-2\" FAN ROOF", z_fr, 41.0),
+        ("+1'-4\" LOBBY", z_lob, -52.0),
+        ("0'-0\" READING LEVEL", 0.0, -17.0),
+        ("-5'-4\" MEZZANINE", z_mezz, 22.0),
+        ("-14'-0\" LEVEL 2", z_l2, -21.5),
+        ("-28'-6\" LEVEL 1", z_l1, 33.0),
     ]:
-        pa, pb = sz(s_start, zf), sz(103.5, zf)
+        pa, pb = sz(s_start, zf), sz(105.0, zf)
         out.append(
             f'    <line x1="{pa[0]:.1f}" y1="{pa[1]:.1f}" x2="{pb[0]:.1f}" y2="{pb[1]:.1f}" class="wf-datum-line"/>'
         )
@@ -861,18 +900,18 @@ def build_skylight_cross_section_svg(compact: bool = False) -> str:
 
     # 4. Architectural Interior Elements in Elevation
     out.append('  <g class="layer-interior-elev">')
-    for vx in (-57.5, -50.8):
-        pa, pb = sz(vx, 1.8), sz(vx, 10.2)
+    for vx in (-58.5, -51.7):
+        pa, pb = sz(vx, z_lob), sz(vx, 9.8)
         out.append(
             f'    <line x1="{pa[0]:.1f}" y1="{pa[1]:.1f}" x2="{pb[0]:.1f}" y2="{pb[1]:.1f}" class="wf-glass-elev"/>'
         )
-    for bx in range(-44, -31, 2):
-        pa, pb = sz(bx, 2.0), sz(bx, 10.8)
+    for bx in range(-45, -31, 2):
+        pa, pb = sz(bx, z_lob), sz(bx, z_sc)
         out.append(
             f'    <line x1="{pa[0]:.1f}" y1="{pa[1]:.1f}" x2="{pb[0]:.1f}" y2="{pb[1]:.1f}" class="wf-batten-line"/>'
         )
 
-    for s0, s1 in ((0.5, 6.9), (13.5, 18.8)):
+    for s0, s1 in ((0.0, 5.5), (12.1, 18.2)):
         pa, pb = sz(s0, 9.75), sz(s1, 9.75)
         out.append(
             f'    <line x1="{pa[0]:.1f}" y1="{pa[1]:.1f}" x2="{pb[0]:.1f}" y2="{pb[1]:.1f}" class="wf-slat-ceiling"/>'
@@ -882,41 +921,50 @@ def build_skylight_cross_section_svg(compact: bool = False) -> str:
         f'    <polygon points="{pts_s([(8.2, 0.0), (12.6, 0.0), (12.6, 3.5), (8.2, 3.5)])}" class="wf-bookcase"/>'
     )
     for rz in (1.1, 2.1, 3.1):
-        pa, pb = sz(19.5, rz), sz(22.7, rz)
+        pa, pb = sz(19.0, rz), sz(22.0, rz)
         out.append(
             f'    <line x1="{pa[0]:.1f}" y1="{pa[1]:.1f}" x2="{pb[0]:.1f}" y2="{pb[1]:.1f}" class="wf-rail-line"/>'
         )
     out.append(
-        f'    <polygon points="{pts_s([(31.1, -12.5), (32.4, -12.5), (32.4, 18.6), (31.1, 18.0)])}" class="wf-col-elev"/>'
+        f'    <polygon points="{pts_s([(31.2, z_l2), (32.5, z_l2), (32.5, 12.67), (31.2, 12.67)])}" class="wf-col-elev"/>'
     )
     out.append(
-        f'    <polygon points="{pts_s([(56.6, -26.5), (57.9, -26.5), (57.9, 11.33), (56.6, 11.33)])}" class="wf-col-elev"/>'
+        f'    <polygon points="{pts_s([(57.2, z_l1), (58.5, z_l1), (58.5, z_fc), (57.2, z_fc)])}" class="wf-col-elev"/>'
     )
 
+    # 3-shelf curved Mezzanine bookcase tucked flush under Level 3 4" soffit lip
     out.append(
-        f'    <polygon points="{pts_s([(22.9, -4.5), (24.1, -4.5), (24.1, -0.8), (22.9, -0.8)])}" class="wf-bookcase"/>'
+        f'    <polygon points="{pts_s([(22.0, z_mezz), (23.3, z_mezz), (23.3, -1.25), (22.0, -1.25)])}" class="wf-bookcase"/>'
     )
+    for m_tier in (1, 2):
+        zt = z_mezz + m_tier * ((-1.25 - z_mezz) / 3.0)
+        pa, pb = sz(22.0, zt), sz(23.3, zt)
+        out.append(
+            f'    <line x1="{pa[0]:.1f}" y1="{pa[1]:.1f}" x2="{pb[0]:.1f}" y2="{pb[1]:.1f}" class="wf-shelf-line"/>'
+        )
+
+    # 6-shelf full-height radial stacks across Level 3, Level 2, and Level 1
     for s0, s1, z_flr, h_ft in [
         (51.2, 70.4, 0.0, 6.85),
-        (35.2, 47.0, -12.5, 6.85),
-        (52.0, 68.2, -12.5, 6.85),
-        (39.0, 54.5, -26.5, 6.85),
-        (59.0, 71.0, -26.5, 6.85),
+        (35.2, 47.0, z_l2, 6.85),
+        (52.0, 68.2, z_l2, 6.85),
+        (39.0, 54.5, z_l1, 6.85),
+        (59.5, 72.0, z_l1, 6.85),
     ]:
         out.append(
             f'    <polygon points="{pts_s([(s0, z_flr), (s1, z_flr), (s1, z_flr + h_ft), (s0, z_flr + h_ft)])}" class="wf-bookcase"/>'
         )
-        for tier in range(1, 5):
-            zt = z_flr + tier * (h_ft / 5.0)
+        for tier in range(1, 6):
+            zt = z_flr + tier * (h_ft / 6.0)
             pa, pb = sz(s0, zt), sz(s1, zt)
             out.append(
                 f'    <line x1="{pa[0]:.1f}" y1="{pa[1]:.1f}" x2="{pb[0]:.1f}" y2="{pb[1]:.1f}" class="wf-shelf-line"/>'
             )
 
-    for s_par, z_flr in ((31.8, -4.5), (43.8, 0.0)):
+    for s_par, z_flr in ((31.8, z_mezz), (44.0, 0.0)):
         dir_s = -1.0 if z_flr < 0 else 1.0
         out.append(
-            f'    <polygon points="{pts_s([(s_par - 0.35, z_flr), (s_par + 0.35, z_flr), (s_par + 0.35, z_flr + 3.2), (s_par - 0.35, z_flr + 3.2)])}" class="wf-poche-cut"/>'
+            f'    <polygon points="{pts_s([(s_par - 0.35, z_flr), (s_par + 0.35, z_flr), (s_par + 0.35, z_flr + 2.8), (s_par - 0.35, z_flr + 2.8)])}" class="wf-poche-cut"/>'
         )
         d0, d1 = (s_par, s_par + dir_s * 2.5)
         out.append(
@@ -932,46 +980,46 @@ def build_skylight_cross_section_svg(compact: bool = False) -> str:
         )
 
     out.append(
-        f'    <polygon points="{pts_s([(80.8, 2.35), (84.6, 2.35), (84.6, 2.60), (80.8, 2.60)])}" class="wf-workbench"/>'
+        f'    <polygon points="{pts_s([(82.0, 2.35), (85.8, 2.35), (85.8, 2.60), (82.0, 2.60)])}" class="wf-workbench"/>'
     )
-    for gz0, gz1 in ((7.2, 15.0), (-9.2, -1.2), (-23.5, -15.5)):
-        pa, pb = sz(85.1, gz0), sz(85.1, gz1)
+    for gz0, gz1 in ((7.2, 15.0), (z_l2 + 3.4, -1.6), (z_l1 + 6.7, z_l2 - 2.2)):
+        pa, pb = sz(86.4, gz0), sz(86.4, gz1)
         out.append(
             f'    <line x1="{pa[0]:.1f}" y1="{pa[1]:.1f}" x2="{pb[0]:.1f}" y2="{pb[1]:.1f}" class="wf-glass-elev"/>'
         )
-    for lz in [7.6 + k * 1.05 for k in range(8)] + [-8.8 + k * 1.05 for k in range(8)]:
-        pa, pb = sz(86.0, lz), sz(87.3, lz - 0.35)
+    for lz in [7.6 + k * 1.05 for k in range(8)] + [z_l2 + 3.8 + k * 1.05 for k in range(9)]:
+        pa, pb = sz(87.3, lz), sz(88.6, lz - 0.35)
         out.append(
             f'    <line x1="{pa[0]:.1f}" y1="{pa[1]:.1f}" x2="{pb[0]:.1f}" y2="{pb[1]:.1f}" class="wf-louver-tick"/>'
         )
 
     out.append(
-        f'    <line x1="{sz(35.1, 21.5)[0]:.1f}" y1="{sz(35.1, 21.5)[1]:.1f}" x2="{sz(39.6, 15.3)[0]:.1f}" y2="{sz(39.6, 15.3)[1]:.1f}" class="wf-skylight-glass"/>'
+        f'    <line x1="{sz(34.8, z_sk)[0]:.1f}" y1="{sz(34.8, z_sk)[1]:.1f}" x2="{sz(41.2, 15.1)[0]:.1f}" y2="{sz(41.2, 15.1)[1]:.1f}" class="wf-skylight-glass"/>'
     )
-    for sc_x in (-21.2, 10.2):
+    for sc_x in (-26.0, 8.8):
         lantern = [
-            (sc_x - 2.3, 12.67),
-            (sc_x - 1.3, 15.83),
-            (sc_x + 1.3, 15.83),
-            (sc_x + 2.3, 12.67),
+            (sc_x - 2.3, z_sr),
+            (sc_x - 1.3, z_sr + 3.0),
+            (sc_x + 1.3, z_sr + 3.0),
+            (sc_x + 2.3, z_sr),
         ]
         out.append(f'    <polygon points="{pts_s(lantern)}" class="wf-lantern-cap"/>')
         out.append(
-            f'    <polyline points="{pts_s([(sc_x - 3.1, 10.8), (sc_x - 2.1, 12.67)])}" class="wf-throat-line"/>'
+            f'    <polyline points="{pts_s([(sc_x - 3.1, z_sc), (sc_x - 2.1, z_sr)])}" class="wf-throat-line"/>'
         )
         out.append(
-            f'    <polyline points="{pts_s([(sc_x + 3.1, 10.8), (sc_x + 2.1, 12.67)])}" class="wf-throat-line"/>'
+            f'    <polyline points="{pts_s([(sc_x + 3.1, z_sc), (sc_x + 2.1, z_sr)])}" class="wf-throat-line"/>'
         )
 
     truss_pts = [
-        (43.5, 11.5),
-        (48.0, 15.1),
-        (52.5, 11.5),
-        (57.0, 15.3),
-        (61.5, 11.5),
-        (65.5, 15.5),
-        (71.0, 12.8),
-        (76.5, 15.8),
+        (44.0, z_fc + 0.2),
+        (48.5, 15.2),
+        (53.0, z_fc + 0.2),
+        (57.5, 15.4),
+        (62.0, z_fc + 0.2),
+        (66.5, 15.7),
+        (72.0, 12.8),
+        (77.5, 16.0),
     ]
     out.append(f'    <polyline points="{pts_s(truss_pts)}" class="wf-truss-web"/>')
     out.append("  </g>")
@@ -979,74 +1027,74 @@ def build_skylight_cross_section_svg(compact: bool = False) -> str:
     # 5. Cut Structural Concrete & Roof Section Poché Solids
     out.append('  <g class="layer-poche">')
     poche_polys = [
-        [(-66.0, 10.2), (-50.2, 10.2), (-50.2, 10.8), (-66.0, 10.8)],
-        [(-64.4, 1.8), (-63.7, 1.8), (-63.7, 10.2), (-64.4, 10.2)],
+        [(-67.0, 9.6), (-51.0, 9.6), (-51.0, 10.2), (-67.0, 10.2)],
+        [(-65.4, 1.15), (-64.7, 1.15), (-64.7, 9.6), (-65.4, 9.6)],
         [
-            (-51.6, 10.8),
-            (-24.3, 10.8),
-            (-23.3, 12.67),
-            (-50.2, 12.67),
-            (-50.2, 13.85),
-            (-51.6, 13.85),
+            (-52.4, z_sc),
+            (-29.1, z_sc),
+            (-28.1, z_sr),
+            (-51.1, z_sr),
+            (-51.1, z_sp),
+            (-52.4, z_sp),
         ],
-        [(-18.1, 10.8), (7.1, 10.8), (8.1, 12.67), (-19.1, 12.67)],
+        [(-22.9, z_sc), (5.7, z_sc), (6.7, z_sr), (-23.9, z_sr)],
         [
-            (13.3, 10.8),
-            (24.2, 10.8),
-            (26.8, 13.2),
-            (29.8, 16.8),
-            (32.4, 19.6),
-            (35.1, 21.5),
-            (34.2, 22.1),
-            (30.8, 19.8),
-            (27.4, 16.2),
-            (23.8, 12.67),
-            (12.3, 12.67),
-        ],
-        [
-            (39.6, 15.25),
-            (84.6, 16.25),
-            (84.6, 17.85),
-            (85.8, 17.85),
-            (85.8, 15.0),
-            (84.4, 15.0),
-            (65.5, 11.33),
-            (43.2, 11.33),
-        ],
-        [(84.6, 0.0), (85.8, 0.0), (85.8, 7.2), (84.6, 7.2)],
-        [(84.6, -1.2), (85.8, -1.2), (85.8, 0.0), (84.6, 0.0)],
-        [(84.6, -13.6), (85.8, -13.6), (85.8, -9.2), (84.6, -9.2)],
-        [(84.6, -28.0), (85.8, -28.0), (85.8, -23.5), (84.6, -23.5)],
-        [
-            (-51.6, 0.9),
-            (-19.5, 0.9),
-            (-16.0, -0.9),
-            (22.0, -0.9),
-            (22.0, -5.4),
-            (32.0, -5.4),
-            (32.0, -4.5),
-            (22.9, -4.5),
-            (22.9, 0.0),
-            (-16.0, 0.0),
-            (-19.5, 2.0),
-            (-51.6, 2.0),
-        ],
-        [(43.5, -0.95), (85.8, -0.95), (85.8, 0.0), (43.5, 0.0)],
-        [
-            (-21.8, -13.6),
-            (85.8, -13.6),
-            (85.8, -12.5),
-            (-20.8, -12.5),
-            (-20.8, 0.9),
-            (-21.8, 0.9),
+            (11.9, z_sc),
+            (25.2, z_sc),
+            (27.5, 13.0),
+            (30.2, 16.6),
+            (32.4, 19.4),
+            (34.8, z_sk),
+            (33.9, z_sk + 0.6),
+            (30.6, 19.6),
+            (27.4, 16.0),
+            (24.6, z_sr),
+            (10.9, z_sr),
         ],
         [
-            (32.2, -27.7),
-            (85.8, -27.7),
-            (85.8, -26.5),
-            (33.2, -26.5),
-            (33.2, -13.6),
-            (32.2, -13.6),
+            (41.2, 15.1),
+            (85.8, z_fr),
+            (85.8, z_fp),
+            (87.0, z_fp),
+            (87.0, 15.0),
+            (85.6, 15.0),
+            (67.0, z_fc),
+            (44.0, z_fc),
+        ],
+        [(85.8, 0.0), (87.0, 0.0), (87.0, 7.2), (85.8, 7.2)],
+        [(85.8, -1.6), (87.0, -1.6), (87.0, 0.0), (85.8, 0.0)],
+        [(85.8, z_l2 - 1.1), (87.0, z_l2 - 1.1), (87.0, z_l2 + 3.4), (85.8, z_l2 + 3.4)],
+        [(85.8, z_l1 - 1.4), (87.0, z_l1 - 1.4), (87.0, z_l1 + 6.7), (85.8, z_l1 + 6.7)],
+        [
+            (-52.4, 0.35),
+            (-20.0, 0.35),
+            (-16.5, -1.0),
+            (21.2, -1.0),
+            (21.2, z_mezz - 1.0),
+            (32.0, z_mezz - 1.0),
+            (32.0, z_mezz),
+            (22.0, z_mezz),
+            (22.0, 0.0),
+            (-16.5, 0.0),
+            (-20.0, z_lob),
+            (-52.4, z_lob),
+        ],
+        [(43.8, -1.0), (87.0, -1.0), (87.0, 0.0), (43.8, 0.0)],
+        [
+            (-22.3, z_l2 - 1.1),
+            (87.0, z_l2 - 1.1),
+            (87.0, z_l2),
+            (-21.3, z_l2),
+            (-21.3, 0.35),
+            (-22.3, 0.35),
+        ],
+        [
+            (32.2, z_l1 - 1.2),
+            (87.0, z_l1 - 1.2),
+            (87.0, z_l1),
+            (33.2, z_l1),
+            (33.2, z_l2 - 1.1),
+            (32.2, z_l2 - 1.1),
         ],
     ]
     for poly in poche_polys:
@@ -1055,7 +1103,7 @@ def build_skylight_cross_section_svg(compact: bool = False) -> str:
 
     # 6. Human Scale Silhouettes
     out.append('  <g class="layer-figures">')
-    for fx, fz in ((-47.0, 2.0), (5.2, 0.0), (47.2, 0.0), (28.0, -4.5), (49.5, -12.5)):
+    for fx, fz in ((-47.5, z_lob), (4.8, 0.0), (47.5, 0.0), (28.0, z_mezz), (49.5, z_l2)):
         head = sz(fx, fz + 5.25)
         body_pts = [
             (fx - 0.55, fz),
@@ -1073,11 +1121,11 @@ def build_skylight_cross_section_svg(compact: bool = False) -> str:
 
     # 7. Callout Leaders
     callouts = [
-        ((-59.0, 10.8), (-58.0, 18.5), "SOUTH PORTICO"),
-        ((-21.2, 15.9), (-18.5, 24.0), "CONICAL SKYLIGHTS (12)"),
-        ((35.1, 21.8), (20.5, 27.8), "NORTH DAYLIGHT SCOOP (+21'-6\")"),
-        ((57.0, 14.2), (54.5, 23.6), "3'-11\" TRUSS ROOF PLENUM"),
-        ((85.8, 11.5), (80.0, 27.8), "+7'-2\" CLERESTORY &amp; LOUVERS"),
+        ((-60.0, 10.2), (-59.0, 18.2), "SOUTH PORTICO"),
+        ((-26.0, z_sr + 3.0), (-22.0, 23.8), "CONICAL SKYLIGHTS (14)"),
+        ((34.8, z_sk + 0.3), (20.5, 27.2), "NORTH DAYLIGHT SCOOP (+21'-4\")"),
+        ((57.5, 14.2), (55.0, 23.4), "3'-11\" TRUSS ROOF PLENUM"),
+        ((87.0, 11.5), (81.0, 27.2), "+7'-2\" CLERESTORY &amp; LOUVERS"),
     ]
     out.append('  <g class="layer-callouts">')
     for p_src, p_txt, label in callouts:
@@ -1093,13 +1141,13 @@ def build_skylight_cross_section_svg(compact: bool = False) -> str:
         )
 
     room_tags = [
-        (-36.0, 5.5, "ENTRANCE LOBBY"),
-        (10.0, 5.8, "CONTROL DESK"),
-        (33.5, 4.2, "READING WELL"),
-        (61.0, 8.5, "MAIN FAN STACKS"),
-        (27.5, -8.5, "MEZZANINE"),
-        (60.0, -8.5, "LEVEL 2 STACKS"),
-        (55.0, -21.5, "LEVEL 1 ARCHIVAL DECK"),
+        (-36.5, 5.2, "ENTRANCE LOBBY"),
+        (9.5, 5.6, "CONTROL DESK"),
+        (33.5, 4.0, "READING WELL"),
+        (61.5, 8.5, "MAIN FAN STACKS"),
+        (27.5, -9.8, "MEZZANINE"),
+        (60.5, -9.8, "LEVEL 2 STACKS"),
+        (55.5, -23.5, "LEVEL 1 ARCHIVAL DECK"),
     ]
     if not compact:
         for rs, rz, rlbl in room_tags:
@@ -1240,7 +1288,7 @@ def build_detail_medallions_svg() -> dict[str, str]:
   <polygon points="{hp_pts}" class="wf-poche-solid"/>
   <line x1="{hxy(w0).split(',')[0]}" y1="{hxy(w0).split(',')[1]}" x2="{hxy(w1).split(',')[0]}" y2="{hxy(w1).split(',')[1]}" class="wf-skylight-glass"/>
   <line x1="118" y1="106" x2="174" y2="24" class="wf-vista-arrow" marker-end="url(#wfArrowVista)"/>
-  <text x="180" y="21" class="wf-vista-lbl">65.7° MT. HOOD ↗</text>
+  <text x="180" y="21" class="wf-vista-lbl">{G.RAY_D_DEG:.1f}° MT. HOOD ↗</text>
   <text x="130" y="180" text-anchor="middle" class="wf-callout-lbl">IRREGULAR H-COLUMN D ALCOVE</text>
 </svg>"""
 
@@ -1250,7 +1298,7 @@ def build_detail_medallions_svg() -> dict[str, str]:
 def build_polycentric_diagram_svg() -> str:
     """Analytical Constructive Diagram of Aalto's 4 Working Points, Radial Fan, and 4-Origin Inset."""
     w_vb, h_vb = 920, 446
-    sc = 3.05
+    sc = 2.95
     ox, oy = 328.0, 358.0
 
     def xy(pt: tuple[float, float]) -> tuple[float, float]:
@@ -1268,10 +1316,10 @@ def build_polycentric_diagram_svg() -> str:
     env = get_level3_envelope_ft()
     out.append(f'  <polygon points="{pts_s(env)}" class="zone-quiet"/>')
     for r_arc, lbl_arc in (
-        (G.R_GALLERY_RAIL, "R = 23'-6\" GALLERY"),
+        (G.R_GALLERY_RAIL, "R = 22'-0\" GALLERY"),
         (G.R_WELL_L2_WALL, "R = 31'-10\" WELL CORE"),
-        (G.R_MEZZ_OPENING, "R = 44'-2\" MEZZANINE"),
-        (85.5, "R = 85'-6\" NORTH WALL"),
+        (G.R_MEZZ_OPENING, "R = 44'-0\" MEZZANINE"),
+        (87.0, "R = 87'-0\" NORTH WALL"),
     ):
         apts = arc_pts(G.WP3A, r_arc, 40.0, 162.0, 44)
         out.append(f'  <polyline points="{pts_s(apts)}" class="wf-reg-arc"/>')
@@ -1281,14 +1329,14 @@ def build_polycentric_diagram_svg() -> str:
         )
 
     for deg, name, orig in (
-        (G.RAY_A_DEG, "AXIS A (136.5°)", G.WP_LOWER),
-        (G.RAY_B_DEG, "AXIS B (112.9°)", G.WP3),
-        (G.RAY_C_DEG, "AXIS C (89.3°)", G.WP3),
-        (G.RAY_D_DEG, "AXIS D (65.7° MT. HOOD)", G.WP3),
-        (G.RAY_E_DEG, "AXIS E (42.1°)", G.WP_LOWER),
+        (G.RAY_A_DEG, f"AXIS A ({G.RAY_A_DEG:.1f}°)", G.WP2),
+        (G.RAY_B_DEG, f"AXIS B ({G.RAY_B_DEG:.1f}°)", G.WP3),
+        (G.RAY_C_DEG, f"AXIS C ({G.RAY_C_DEG:.1f}°)", G.WP3),
+        (G.RAY_D_DEG, f"AXIS D ({G.RAY_D_DEG:.1f}° MT. HOOD)", G.WP3),
+        (G.RAY_E_DEG, f"AXIS E ({G.RAY_E_DEG:.1f}°)", G.WP2),
     ):
-        pa, pb = xy(orig), xy(polar_pt(orig, 93.0, deg))
-        cls = "wf-vista-arrow" if "65.7" in name else "wf-reg-ray"
+        pa, pb = xy(orig), xy(polar_pt(orig, 95.0, deg))
+        cls = "wf-vista-arrow" if "MT. HOOD" in name else "wf-reg-ray"
         out.append(
             f'  <line x1="{pa[0]:.1f}" y1="{pa[1]:.1f}" x2="{pb[0]:.1f}" y2="{pb[1]:.1f}" class="{cls}"/>'
         )
@@ -1316,21 +1364,21 @@ def build_polycentric_diagram_svg() -> str:
         70.5,
     ]
     stack_angles = [
-        156.0,
-        149.5,
-        143.0,
-        130.5,
-        124.2,
-        118.0,
-        111.8,
-        105.5,
-        92.5,
-        86.2,
-        80.0,
-        73.8,
-        57.5,
-        51.2,
-        45.0,
+        159.0,
+        153.2,
+        147.8,
+        132.5,
+        126.6,
+        120.8,
+        115.0,
+        109.2,
+        93.4,
+        86.4,
+        79.4,
+        72.4,
+        56.5,
+        50.5,
+        44.5,
     ]
     for deg, r_end in zip(stack_angles, r_ends):
         rad = math.radians(deg)
@@ -1346,7 +1394,7 @@ def build_polycentric_diagram_svg() -> str:
         out.append(f'  <polygon points="{pts_s(hp_poly)}" class="wf-poche-solid"/>')
     out.append(f'  <polygon points="{pts_s(env)}" class="wf-wall-ext"/>')
 
-    for wp_pt in (G.WP4, G.WP3, G.WP3A, G.WP_DESK):
+    for wp_pt in (G.WP3, G.WP2, G.WP3A, G.WP_DESK):
         p = xy(wp_pt)
         out.append(
             f'  <circle cx="{p[0]:.1f}" cy="{p[1]:.1f}" r="3.4" class="wf-wp-dot"/>'
@@ -1358,25 +1406,25 @@ def build_polycentric_diagram_svg() -> str:
         '  <text x="20" y="40" class="wf-subplan-sub">Every bookcase length (16.3\'–20.0\'), H-column rotation, and skylight arc springs from shifted origins</text>'
     )
 
-    # Right Top: 16x Magnified 4-Origin Cluster Inset
-    ix, iy, isc = 774.0, 178.0, 28.0
+    # Right Top: 8x Magnified 4-Origin Cluster Inset
+    ix, iy, isc = 762.0, 142.0, 13.5
     out.append(
-        '  <text x="648" y="24" class="wf-subplan-kicker">MAGNIFIED 4-ORIGIN CLUSTER (16×)</text>'
+        '  <text x="648" y="24" class="wf-subplan-kicker">MAGNIFIED 4-ORIGIN CLUSTER (8×)</text>'
     )
     out.append(
-        '  <text x="648" y="40" class="wf-subplan-sub">Subtle eccentricities prevent rigid symmetry</text>'
+        '  <text x="648" y="40" class="wf-subplan-sub">Archival W.P. offsets prevent rigid symmetry</text>'
     )
     out.append(
         f'  <line x1="652" y1="{iy:.1f}" x2="898" y2="{iy:.1f}" class="wf-datum-line"/>'
     )
     out.append(
-        f'  <line x1="{ix:.1f}" y1="64" x2="{ix:.1f}" y2="222" class="wf-datum-line"/>'
+        f'  <line x1="{ix:.1f}" y1="64" x2="{ix:.1f}" y2="226" class="wf-datum-line"/>'
     )
     origins = [
-        (G.WP4, "WP #4 (0, 0)", "Survey Grid 6 Datum", 8, 13),
-        (G.WP3, "WP #3 (0, +1.0')", "Primary Rays B, C, D", 8, -5),
-        (G.WP3A, "WP #3A (+1.5', +2.6')", "Well, Scoop &amp; Stacks", 8, -6),
-        (G.WP_DESK, "WP_DESK (-1.2', +2.2')", "Desk &amp; Slatted Ceiling", -8, -8),
+        (G.WP3, "WP #3 (0, 0)", "Rays B, C, D &amp; Grid 6", -8, 12),
+        (G.WP2, "WP #2 (+2'-10\", -5'-3\")", "Flanks A &amp; E", -8, 12),
+        (G.WP3A, "WP #3A (+1'-7\", +3'-5\")", "Well, Scoop &amp; Stacks", 8, -4),
+        (G.WP_DESK, "WP_DESK (-1'-2\", +2'-2\")", "Desk &amp; Slatted Ceiling", -8, -8),
     ]
     for pt_o, lbl_o, sub_o, dx, dy in origins:
         px = ix + pt_o[0] * isc
@@ -1398,15 +1446,15 @@ def build_polycentric_diagram_svg() -> str:
         '  <text x="648" y="262" class="wf-subplan-kicker">THREE-TIER ROOF STEP HIERARCHY</text>'
     )
     out.append(
-        '  <text x="648" y="278" class="wf-subplan-sub">Heights above Level 3 Reading Deck (0\'-0")</text>'
+        '  <text x="648" y="278" class="wf-subplan-sub">Roof deck heights above Level 3 (0\'-0")</text>'
     )
     y_base = 410.0
     z_sc = 4.8
     bars = [
-        (654, 52, 12.67, "zone-public", "+12'-8\"", "SOUTH / LOBBY"),
-        (714, 58, 16.25, "zone-quiet", "+16'-3\"", "MAIN FAN"),
-        (780, 56, 18.67, "zone-auditorium", "+18'-8\"", "AUDITORIUM"),
-        (844, 54, 21.50, "zone-well", "+21'-6\"", "SCOOP RIDGE"),
+        (654, 52, G.Z_SOUTH_ROOF_FT, "zone-public", "+13'-8\"", "SOUTH / LOBBY"),
+        (714, 58, G.Z_FAN_ROOF_HIGH_FT, "zone-quiet", "+16'-2\"", "MAIN FAN"),
+        (780, 56, G.Z_AUDITORIUM_ROOF_FT, "zone-auditorium", "+17'-10\"", "AUDITORIUM"),
+        (844, 54, G.Z_SCOOP_RIDGE_FT, "zone-well", "+21'-4\"", "SCOOP RIDGE"),
     ]
     out.append(
         f'  <line x1="648" y1="{y_base:.1f}" x2="906" y2="{y_base:.1f}" class="wf-wall-int-bold"/>'

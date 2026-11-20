@@ -125,32 +125,35 @@ def build_roof_and_skylights(scene):
     mesh = grp.mesh
     G = AaltoGeometry
 
-    z_fan_low = m_ft(G.Z_FAN_ROOF_LOW_FT)       # +4.65 m (Main Fan Roof Deck)
-    z_fan_high = m_ft(G.Z_FAN_ROOF_HIGH_FT)     # +4.95 m (Outer North Perimeter Roof)
-    z_fan_ceil = m_ft(G.Z_FAN_CEIL_FT)         # +3.45 m (Main Fan Reading Room Ceiling)
-    z_s_ceil = m_ft(G.Z_SOUTH_CEIL_FT)          # +3.30 m (South Wing Interior Ceiling)
-    z_south_rf = m_ft(G.Z_SOUTH_ROOF_FT)        # +3.86 m (Lower South Wing Roof Deck)
-    z_s_par = m_ft(G.Z_SOUTH_PARAPET_FT)        # +4.22 m (South Wing Parapet Coping)
-    z_aud_rf = m_ft(G.Z_AUDITORIUM_ROOF_FT)     # +5.69 m (Taller SE Auditorium Roof Deck)
-    z_aud_par = m_ft(G.Z_AUDITORIUM_PARAPET_FT) # +6.15 m (Taller SE Auditorium Parapet Coping)
-    z_par_n = m_ft(G.Z_FAN_PARAPET_N_FT)        # +5.44 m (North Fan Parapet Coping)
-    z_ridge = m_ft(G.Z_SCOOP_RIDGE_FT)          # +6.55 m (Daylight Scoop Peak Ridge)
-    z_lantern = m_ft(G.Z_LANTERN_TOP_FT)        # +4.83 m (Conical Skylight Lantern Peak)
+    z_fan_low = m_ft(G.Z_FAN_ROOF_LOW_FT)       # +4.65 m (+15'-3" Main Fan Roof Deck)
+    z_fan_high = m_ft(G.Z_FAN_ROOF_HIGH_FT)     # +4.93 m (+16'-2" Outer North Perimeter Roof)
+    z_fan_ceil = m_ft(G.Z_FAN_CEIL_FT)          # +3.45 m (+11'-4" Main Fan Reading Room Ceiling)
+    z_s_ceil = m_ft(G.Z_SOUTH_CEIL_FT)          # +3.19 m (+10'-5 1/2" South Wing Interior Ceiling)
+    z_south_rf = m_ft(G.Z_SOUTH_ROOF_FT)        # +4.17 m (+13'-8" Lower South Wing Roof Deck)
+    z_s_par = m_ft(G.Z_SOUTH_PARAPET_FT)        # +4.57 m (+15'-0" South Wing Parapet Coping)
+    z_aud_rf = m_ft(G.Z_AUDITORIUM_ROOF_FT)     # +5.44 m (+17'-10" Taller SE Auditorium Roof Deck)
+    z_aud_par = m_ft(G.Z_AUDITORIUM_PARAPET_FT) # +5.88 m (+19'-3 3/8" Taller SE Auditorium Parapet Coping)
+    z_par_n = m_ft(G.Z_FAN_PARAPET_N_FT)        # +5.47 m (+17'-11 3/8" North Fan Parapet Coping)
+    z_ridge = m_ft(G.Z_SCOOP_RIDGE_FT)          # +6.50 m (+21'-4" Daylight Scoop Peak Ridge)
+    z_lantern = m_ft(G.Z_LANTERN_TOP_FT)        # +4.98 m (+16'-4" Conical Skylight Lantern Peak)
 
     # =========================================================================
     # 1. CURVED CENTRAL NORTH DAYLIGHT MONITOR SCOOP (45° .. 156° around WP3A)
+    #    Sheet 18-a18 Sec. 4 & Sheet 48-s17 Det. D: R_in = 25'-10", R_ridge = 34'-6",
+    #    15'-4" total ceiling opening to R_out = 41'-2", peak EL. +149'-10" (+21'-4").
     # =========================================================================
     n_scoop = 36
     deg0, deg1 = 45.0, 156.0
     angles = [deg0 + (deg1 - deg0) * (i / n_scoop) for i in range(n_scoop + 1)]
-    r_curb_top = 39.6          # Radius where North Skylight Glazing meets Fan Roof
-    z_curb = z_fan_low + 0.14  # +4.79 m concrete/plaster skylight curb top
+    r_curb_top = G.R_SCOOP_OUTER - 0.75  # 40.42 ft glazing-to-curb contact (outer curb lip at 41'-2")
+    z_curb = z_fan_low + 0.14            # +4.79 m concrete/plaster skylight curb top
 
     # Concave white plaster reflector profile (radius_ft_from_WP3A, z_interior_m, z_exterior_m)
+    # Approximates the 7'-8" radius curved plaster vault springing from R = 25'-10" up to R = 34'-6"
     vault_profile = [
-        (G.R_SCOOP_INNER, 3.32, 3.94),
-        (26.8, 4.55, 4.98),
-        (30.4, 5.68, 5.92),
+        (G.R_SCOOP_INNER, z_s_ceil + 0.04, z_south_rf + 0.06),
+        (28.2, 4.48, 4.98),
+        (31.2, 5.65, 5.90),
         (G.R_SCOOP_RIDGE, z_ridge - 0.10, z_ridge),
     ]
 
@@ -242,7 +245,7 @@ def build_roof_and_skylights(scene):
         steps=36,
     )
 
-    # Outer Skylight Curb Beam & Copper Sill Flashing at R = 39.6 ft (`Sheet 07-a7 Detail 8: SILL DETAIL SKYLIGHT`)
+    # Outer Skylight Curb Beam & Copper Sill Flashing at R = 40.42 ft (`Sheet 07-a7 Detail 8: SILL DETAIL SKYLIGHT`)
     r_curb_in = r_curb_top - 0.48
     r_curb_out = r_curb_top + 0.36
     add_arc_band_ft(
@@ -271,10 +274,11 @@ def build_roof_and_skylights(scene):
     )
 
     # Radial Skylight Header Beams across the Daylight Scoop (`Sheet 48-s17: MAIN SKYLIGHT FRAME DETAILS`
-    # & Detail B "HEADER BEAM TO CONC COLUMN"): plaster-cased WF beams running along Radial Axes B, C, D
-    # from WP3, emerging from the concave vault (R ≈ 25.8 ft from WP3A) and crossing beneath the north
-    # glazing to bury into the curb at R = 40.0 ft. Each bears on its well column (`Well_1/2/3`).
-    beam_z0, beam_z1 = 3.85, 4.55
+    # & Detail B "HEADER BEAM TO CONC COLUMN"): plaster-cased 18WF50 beams running along true Radial Axes B, C, D
+    # from WP #3 (0,0), emerging from the concave vault (R ≈ 26.8 ft from WP #3A) and crossing beneath the north
+    # glazing to bury into the curb at R = 40.8 ft. Each bears dead-center on its well column (`Well_1/2/3`).
+    beam_z0 = m_ft(G.Z_HEADER_BEAM_BOT_FT)  # +3.861 m (+12'-8")
+    beam_z1 = m_ft(G.Z_HEADER_BEAM_TOP_FT)  # +4.455 m (+14'-7 3/8")
     beam_w_ft = 1.33
     for ray_deg in (G.RAY_B_DEG, G.RAY_C_DEG, G.RAY_D_DEG):
         ux, uy = math.cos(math.radians(ray_deg)), math.sin(math.radians(ray_deg))
@@ -286,7 +290,7 @@ def build_roof_and_skylights(scene):
             # Distance along the ray from WP3 at which radius from WP3A equals r_ft
             return -b + math.sqrt(b * b - c0 + r_ft * r_ft)
 
-        t0, t1 = _t_at_r(25.8), _t_at_r(40.0)
+        t0, t1 = _t_at_r(26.8), _t_at_r(r_curb_top + 0.40)
         t_mid = 0.5 * (t0 + t1)
         add_oriented_box_ft(
             mesh,
@@ -308,8 +312,8 @@ def build_roof_and_skylights(scene):
         (m_ft(r_curb_out + 0.04),      z_curb + 0.032),
         (m_ft(r_curb_top),             z_curb + 0.032),
         (m_ft(G.R_SCOOP_RIDGE),        z_ridge + 0.038),
-        (m_ft(30.4),                   5.92),
-        (m_ft(26.8),                   4.98),
+        (m_ft(31.2),                   5.90),
+        (m_ft(28.2),                   4.98),
         (m_ft(G.R_SCOOP_INNER - 0.55), z_south_rf + 0.08),
     ]
     # East End Cheek (`deg0 = 45.0°`): +n (-deg) faces outside (`copper_roof`), -n (+deg) faces inside (`white_plaster`)
@@ -359,11 +363,12 @@ def build_roof_and_skylights(scene):
 
     deg_step_w_outer = math.degrees(math.atan2(G.PT_A_INNER_JUNC[1] - G.WP3A[1], G.PT_A_INNER_JUNC[0] - G.WP3A[0]))
     deg_step_e_outer = math.degrees(math.atan2(G.PT_LOUNGE_JUNC[1] - G.WP3A[1], G.PT_LOUNGE_JUNC[0] - G.WP3A[0]))
+    deg_e_ramp = deg_step_e_outer + 0.5
     f_deg0 = deg_step_e_outer
     f_deg1 = deg_step_w_outer
 
     raw_angles = [f_deg0 + (f_deg1 - f_deg0) * (i / 84) for i in range(85)]
-    raw_angles.extend([deg0, deg1, deg_pt_e, deg_pt_a, 32.80])
+    raw_angles.extend([deg0, deg1, deg_pt_e, deg_pt_a, deg_e_ramp])
     # Include exact vertex angles of every H-column scupper pocket & prow corner in `roof_inner_chain`
     for vx, vy in roof_inner_chain[1:-1]:
         vang = math.degrees(math.atan2(vy - G.WP3A[1], vx - G.WP3A[0]))
@@ -381,15 +386,15 @@ def build_roof_and_skylights(scene):
         """
         Outer perimeter built-up roof & interior daylight-scoop soffit Z at polar angle `deg`
         (`Sheet 07-a7 Detail 1: PARAPET DETAIL NORTH WALL` & `Sheet 13-a13 Section A-A`):
-          - Flat at `z_fan_low` (+4.65 m) where the fan meets the East Periodical Lounge step (`<= 32.80°`),
-            sweeping smoothly up to `z_fan_high` (+4.95 m) at the East Acute Prow (`deg_pt_e`),
-          - Constant `z_fan_high` (+4.95 m, +4.62 m soffit) across all 4 North Bays (`deg_pt_e .. deg_pt_a`),
+          - Flat at `z_fan_low` (+4.65 m) where the fan meets the East Periodical Lounge step (`<= deg_e_ramp`),
+            sweeping smoothly up to `z_fan_high` (+4.93 m) at the East Acute Prow (`deg_pt_e`),
+          - Constant `z_fan_high` (+4.93 m, +4.62 m soffit) across all 4 North Bays (`deg_pt_e .. deg_pt_a`),
           - Smooth taper back down to `z_fan_low` (+4.65 m, +3.45 m soffit) across West Throat (`deg_pt_a .. f_deg1`).
         """
-        if deg <= 32.80:
+        if deg <= deg_e_ramp:
             return z_fan_low, z_fan_ceil
         if deg < deg_pt_e:
-            t = (deg - 32.80) / max(1e-4, deg_pt_e - 32.80)
+            t = (deg - deg_e_ramp) / max(1e-4, deg_pt_e - deg_e_ramp)
             s = t * t * (3.0 - 2.0 * t)
             zt = z_fan_low + s * (z_fan_high - z_fan_low)
             zb = z_fan_ceil + s * (4.62 - z_fan_ceil)
@@ -411,7 +416,7 @@ def build_roof_and_skylights(scene):
         a_mid = 0.5 * (a0 + a1)
         is_scoop = (deg0 <= a_mid <= deg1)
         r_tin = r_curb_top if is_scoop else G.R_SCOOP_INNER
-        r_bin = 43.2 if is_scoop else G.R_SCOOP_INNER
+        r_bin = 43.8 if is_scoop else G.R_SCOOP_INNER
         raw_slices.append([a0, a1, r_tin, r_bin, r_out0, r_out1, is_scoop])
 
     # Snap shared radial vertices across smooth joints so adjacent slices share bit-identical edges
@@ -423,8 +428,8 @@ def build_roof_and_skylights(scene):
             raw_slices[i + 1][4] = shared_r
 
     for i, (a0, a1, r_tin, r_bin, r_out0, r_out1, is_scoop) in enumerate(raw_slices):
-        r_hinge0 = min(65.5, r_out0 - 1.2)
-        r_hinge1 = min(65.5, r_out1 - 1.2)
+        r_hinge0 = min(67.0, r_out0 - 1.2)
+        r_hinge1 = min(67.0, r_out1 - 1.2)
         zt_ou0, zb_ou0 = _z_outer_roof_and_soffit(a0)
         zt_ou1, zb_ou1 = _z_outer_roof_and_soffit(a1)
 
@@ -485,24 +490,55 @@ def build_roof_and_skylights(scene):
         overhang_left_ft=0.08,
     )
 
+    # 3 Outer-Fan Rooftop Exhaust Fan Hoods alongside Structural Rays B, C, D (`Sheets 07-a7 & 36-s5`)
+    for fx, fy, fr in G.FAN_ROOF_EXHAUST_FANS:
+        r_fan = math.hypot(fx - G.WP3A[0], fy - G.WP3A[1])
+        u_slope = max(0.0, min(1.0, (r_fan - 67.0) / 18.0))
+        z_rf_here = z_fan_low + u_slope * (z_fan_high - z_fan_low)
+        # Curb base + brushed aluminum spun-hood exhaust cap
+        add_arc_band_ft(mesh, (fx, fy), 0.10, fr * 0.72, 0.0, 360.0, z_rf_here - 0.04, z_rf_here + 0.36, MATERIALS["mullion_alum"], steps=16)
+        add_frustum_ft(
+            mesh,
+            (fx, fy),
+            r0_ft=fr * 1.05,
+            r1_ft=fr * 0.62,
+            z0_m=z_rf_here + 0.34,
+            z1_m=z_rf_here + 0.62,
+            attrs=MATERIALS["white_column"],
+            sides=16,
+            cap_top=True,
+            cap_bottom=True,
+        )
+
+    # Centralized South Wing grid anchors
+    x_w = G.X_WEST_WING        # -129'-5"
+    x_step = G.X_SOUTH_STEP    #  -91'-2"
+    x_elev = G.X_ELEV_E        #  -80'-10"
+    x_lob_e = G.X_LOBBY_E_G2   #  +17'-6"
+    x_aud_sw = G.X_AUD_SW      #  +19'-2"
+    x_lng_e = G.X_LOUNGE_E     #  +52'-2"
+    x_aud_e = G.X_AUD_E        #  +62'-5"
+    y_g6 = G.GRID_Y["6"]       #    0'-0"
+    y_g5 = G.GRID_Y["5"]       #   -8'-10"
+    y_g4 = G.GRID_Y["4"]       #  -21'-6"
+    y_g3 = G.GRID_Y["3"]       #  -29'-0"
+    y_g2 = G.GRID_Y["2"]       #  -51'-8"
+    y_g1 = G.GRID_Y["1"]       #  -61'-0"
+
     # =========================================================================
-    # 3. TALLER SE AUDITORIUM ROOF (+5.69 m) & COPPER-COPED BRICK PARAPET (+6.15 m)
+    # 3. TALLER SE AUDITORIUM ROOF (+5.44 m) & COPPER-COPED BRICK PARAPET (+5.88 m)
     # =========================================================================
-    # SE Auditorium + NW Intake Housing projection from Sheet 13-a13 Section B-B & media_1794671241974_4b7a0b79.jpg
     auditorium_roof_poly = [
-        (16.5, -50.8),
-        (19.5, -59.5),
-        (61.5, -59.5),
-        (61.5, -21.0),
-        (36.0, -21.0),
-        (36.0, -13.5),
-        (18.0, -13.5),
-        (18.0, -21.0),
+        (x_lob_e, y_g2),
+        (x_aud_sw, y_g1),
+        (x_aud_e, y_g1),
+        (x_aud_e, y_g4),
+        (36.8, y_g4),
+        (36.8, -13.8),
+        (18.5, -13.8),
+        (18.5, y_g4),
     ]
-    # Envelope wall (Layer 6) is 1.35 ft thick and runs INWARD from this footprint line.
     aud_wall_ft = 1.35
-    # Extrude 0.64 m structural slab (+5.05 .. +5.69 m) with dark slate-charcoal membrane,
-    # inset to the inner face of the envelope wall so slab and wall never share coplanar faces.
     aud_slab_poly = offset_polyline_right_ft(auditorium_roof_poly, -aud_wall_ft, closed=True)
     add_extruded_polygon_ft(
         mesh,
@@ -513,10 +549,6 @@ def build_roof_and_skylights(scene):
         MATERIALS["buff_brick"],
         MATERIALS["white_soffit"],
     )
-    # Copper Coping capping the Auditorium parapet. The buff-brick parapet itself is the
-    # Layer 6 auditorium envelope wall (rising to z_aud_par), so no second brick strip is
-    # added here (it would be coplanar and z-fight). Loop is wound clockwise like the
-    # envelope wall so "right" = inward; the coping overhangs both wall faces by 0.08 ft.
     aud_coping_loop = [*reversed(auditorium_roof_poly), auditorium_roof_poly[-1]]
     add_wall_strip_ft(
         mesh,
@@ -530,31 +562,29 @@ def build_roof_and_skylights(scene):
     )
 
     # =========================================================================
-    # 4. LOWER SOUTH WING BUILT-UP ROOF (+3.86 m, 0.56 m THICK!) & STEP WALLS
+    # 4. LOWER SOUTH WING BUILT-UP ROOF (+4.17 m, 0.98 m PLENUM!) & STEP WALLS
     # =========================================================================
-    deg_step_w_outer = math.degrees(math.atan2(G.PT_A_INNER_JUNC[1] - G.WP3A[1], G.PT_A_INNER_JUNC[0] - G.WP3A[0]))
-    deg_step_e_outer = math.degrees(math.atan2(G.PT_LOUNGE_JUNC[1] - G.WP3A[1], G.PT_LOUNGE_JUNC[0] - G.WP3A[0]))
     south_roof_arc = [
         polar_pt(G.WP3A, G.R_SCOOP_INNER, deg_step_w_outer - (deg_step_w_outer - deg_step_e_outer) * (k / 36))
         for k in range(37)
     ]
     south_roof_poly = [
-        (-126.5, 1.5),
-        (-77.5, 1.5),
+        (x_w, y_g6),
+        (x_elev, y_g6),
         G.PT_A_INNER_JUNC,
         *south_roof_arc,
         G.PT_LOUNGE_JUNC,
-        (51.8, -8.8),
-        (61.5, -8.8),
-        (61.5, -21.0),
-        (36.0, -21.0),
-        (36.0, -13.5),
-        (18.0, -13.5),
-        (18.0, -21.0),
-        (16.5, -50.8),
-        (-91.5, -50.8),
-        (-91.5, -28.0),
-        (-126.5, -28.0),
+        (x_lng_e, y_g5),
+        (x_aud_e, y_g5),
+        (x_aud_e, y_g4),
+        (36.8, y_g4),
+        (36.8, -13.8),
+        (18.5, -13.8),
+        (18.5, y_g4),
+        (x_lob_e, y_g2),
+        (x_step, y_g2),
+        (x_step, y_g3),
+        (x_w, y_g3),
     ]
     sides_sky = 20
     roof_skylight_holes = [
@@ -580,10 +610,7 @@ def build_roof_and_skylights(scene):
     )
 
     # Continuous Watertight Buff-Brick + Copper-Capped Clerestory Step Parapet rising UP from the
-    # Lower South Wing Roof (+3.74 m) to +4.83 m. It runs unbroken from the West flank (PT_A junction)
-    # along R_SCOOP_INNER — passing BEHIND the springing of the curved Daylight Scoop (45°..156°),
-    # exactly as the parapet + coping at the low end of `Sheet 18-a18 Detail 4` and the continuous
-    # white cap seen in the aerial photograph — to the East flank (Periodical Lounge junction).
+    # Lower South Wing Roof (+4.17 m) to +4.83 m along R_SCOOP_INNER (25'-10").
     n_step_arc = 48
     step_pts = [
         G.PT_A_INNER_JUNC,
@@ -617,11 +644,11 @@ def build_roof_and_skylights(scene):
 
     # Copper Parapet Coping around Lower South Wing & Periodical Lounge Perimeter
     south_coping_chain_e = [
-        G.PT_LOUNGE_JUNC, (51.8, -8.8), (61.5, -8.8), (61.5, -21.0),
+        G.PT_LOUNGE_JUNC, (x_lng_e, y_g5), (x_aud_e, y_g5), (x_aud_e, y_g4),
     ]
     south_coping_chain_w = [
-        (16.5, -50.8), (-91.5, -50.8), (-91.5, -28.0),
-        (-126.5, -28.0), (-126.5, 1.5), (-77.5, 1.5), G.PT_A_INNER_JUNC,
+        (x_lob_e, y_g2), (x_step, y_g2), (x_step, y_g3),
+        (x_w, y_g3), (x_w, y_g6), (x_elev, y_g6), G.PT_A_INNER_JUNC,
     ]
     for c_chain in (south_coping_chain_e, south_coping_chain_w):
         add_wall_strip_ft(
@@ -639,42 +666,48 @@ def build_roof_and_skylights(scene):
     # 5. AUTHENTIC RADIAL WOOD-SLATTED CEILING SECTOR & ENTRY SLATS (`10-a10`)
     # =========================================================================
     wp_desk = G.WP_DESK
-    # A. Recessed dark acoustic backing plenum (R = 8.6..19.2 ft, 26°..172°, Z = +3.02..+3.28 m)
-    plenum_poly = [polar_pt(wp_desk, 19.2, 26.0 + (172.0 - 26.0) * i / 36) for i in range(37)]
-    plenum_poly += [polar_pt(wp_desk, 8.6, 172.0 - (172.0 - 26.0) * i / 36) for i in range(37)]
+    drum_skylights = [G.CONICAL_SKYLIGHTS[0][:2], G.CONICAL_SKYLIGHTS[1][:2]]  # (-10.8, 8.8), (+5.2, 8.8)
+    r_drum_in = 5.0
+    r_drum_out = 19.2
+    z_drum_bot = 2.92
+    z_drum_top = z_s_ceil  # +3.188 m (flush under South Wing roof slab)
+
+    # A. Recessed dark acoustic backing plenum (R = 5.0..19.2 ft, 26°..172°, Z = +3.01..z_drum_top)
+    plenum_poly = [polar_pt(wp_desk, r_drum_out, 26.0 + (172.0 - 26.0) * i / 36) for i in range(37)]
+    plenum_poly += [polar_pt(wp_desk, r_drum_in, 172.0 - (172.0 - 26.0) * i / 36) for i in range(37)]
     plenum_holes = []
-    for sx, sy in ((-9.8, 11.8), (6.2, 11.8)):
+    for sx, sy in drum_skylights:
         h = [(sx + 3.05 * math.cos(2.0 * math.pi * k / sides_sky), sy + 3.05 * math.sin(2.0 * math.pi * k / sides_sky)) for k in range(sides_sky)]
         plenum_holes.append(h)
     add_extruded_polygon_with_holes_ft(
         mesh,
         plenum_poly,
         plenum_holes,
-        3.02,
-        3.28,
+        3.01,
+        z_drum_top,
         MATERIALS["black_linoleum"],
     )
 
-    # Circular White Plaster Oculus Trim Collars flush with Flared Conical Skylight Throats (Z = +2.92..+3.02 m)
-    for sx, sy in ((-9.8, 11.8), (6.2, 11.8)):
-        add_arc_band_ft(mesh, (sx, sy), 2.98, 3.36, 0.0, 360.0, 2.92, 3.02, MATERIALS["white_plaster"], steps=20)
+    # Circular White Plaster Oculus Trim Collars flush with Flared Conical Skylight Throats (Z = +2.92..+3.01 m)
+    for sx, sy in drum_skylights:
+        add_arc_band_ft(mesh, (sx, sy), 2.98, 3.36, 0.0, 360.0, z_drum_bot, 3.01, MATERIALS["white_plaster"], steps=20)
 
-    # B. Curving Birch/Hemlock Vertical Fascia Bands (outer & inner, Z = +2.92..+3.30 m)
-    add_arc_band_ft(mesh, wp_desk, 19.15, 19.45, 26.0, 172.0, 2.92, 3.30, MATERIALS["birch_wood"], steps=36)
-    add_arc_band_ft(mesh, wp_desk, 8.45, 8.75, 26.0, 172.0, 2.92, 3.30, MATERIALS["birch_wood"], steps=36)
+    # B. Curving Birch/Hemlock Vertical Fascia Bands (outer & inner, Z = +2.92..z_drum_top)
+    add_arc_band_ft(mesh, wp_desk, r_drum_out - 0.05, r_drum_out + 0.25, 26.0, 172.0, z_drum_bot, z_drum_top, MATERIALS["birch_wood"], steps=36)
+    add_arc_band_ft(mesh, wp_desk, r_drum_in - 0.15, r_drum_in + 0.15, 26.0, 172.0, z_drum_bot, z_drum_top, MATERIALS["birch_wood"], steps=36)
     for a_deg in (26.0, 172.0):
         rad = math.radians(a_deg)
-        mid_r = 0.5 * (8.75 + 19.15)
+        mid_r = 0.5 * (r_drum_in + 0.15 + r_drum_out - 0.05)
         c_pt = (wp_desk[0] + mid_r * math.cos(rad), wp_desk[1] + mid_r * math.sin(rad))
-        add_oriented_box_ft(mesh, c_pt, 19.15 - 8.75, 0.30, a_deg, 2.92, 3.30, MATERIALS["birch_wood"])
+        add_oriented_box_ft(mesh, c_pt, (r_drum_out - 0.05) - (r_drum_in + 0.15), 0.30, a_deg, z_drum_bot, z_drum_top, MATERIALS["birch_wood"])
 
-    # C. Dark Circumferential Joint Ring (R = 14.45..14.65 ft, Z = +2.93..+3.01 m), trimmed cleanly at both skylight oculi
-    for j_deg0, j_deg1, j_steps in ((26.2, 41.0, 8), (63.8, 118.5, 18), (145.2, 171.8, 10)):
-        add_arc_band_ft(mesh, wp_desk, 14.45, 14.65, j_deg0, j_deg1, 2.93, 3.01, MATERIALS["black_linoleum"], steps=j_steps)
+    # C. Dark Circumferential Joint Ring (R = 14.45..14.65 ft, Z = +2.93..+3.00 m), trimmed cleanly at both oculi
+    for j_deg0, j_deg1, j_steps in ((26.2, 34.0, 6), (62.0, 134.0, 22), (160.0, 171.8, 6)):
+        add_arc_band_ft(mesh, wp_desk, 14.45, 14.65, j_deg0, j_deg1, 2.93, 3.00, MATERIALS["black_linoleum"], steps=j_steps)
 
     # D. ~56 Radial Ceiling Battens (0.11 ft wide x 0.07 m tall, Z = +2.94..+3.01 m)
     n_slats = 56
-    skylight_clearances = [(-9.8, 11.8, 3.42), (6.2, 11.8, 3.42)]
+    skylight_clearances = [(sx, sy, 3.42) for sx, sy in drum_skylights]
     for k in range(n_slats):
         ang_deg = 27.0 + (171.0 - 27.0) * (k / (n_slats - 1))
         rad = math.radians(ang_deg)
@@ -689,7 +722,7 @@ def build_roof_and_skylights(scene):
                 h = math.sqrt(r_clr * r_clr - d_sq)
                 blocked_intervals.append((t_proj - h, t_proj + h))
 
-        for r_start, r_end in ((8.76, 14.44), (14.66, 19.14)):
+        for r_start, r_end in ((r_drum_in + 0.16, 14.44), (14.66, r_drum_out - 0.06)):
             segs = [(r_start, r_end)]
             for b0, b1 in blocked_intervals:
                 new_segs = []
@@ -709,15 +742,15 @@ def build_roof_and_skylights(scene):
                     add_oriented_box_ft(mesh, c_pt, s1 - s0, 0.11, ang_deg, 2.94, 3.01, MATERIALS["hemlock_slat"])
 
     # E. Parallel N–S Wood Ceiling Slats over ENTRY AREA 318 (Z = +2.94..+3.01 m)
-    entry_skylights = [(-11.2, -9.8, 3.38), (4.2, -9.8, 3.38)]
-    x_curr = -16.8
-    while x_curr <= 15.0:
+    entry_skylights = [(*G.CONICAL_SKYLIGHTS[6][:2], 3.38), (*G.CONICAL_SKYLIGHTS[7][:2], 3.38)]  # (-12.0, -14.5), (+4.0, -14.5)
+    x_curr = -17.5
+    while x_curr <= 15.5:
         blocked_y = []
         for sx, sy, r_clr in entry_skylights:
             if abs(x_curr - sx) < r_clr:
                 dy = math.sqrt(r_clr * r_clr - (x_curr - sx) ** 2)
                 blocked_y.append((sy - dy, sy + dy))
-        y_segs = [(-20.5, -1.5)]
+        y_segs = [(y_g4 + 0.5, -1.5)]
         for b0, b1 in blocked_y:
             new_ysegs = []
             for s0, s1 in y_segs:
@@ -736,7 +769,7 @@ def build_roof_and_skylights(scene):
         x_curr += 0.58
 
     # =========================================================================
-    # 6. 12 SIGNATURE AALTO CONICAL ROOF SKYLIGHT LANTERNS (WATERTIGHT SHELLS)
+    # 6. 14 SIGNATURE AALTO CONICAL ROOF SKYLIGHT LANTERNS (WATERTIGHT SHELLS)
     # =========================================================================
     for sx, sy, sr in G.CONICAL_SKYLIGHTS:
         add_arc_band_ft(mesh, (sx, sy), sr - 0.10, sr + 0.28, 0.0, 360.0, z_south_rf, z_lantern - 0.22, MATERIALS["copper_roof"], steps=sides_sky)
@@ -755,11 +788,18 @@ def build_roof_and_skylights(scene):
         )
 
         # Watertight Thick-Walled White Plaster Conical Light-Diffusing Throat (for Section A-A & B-B poché!)
-        z_ceil = 2.98 if sy > 4.0 else 3.28
-        z_throat_top = z_south_rf - 0.56  # 3.8608 - 0.56 = 3.3008 m -> strictly z_ceil < z_throat_top!
+        z_ceil = 2.96 if sy > 4.0 else (z_s_ceil - 0.14)
+        z_throat_top = z_s_ceil + 0.04  # strictly z_ceil < z_throat_top; embeds cleanly into South roof slab!
         cx_m, cy_m = xy_m((sx, sy))
-        r0_in, r0_out = m_ft(sr + 0.78), m_ft(sr + 1.14)
-        r1_in, r1_out = m_ft(sr - 0.10), m_ft(sr + 0.26)
+        if sx < G.X_SOUTH_STEP and (sy - (sr + 1.14)) < (y_g3 + 0.25):
+            r0_out_ft = max(sr + 0.05, sy - (y_g3 + 0.25))
+            r0_in_ft = r0_out_ft - 0.30
+            r1_in_ft, r1_out_ft = sr - 0.35, sr - 0.05
+        else:
+            r0_in_ft, r0_out_ft = sr + 0.78, sr + 1.14
+            r1_in_ft, r1_out_ft = sr - 0.10, sr + 0.26
+        r0_in, r0_out = m_ft(r0_in_ft), m_ft(r0_out_ft)
+        r1_in, r1_out = m_ft(r1_in_ft), m_ft(r1_out_ft)
         in0, out0, in1, out1 = [], [], [], []
         for s_i in range(sides_sky):
             ang = 2.0 * math.pi * s_i / sides_sky

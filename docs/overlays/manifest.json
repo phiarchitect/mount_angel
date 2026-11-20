@@ -1,5 +1,5 @@
 {
-  "origin_description": "Working Point #4 (convergence of Rays B, C, D) on Level 3 Finished Floor",
+  "origin_description": "Working Point #3 (convergence of Rays B, C, D on Grid Line 6) at Level 3 Finished Floor (EL. +128'-6\")",
   "units": "feet (canonical) / metres (IngeTrazo 3D)",
   "layers": [
     {
@@ -34,11 +34,12 @@
       "filename": "03-a3_gm-1135x700.jpg",
       "title": "FLOOR PLAN LEVEL #1",
       "svg": "overlays/sheet_03.svg",
-      "scale_px_per_ft": 3.4115,
-      "rot_deg": -0.6,
+      "scale_px_per_ft": 3.368,
+      "scale_y_px_per_ft": 3.345,
+      "rot_deg": -0.12,
       "origin_px": [
-        621.0,
-        418.8
+        621.8,
+        419.5
       ],
       "mode": "plan"
     },
@@ -47,11 +48,12 @@
       "filename": "04-a4_gm-1144x700.jpg",
       "title": "FLOOR PLAN LEVEL TWO",
       "svg": "overlays/sheet_04.svg",
-      "scale_px_per_ft": 3.4534,
-      "rot_deg": -0.563,
+      "scale_px_per_ft": 3.38,
+      "scale_y_px_per_ft": 3.345,
+      "rot_deg": -0.1,
       "origin_px": [
-        618.99,
-        420.14
+        622.2,
+        420.5
       ],
       "mode": "plan"
     },
@@ -60,11 +62,12 @@
       "filename": "05-a5_gm-1145x700.jpg",
       "title": "FLOOR PLAN LEVEL #3",
       "svg": "overlays/sheet_05.svg",
-      "scale_px_per_ft": 3.4416,
-      "rot_deg": -0.741,
+      "scale_px_per_ft": 3.38,
+      "scale_y_px_per_ft": 3.338,
+      "rot_deg": 0.02,
       "origin_px": [
-        620.25,
-        418.53
+        623.0,
+        419.5
       ],
       "mode": "plan"
     },
@@ -73,11 +76,12 @@
       "filename": "06-a6_gm-1149x700.jpg",
       "title": "BASIC PLAN LAYOUT",
       "svg": "overlays/sheet_06.svg",
-      "scale_px_per_ft": 6.91,
-      "rot_deg": -0.78,
+      "scale_px_per_ft": 6.7271,
+      "scale_y_px_per_ft": null,
+      "rot_deg": -0.321,
       "origin_px": [
-        693.58,
-        691.15
+        692.86,
+        693.37
       ],
       "mode": "plan"
     },
@@ -86,11 +90,12 @@
       "filename": "07-a7_gm-1145x700.jpg",
       "title": "ROOF PLAN & DETAILS",
       "svg": "overlays/sheet_07.svg",
-      "scale_px_per_ft": 3.4416,
-      "rot_deg": -0.741,
+      "scale_px_per_ft": 3.385,
+      "scale_y_px_per_ft": 3.345,
+      "rot_deg": 0.05,
       "origin_px": [
-        619.25,
-        418.53
+        623.0,
+        419.2
       ],
       "mode": "plan"
     },
@@ -99,11 +104,12 @@
       "filename": "13-a13_gm-1150x700.jpg",
       "title": "SECTION A-A & B-B",
       "svg": "overlays/sheet_13.svg",
-      "scale_px_per_ft": 3.446,
-      "rot_deg": -0.25,
+      "scale_px_per_ft": 3.395,
+      "scale_y_px_per_ft": 3.378,
+      "rot_deg": -0.1,
       "origin_px": [
-        423.1,
-        524.5
+        425.5,
+        523.75
       ],
       "mode": "section_aa"
     },
@@ -112,11 +118,12 @@
       "filename": "35-s4_gm-1140x700.jpg",
       "title": "LEVEL THREE FRAMING & FOUNDATION PLAN",
       "svg": "overlays/sheet_35.svg",
-      "scale_px_per_ft": 3.4414,
-      "rot_deg": -0.761,
+      "scale_px_per_ft": 3.3683,
+      "scale_y_px_per_ft": 3.356,
+      "rot_deg": -0.095,
       "origin_px": [
-        618.45,
-        417.22
+        622.5,
+        419.5
       ],
       "mode": "plan"
     }

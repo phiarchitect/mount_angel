@@ -1,37 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1150 700" width="1150" height="700" class="aalto-vector-svg">
   <g class="vec-layer" data-layer="regulating">
-    <line x1="243.88" y1="518.39" x2="726.32" y2="516.28" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="6,4" stroke-linecap="round"/>
-    <text x="733.76" y="519.27" fill="#38bdf8" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">UPPER LOBBY (+2'-0")</text>
-    <line x1="416.21" y1="524.53" x2="726.35" y2="523.18" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="6,4" stroke-linecap="round"/>
-    <text x="733.79" y="526.16" fill="#00e5ff" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">LEVEL #3 FAN (0'-0")</text>
-    <line x1="423.15" y1="536.56" x2="726.40" y2="535.24" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="6,4" stroke-linecap="round"/>
-    <text x="733.84" y="538.22" fill="#a855f7" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">MEZZANINE (-4'-6")</text>
-    <line x1="347.46" y1="564.46" x2="726.52" y2="562.81" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="6,4" stroke-linecap="round"/>
-    <text x="733.96" y="565.79" fill="#22c55e" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">LEVEL #2 (-12'-6")</text>
-    <line x1="533.75" y1="611.89" x2="726.73" y2="611.05" stroke="#10b981" stroke-width="1.5" stroke-dasharray="6,4" stroke-linecap="round"/>
-    <text x="734.17" y="614.03" fill="#10b981" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">LEVEL #1 (-26'-6")</text>
-    <polyline points="164.63,520.46 248.02,519.06 271.47,522.40 350.93,569.61 423.35,581.36 537.23,618.77 651.04,638.95 717.84,628.32 795.85,657.27" fill="none" stroke="#a3e635" stroke-width="2.0" stroke-dasharray="8,4" stroke-linejoin="round"/>
+    <line x1="250.08" y1="519.55" x2="738.51" y2="518.70" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="6,4" stroke-linecap="round"/>
+    <text x="745.91" y="512.69" fill="#38bdf8" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">UPPER LOBBY (+1'-4" / EL. 129'-10")</text>
+    <line x1="418.71" y1="523.76" x2="738.52" y2="523.20" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="6,4" stroke-linecap="round"/>
+    <text x="745.91" y="530.20" fill="#00e5ff" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">LEVEL #3 FAN (0'-0" / EL. 128'-6")</text>
+    <line x1="425.53" y1="541.77" x2="738.55" y2="541.22" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="6,4" stroke-linecap="round"/>
+    <text x="745.94" y="544.21" fill="#a855f7" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">MEZZANINE (-5'-4" / EL. 123'-2")</text>
+    <line x1="352.59" y1="571.17" x2="738.60" y2="570.50" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="6,4" stroke-linecap="round"/>
+    <text x="746.00" y="573.49" fill="#22c55e" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">LEVEL #2 (-14'-0" / EL. 114'-6")</text>
+    <line x1="544.49" y1="619.82" x2="738.69" y2="619.48" stroke="#10b981" stroke-width="1.5" stroke-dasharray="6,4" stroke-linecap="round"/>
+    <text x="746.08" y="622.47" fill="#10b981" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">LEVEL #1 (-28'-6" / EL. 100'-0")</text>
+    <polyline points="167.47,520.82 250.08,520.00 276.12,522.66 352.59,572.86 425.60,582.86 545.24,621.50 656.56,639.89 725.13,631.32 792.40,658.23" fill="none" stroke="#a3e635" stroke-width="2.0" stroke-dasharray="8,4" stroke-linejoin="round"/>
   </g>
   <g class="vec-layer" data-layer="walls">
-    <polyline points="173.11,488.83 247.88,488.51" fill="none" stroke="#f59e0b" stroke-width="2.6" stroke-linejoin="round"/>
-    <polyline points="248.01,518.37 412.73,517.65 423.10,524.50 502.01,524.16" fill="none" stroke="#10b981" stroke-width="2.6" stroke-linejoin="round"/>
-    <polyline points="580.93,523.81 717.39,523.22" fill="none" stroke="#10b981" stroke-width="2.8" stroke-linejoin="round"/>
-    <polyline points="350.91,564.44 717.56,562.84" fill="none" stroke="#10b981" stroke-width="2.6" stroke-linejoin="round"/>
-    <polyline points="537.20,611.88 717.77,611.09" fill="none" stroke="#10b981" stroke-width="2.6" stroke-linejoin="round"/>
-    <line x1="717.90" y1="640.38" x2="717.12" y2="461.76" stroke="#10b981" stroke-width="2.8" stroke-linecap="round"/>
-    <line x1="537.33" y1="641.17" x2="536.99" y2="563.63" stroke="#10b981" stroke-width="2.4" stroke-linecap="round"/>
+    <polyline points="174.21,487.59 250.03,487.46" fill="none" stroke="#f59e0b" stroke-width="2.6" stroke-linejoin="round"/>
+    <polyline points="250.08,519.55 415.31,519.26 425.50,523.75 511.68,523.60" fill="none" stroke="#10b981" stroke-width="2.6" stroke-linejoin="round"/>
+    <polyline points="586.37,523.47 724.94,523.23" fill="none" stroke="#10b981" stroke-width="2.8" stroke-linejoin="round"/>
+    <polyline points="352.59,571.17 725.02,570.52" fill="none" stroke="#10b981" stroke-width="2.6" stroke-linejoin="round"/>
+    <polyline points="545.24,619.81 725.11,619.50" fill="none" stroke="#10b981" stroke-width="2.6" stroke-linejoin="round"/>
+    <line x1="725.14" y1="641.46" x2="724.83" y2="462.60" stroke="#10b981" stroke-width="2.8" stroke-linecap="round"/>
+    <line x1="545.27" y1="641.77" x2="545.15" y2="570.83" stroke="#10b981" stroke-width="2.4" stroke-linecap="round"/>
   </g>
   <g class="vec-layer" data-layer="stairs_millwork">
-    <polyline points="580.93,523.81 580.88,512.78" fill="none" stroke="#facc15" stroke-width="2.8" stroke-linejoin="round"/>
-    <polyline points="502.01,524.16 502.07,536.22 534.11,536.08 534.06,525.05" fill="none" stroke="#c084fc" stroke-width="2.4" stroke-linejoin="round"/>
+    <polyline points="586.37,523.47 586.36,513.34" fill="none" stroke="#facc15" stroke-width="2.8" stroke-linejoin="round"/>
+    <polyline points="511.68,523.60 511.72,541.62 545.10,541.56 545.08,532.10" fill="none" stroke="#c084fc" stroke-width="2.4" stroke-linejoin="round"/>
   </g>
   <g class="vec-layer" data-layer="roof_skylights">
-    <polyline points="247.85,481.61 503.89,480.50 543.73,449.88 560.02,471.35 717.14,467.22 717.12,461.76" fill="none" stroke="#facc15" stroke-width="2.6" stroke-linejoin="round"/>
-    <polyline points="560.02,471.35 571.80,484.80 648.64,484.46 714.40,471.02" fill="none" stroke="#38bdf8" stroke-width="2.0" stroke-dasharray="5,3" stroke-linejoin="round"/>
-    <polyline points="520.11,486.74 524.52,468.92 532.40,458.55 543.73,449.88" fill="none" stroke="#38bdf8" stroke-width="2.0" stroke-dasharray="4,2" stroke-linejoin="round"/>
-    <polyline points="318.88,489.81 322.58,470.38 337.06,470.31 340.93,489.71" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linejoin="round"/>
-    <polyline points="356.78,489.64 360.49,470.21 374.96,470.15 378.84,489.54" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linejoin="round"/>
-    <polyline points="435.70,489.30 439.40,469.87 453.88,469.80 457.75,489.20" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linejoin="round"/>
-    <text x="513.19" y="440.74" fill="#fde047" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">NORTH LIGHT SCOOP (+21'-6")</text>
+    <polyline points="250.01,477.89 511.60,477.43 554.00,451.46 576.67,471.97 724.84,468.62 724.83,462.60" fill="none" stroke="#facc15" stroke-width="2.6" stroke-linejoin="round"/>
+    <polyline points="576.67,471.97 586.87,485.18 654.60,485.07 722.13,468.51" fill="none" stroke="#38bdf8" stroke-width="2.0" stroke-dasharray="5,3" stroke-linejoin="round"/>
+    <polyline points="524.63,485.29 530.72,469.52 540.88,458.69 554.00,451.46" fill="none" stroke="#38bdf8" stroke-width="2.0" stroke-dasharray="4,2" stroke-linejoin="round"/>
+    <polyline points="338.19,488.57 341.89,468.72 356.15,468.70 359.91,488.54" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linejoin="round"/>
+    <polyline points="377.91,488.50 381.61,468.65 395.87,468.63 399.64,488.47" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linejoin="round"/>
+    <polyline points="454.64,488.37 458.34,468.52 472.59,468.49 476.36,488.33" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linejoin="round"/>
+    <text x="522.20" y="442.41" fill="#fde047" font-family="Inter, monospace, sans-serif" font-size="10" font-weight="700" paint-order="stroke" stroke="#0b0f17" stroke-width="3" stroke-linejoin="round">NORTH LIGHT SCOOP (+21'-4")</text>
   </g>
 </svg>

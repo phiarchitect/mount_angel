@@ -49,17 +49,17 @@ def _point_in_poly_2d(pt: tuple[float, float], poly: list[tuple[float, float]]) 
 
 def natural_hillside_z_m(x_ft: float, y_ft: float) -> float:
     """Smooth Mount Angel Abbey bluff elevation (metres) outside the building excavation."""
-    # Preserved 100% identically inside Library excavation pocket [-140..115 ft] x [-70..110 ft]
+    # Aligned to true Lobby threshold (+1'-4" = +0.406 m) and Level 1 toe (-28'-6" = -8.687 m)
     if -140.0 <= x_ft <= 115.0 and -70.0 <= y_ft <= 110.0:
         if y_ft <= -42.0:
-            return 0.52 - 0.002 * max(0.0, -42.0 - y_ft) - 0.0008 * max(0.0, abs(x_ft) - 70.0)
-        if y_ft <= 86.0:
-            t = (y_ft - (-42.0)) / (86.0 - (-42.0))
+            return 0.32 - 0.002 * max(0.0, -42.0 - y_ft) - 0.0008 * max(0.0, abs(x_ft) - 70.0)
+        if y_ft <= 88.0:
+            t = (y_ft - (-42.0)) / (88.0 - (-42.0))
             s = t * t * (3.0 - 2.0 * t)
-            z = 0.52 * (1.0 - s) + (-9.35) * s
+            z = 0.32 * (1.0 - s) + (-9.85) * s
         else:
-            t2 = (y_ft - 86.0) / 54.0
-            z = -9.35 - 2.35 * t2
+            t2 = (y_ft - 88.0) / 54.0
+            z = -9.85 - 2.35 * t2
         z -= 0.000045 * (x_ft * x_ft)
         return z
 
@@ -72,17 +72,17 @@ def natural_hillside_z_m(x_ft: float, y_ft: float) -> float:
         y_crest = -42.0
 
     if y_ft <= y_crest:
-        z = 0.50 - 0.0012 * max(0.0, y_crest - y_ft) - 0.0004 * max(0.0, abs(x_ft) - 90.0)
-        return max(-0.25, z)
+        z = 0.30 - 0.0012 * max(0.0, y_crest - y_ft) - 0.0004 * max(0.0, abs(x_ft) - 90.0)
+        return max(-0.45, z)
     else:
         dy = y_ft - y_crest
-        if dy <= 128.0:
-            t = dy / 128.0
+        if dy <= 130.0:
+            t = dy / 130.0
             s = t * t * (3.0 - 2.0 * t)
-            z = 0.50 * (1.0 - s) + (-9.35) * s
+            z = 0.30 * (1.0 - s) + (-9.85) * s
         else:
-            t2 = (dy - 128.0) / 54.0
-            z = -9.35 - 2.35 * t2
+            t2 = (dy - 130.0) / 54.0
+            z = -9.85 - 2.35 * t2
         return z
 
 
@@ -287,14 +287,15 @@ def build_site_terrain(scene):
         p_next = perim_b[(k + 1) % len(perim_b)]
         add_tri(mesh, pc_b, p_next, p_curr, MATERIALS["hill_earth"])
 
-    # Exposed-aggregate South Entrance Plaza & Abbey Approach Walk
+    # Exposed-aggregate South Entrance Plaza & Abbey Approach Walk (flush just below +0.41 m Lobby)
+    z_l1 = m_ft(G.Z_L1_FT)  # -8.69 m
     plaza_poly = [
-        (-96.0, -50.8),
-        (20.0, -50.8),
-        (20.0, -82.0),
+        (-96.0, G.GRID_Y["2"]),
+        (21.0, G.GRID_Y["2"]),
+        (21.0, -82.0),
         (-96.0, -82.0),
     ]
-    add_extruded_polygon_ft(mesh, plaza_poly, 0.35, 0.56, MATERIALS["plaza_paving"], MATERIALS["concrete"])
+    add_extruded_polygon_ft(mesh, plaza_poly, 0.15, 0.36, MATERIALS["plaza_paving"], MATERIALS["concrete"])
 
     # Broad Abbey South Promenade Walk extending toward Quad axis
     walk_poly = [
@@ -303,22 +304,36 @@ def build_site_terrain(scene):
         (8.0, -104.5),
         (-26.0, -104.5),
     ]
-    add_extruded_polygon_ft(mesh, walk_poly, 0.25, 0.54, MATERIALS["plaza_paving"], MATERIALS["concrete"])
+    add_extruded_polygon_ft(mesh, walk_poly, 0.08, 0.34, MATERIALS["plaza_paving"], MATERIALS["concrete"])
 
     # Low Buff-Brick Entry Forecourt Bench Wall along South Plaza
-    add_wall_strip_ft(mesh, [(-92.0, -68.0), (-30.0, -68.0)], 1.4, 0.56, 1.15, MATERIALS["buff_brick"])
+    add_wall_strip_ft(mesh, [(-92.0, -68.5), (-30.0, -68.5)], 1.4, 0.36, 0.95, MATERIALS["buff_brick"])
 
     # Subtle low concrete site curbs flanking the West & East upper plaza transitions
-    add_wall_strip_ft(mesh, [(-126.5, -28.0), (-134.0, -28.0), (-134.0, 1.5), (-126.5, 1.5)], 1.1, -1.2, 0.58, MATERIALS["concrete"])
-    add_wall_strip_ft(mesh, [(61.5, -59.5), (68.0, -59.5), (68.0, -8.8), (61.5, -8.8)], 1.1, -1.2, 0.58, MATERIALS["concrete"])
+    add_wall_strip_ft(
+        mesh,
+        [(G.X_WEST_WING, G.GRID_Y["3"]), (G.X_WEST_WING - 7.5, G.GRID_Y["3"]), (G.X_WEST_WING - 7.5, G.GRID_Y["6"]), (G.X_WEST_WING, G.GRID_Y["6"])],
+        1.1,
+        -1.2,
+        0.38,
+        MATERIALS["concrete"],
+    )
+    add_wall_strip_ft(
+        mesh,
+        [(G.X_AUD_E, G.GRID_Y["1"]), (G.X_AUD_E + 6.5, G.GRID_Y["1"]), (G.X_AUD_E + 6.5, G.GRID_Y["5"]), (G.X_AUD_E, G.GRID_Y["5"])],
+        1.1,
+        -1.2,
+        0.38,
+        MATERIALS["concrete"],
+    )
 
-    # North & East Perimeter Concrete Maintenance Apron at Level 1 Toe (meeting stepped-back L1 wall)
-    l1_chain = [G.PT_A_INNER_JUNC, *get_north_perimeter_with_pockets_ft(level=1), (43.5, 24.5)]
+    # North & East Perimeter Concrete Maintenance Apron at Level 1 Toe (-28'-6" / -8.69 m)
+    l1_chain = [G.PT_A_INNER_JUNC, *get_north_perimeter_with_pockets_ft(level=1), (44.5, 25.0)]
     apron_pts = [
-        (-81.5, 13.8), (-90.5, 16.5), (-62.0, 63.0), (-13.8, 88.8), (41.8, 88.0), (97.8, 67.2), (48.0, 21.5),
+        (-84.5, 13.5), (-92.5, 16.0), (-65.5, 62.5), (-15.0, 92.5), (44.0, 92.5), (99.5, 74.5), (49.0, 22.0),
         *reversed(l1_chain),
     ]
-    add_extruded_polygon_ft(mesh, apron_pts, -9.60, -8.12, MATERIALS["plaza_paving"], MATERIALS["concrete"])
+    add_extruded_polygon_ft(mesh, apron_pts, z_l1 - 1.50, z_l1 - 0.04, MATERIALS["plaza_paving"], MATERIALS["concrete"])
 
     # Local material definitions for contextual campus architecture
     buff_brick = MATERIALS["buff_brick"]
@@ -329,7 +344,6 @@ def build_site_terrain(scene):
     # =========================================================================
     # ABBEY DRIVE & CAMPUS QUAD WALKWAYS
     # =========================================================================
-    # Curving Abbey Drive around downhill North/NE toe of bluff (closed 2-manifold slabs following grade)
     drive_pts = [
         (-280.0, 40.0),
         (-220.0, 55.0),
@@ -349,25 +363,25 @@ def build_site_terrain(scene):
     add_extruded_polygon_ft(
         mesh,
         [(-135.0, -116.0), (238.0, -116.0), (238.0, -128.0), (-135.0, -128.0)],
-        0.25, 0.52, MATERIALS["plaza_paving"], MATERIALS["concrete"]
+        0.05, 0.32, MATERIALS["plaza_paving"], MATERIALS["concrete"]
     )
     # Connector Walkway linking Library Promenade south to Quad Axial Walk
     add_extruded_polygon_ft(
         mesh,
         [(-18.0, -104.5), (0.0, -104.5), (0.0, -116.0), (-18.0, -116.0)],
-        0.25, 0.52, MATERIALS["plaza_paving"], MATERIALS["concrete"]
+        0.05, 0.32, MATERIALS["plaza_paving"], MATERIALS["concrete"]
     )
     # West Quad Cross Walkway connecting Aquinas Hall south to Romanesque Hall
     add_extruded_polygon_ft(
         mesh,
         [(-162.0, -80.0), (-150.0, -80.0), (-150.0, -130.0), (-162.0, -130.0)],
-        0.25, 0.50, MATERIALS["plaza_paving"], MATERIALS["concrete"]
+        0.05, 0.30, MATERIALS["plaza_paving"], MATERIALS["concrete"]
     )
     # South Cross Walkway connecting Axial Walk south to Modern Seminary Pavilions
     add_extruded_polygon_ft(
         mesh,
         [(-32.0, -128.0), (-20.0, -128.0), (-20.0, -190.0), (-32.0, -190.0)],
-        0.25, 0.48, MATERIALS["plaza_paving"], MATERIALS["concrete"]
+        0.05, 0.28, MATERIALS["plaza_paving"], MATERIALS["concrete"]
     )
     # Semicircular Abbey Church Forecourt Plaza (center=(238.0, -122.0), R=46 ft, West half 90°..270°)
     forecourt_arc = arc_pts((238.0, -122.0), 46.0, 90.0, 270.0, steps=16)
@@ -375,7 +389,7 @@ def build_site_terrain(scene):
     add_extruded_polygon_ft(
         mesh,
         forecourt_poly,
-        0.25, 0.58, MATERIALS["plaza_paving"], MATERIALS["concrete"]
+        0.05, 0.38, MATERIALS["plaza_paving"], MATERIALS["concrete"]
     )
 
     # =========================================================================
