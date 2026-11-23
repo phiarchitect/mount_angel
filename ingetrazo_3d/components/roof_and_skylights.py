@@ -37,6 +37,7 @@ from .primitives import (
     add_quad,
     add_tri,
     add_wall_strip_ft,
+    as_concrete,
     create_scene_group,
     m_ft,
     offset_polyline_right_ft,
@@ -150,6 +151,12 @@ def build_roof_and_skylights(scene):
 
     # Concave white plaster reflector profile (radius_ft_from_WP3A, z_interior_m, z_exterior_m)
     # Approximates the 7'-8" radius curved plaster vault springing from R = 25'-10" up to R = 34'-6"
+    scoop_cop_conc = as_concrete(MATERIALS["copper_roof"])
+    plaster_conc = as_concrete(MATERIALS["white_plaster"])
+    soffit_conc = as_concrete(MATERIALS["white_soffit"])
+    builtup_conc = as_concrete(MATERIALS["builtup_roof"])
+    aud_rf_conc = as_concrete(MATERIALS["auditorium_roof"])
+    brick_conc = as_concrete(MATERIALS["buff_brick"])
     vault_profile = [
         (G.R_SCOOP_INNER, z_s_ceil + 0.04, z_south_rf + 0.06),
         (28.2, 4.48, 4.98),
@@ -174,7 +181,7 @@ def build_roof_and_skylights(scene):
                 (*p01_xy, ze_b),
                 (*p11_xy, ze_b),
                 (*p10_xy, ze_a),
-                MATERIALS["copper_roof"],
+                scoop_cop_conc,
             )
             # Interior Concave White Plaster Daylight Reflector Vault (facing North/Down into Well!)
             add_quad(
@@ -183,17 +190,17 @@ def build_roof_and_skylights(scene):
                 (*p10_xy, zi_a),
                 (*p11_xy, zi_b),
                 (*p01_xy, zi_b),
-                MATERIALS["white_plaster"],
+                plaster_conc,
             )
             # Seal outer boundary rims of the curved scoop vault for watertight section capping
             if k == 0:
-                add_quad(mesh, (*p00_xy, zi_a), (*p00_xy, ze_a), (*p10_xy, ze_a), (*p10_xy, zi_a), MATERIALS["copper_roof"])
+                add_quad(mesh, (*p00_xy, zi_a), (*p00_xy, ze_a), (*p10_xy, ze_a), (*p10_xy, zi_a), scoop_cop_conc)
             if k == len(vault_profile) - 2:
-                add_quad(mesh, (*p01_xy, ze_b), (*p01_xy, zi_b), (*p11_xy, zi_b), (*p11_xy, ze_b), MATERIALS["copper_roof"])
+                add_quad(mesh, (*p01_xy, ze_b), (*p01_xy, zi_b), (*p11_xy, zi_b), (*p11_xy, ze_b), scoop_cop_conc)
             if i == 0:
-                add_quad(mesh, (*p00_xy, zi_a), (*p01_xy, zi_b), (*p01_xy, ze_b), (*p00_xy, ze_a), MATERIALS["copper_roof"])
+                add_quad(mesh, (*p00_xy, zi_a), (*p01_xy, zi_b), (*p01_xy, ze_b), (*p00_xy, ze_a), scoop_cop_conc)
             if i == n_scoop - 1:
-                add_quad(mesh, (*p10_xy, ze_a), (*p11_xy, ze_b), (*p11_xy, zi_b), (*p10_xy, zi_a), MATERIALS["copper_roof"])
+                add_quad(mesh, (*p10_xy, ze_a), (*p11_xy, ze_b), (*p11_xy, zi_b), (*p10_xy, zi_a), scoop_cop_conc)
 
         # Closed 2-manifold Steep North-Facing Skylight Glazing Shell (thickness = 24 mm)
         rg0_xy = xy_m(polar_pt(G.WP3A, G.R_SCOOP_RIDGE, a0))
@@ -257,7 +264,7 @@ def build_roof_and_skylights(scene):
         deg1,
         z_fan_low - 0.22,
         z_curb,
-        MATERIALS["white_plaster"],
+        plaster_conc,
         steps=36,
     )
     add_arc_band_ft(
@@ -300,7 +307,7 @@ def build_roof_and_skylights(scene):
             ray_deg,
             beam_z0,
             beam_z1,
-            MATERIALS["white_plaster"],
+            plaster_conc,
         )
 
     # Watertight Copper/Plaster End-Cheek Gables closing East (45°) & West (156°) Scoop Ends
@@ -324,9 +331,9 @@ def build_roof_and_skylights(scene):
         cheek_rz_m,
         s0_m=-m_ft(0.42),
         s1_m=+m_ft(0.16),
-        s0_attrs=MATERIALS["white_plaster"],
-        s1_attrs=MATERIALS["copper_roof"],
-        rim_attrs=MATERIALS["copper_roof"],
+        s0_attrs=plaster_conc,
+        s1_attrs=scoop_cop_conc,
+        rim_attrs=scoop_cop_conc,
     )
     # West End Cheek (`deg1 = 156.0°`): -n (+deg) faces outside (`copper_roof`), +n (-deg) faces inside (`white_plaster`)
     _add_scoop_end_cheek_solid(
@@ -336,9 +343,9 @@ def build_roof_and_skylights(scene):
         cheek_rz_m,
         s0_m=-m_ft(0.16),
         s1_m=+m_ft(0.42),
-        s0_attrs=MATERIALS["copper_roof"],
-        s1_attrs=MATERIALS["white_plaster"],
-        rim_attrs=MATERIALS["copper_roof"],
+        s0_attrs=scoop_cop_conc,
+        s1_attrs=plaster_conc,
+        rim_attrs=scoop_cop_conc,
     )
 
     # =========================================================================
@@ -443,40 +450,40 @@ def build_roof_and_skylights(scene):
         q_ou1 = xy_m(polar_pt(G.WP3A, r_out1, a1))
 
         # Zone A: Top Built-Up Roof from r_tin to r_hinge (Z = +4.65 m)
-        add_quad(mesh, (*q_tin0, z_fan_low), (*q_hg0, z_fan_low), (*q_hg1, z_fan_low), (*q_tin1, z_fan_low), MATERIALS["builtup_roof"])
+        add_quad(mesh, (*q_tin0, z_fan_low), (*q_hg0, z_fan_low), (*q_hg1, z_fan_low), (*q_tin1, z_fan_low), builtup_conc)
 
         # Zone B: Upward-Sweeping Perimeter Built-Up Roof (`Sheet 07-a7`) & Daylight-Scoop Plaster Soffit
-        zone_b_mat = MATERIALS["builtup_roof"]
+        zone_b_mat = builtup_conc
         if abs(zt_ou0 - zt_ou1) > 1e-5:
             add_tri(mesh, (*q_hg0, z_fan_low), (*q_ou0, zt_ou0), (*q_ou1, zt_ou1), zone_b_mat)
             add_tri(mesh, (*q_hg0, z_fan_low), (*q_ou1, zt_ou1), (*q_hg1, z_fan_low), zone_b_mat)
-            add_tri(mesh, (*q_hg0, z_fan_ceil), (*q_hg1, z_fan_ceil), (*q_ou1, zb_ou1), MATERIALS["white_soffit"])
-            add_tri(mesh, (*q_hg0, z_fan_ceil), (*q_ou1, zb_ou1), (*q_ou0, zb_ou0), MATERIALS["white_soffit"])
+            add_tri(mesh, (*q_hg0, z_fan_ceil), (*q_hg1, z_fan_ceil), (*q_ou1, zb_ou1), soffit_conc)
+            add_tri(mesh, (*q_hg0, z_fan_ceil), (*q_ou1, zb_ou1), (*q_ou0, zb_ou0), soffit_conc)
         else:
             add_quad(mesh, (*q_hg0, z_fan_low), (*q_ou0, zt_ou0), (*q_ou1, zt_ou1), (*q_hg1, z_fan_low), zone_b_mat)
-            add_quad(mesh, (*q_hg0, z_fan_ceil), (*q_hg1, z_fan_ceil), (*q_ou1, zb_ou1), (*q_ou0, zb_ou0), MATERIALS["white_soffit"])
+            add_quad(mesh, (*q_hg0, z_fan_ceil), (*q_hg1, z_fan_ceil), (*q_ou1, zb_ou1), (*q_ou0, zb_ou0), soffit_conc)
 
         # Zone A: Bottom Horizontal Soffit from r_bin to r_hinge (Z = +3.45 m, 1.20 m plenum!)
-        add_quad(mesh, (*q_bin0, z_fan_ceil), (*q_bin1, z_fan_ceil), (*q_hg1, z_fan_ceil), (*q_hg0, z_fan_ceil), MATERIALS["white_soffit"])
+        add_quad(mesh, (*q_bin0, z_fan_ceil), (*q_bin1, z_fan_ceil), (*q_hg1, z_fan_ceil), (*q_hg0, z_fan_ceil), soffit_conc)
 
         # Outer rim face at r_out (+r outward normal)
         add_quad(mesh, (*q_ou0, zt_ou0), (*q_ou0, zb_ou0), (*q_ou1, zb_ou1), (*q_ou1, zt_ou1), zone_b_mat)
 
         # Inner face: Diagonal Splayed Coffer (inside Scoop) or Vertical Rim (outside Scoop)
         if is_scoop:
-            add_quad(mesh, (*q_tin0, z_fan_low), (*q_tin1, z_fan_low), (*q_bin1, z_fan_ceil), (*q_bin0, z_fan_ceil), MATERIALS["white_plaster"])
+            add_quad(mesh, (*q_tin0, z_fan_low), (*q_tin1, z_fan_low), (*q_bin1, z_fan_ceil), (*q_bin0, z_fan_ceil), plaster_conc)
         else:
-            add_quad(mesh, (*q_tin0, z_fan_ceil), (*q_tin0, z_fan_low), (*q_tin1, z_fan_low), (*q_tin1, z_fan_ceil), MATERIALS["white_soffit"])
+            add_quad(mesh, (*q_tin0, z_fan_ceil), (*q_tin0, z_fan_low), (*q_tin1, z_fan_low), (*q_tin1, z_fan_ceil), soffit_conc)
 
         # Seal radial cheek rims at outer ends, sector transitions, or H-pocket radial steps
         cap_east = (i == 0) or (raw_slices[i][6] != raw_slices[i - 1][6]) or (raw_slices[i][4] != raw_slices[i - 1][5])
         cap_west = (i == n_sl - 1) or (raw_slices[i][6] != raw_slices[i + 1][6]) or (raw_slices[i][5] != raw_slices[i + 1][4])
         if cap_east:
-            add_quad(mesh, (*q_bin0, z_fan_ceil), (*q_hg0, z_fan_ceil), (*q_hg0, z_fan_low), (*q_tin0, z_fan_low), MATERIALS["copper_roof"])
-            add_quad(mesh, (*q_hg0, z_fan_ceil), (*q_ou0, zb_ou0), (*q_ou0, zt_ou0), (*q_hg0, z_fan_low), MATERIALS["copper_roof"])
+            add_quad(mesh, (*q_bin0, z_fan_ceil), (*q_hg0, z_fan_ceil), (*q_hg0, z_fan_low), (*q_tin0, z_fan_low), scoop_cop_conc)
+            add_quad(mesh, (*q_hg0, z_fan_ceil), (*q_ou0, zb_ou0), (*q_ou0, zt_ou0), (*q_hg0, z_fan_low), scoop_cop_conc)
         if cap_west:
-            add_quad(mesh, (*q_tin1, z_fan_low), (*q_hg1, z_fan_low), (*q_hg1, z_fan_ceil), (*q_bin1, z_fan_ceil), MATERIALS["copper_roof"])
-            add_quad(mesh, (*q_hg1, z_fan_low), (*q_ou1, zt_ou1), (*q_ou1, zb_ou1), (*q_hg1, z_fan_ceil), MATERIALS["copper_roof"])
+            add_quad(mesh, (*q_tin1, z_fan_low), (*q_hg1, z_fan_low), (*q_hg1, z_fan_ceil), (*q_bin1, z_fan_ceil), scoop_cop_conc)
+            add_quad(mesh, (*q_hg1, z_fan_low), (*q_ou1, zt_ou1), (*q_ou1, zb_ou1), (*q_hg1, z_fan_ceil), scoop_cop_conc)
 
     # Weathered Copper Parapet Fascia Cap mitering razor-sharp around ALL 3 H-Pockets & BOTH Acute Prows!
     add_wall_strip_ft(
@@ -545,9 +552,9 @@ def build_roof_and_skylights(scene):
         aud_slab_poly,
         z_aud_rf - 0.64,
         z_aud_rf,
-        MATERIALS["auditorium_roof"],
-        MATERIALS["buff_brick"],
-        MATERIALS["white_soffit"],
+        aud_rf_conc,
+        brick_conc,
+        soffit_conc,
     )
     aud_coping_loop = [*reversed(auditorium_roof_poly), auditorium_roof_poly[-1]]
     add_wall_strip_ft(
@@ -603,10 +610,10 @@ def build_roof_and_skylights(scene):
         roof_skylight_holes,
         z_s_ceil,
         z_south_rf,
-        MATERIALS["builtup_roof"],
-        MATERIALS["buff_brick"],
-        MATERIALS["white_plaster"],
-        MATERIALS["white_soffit"],
+        builtup_conc,
+        brick_conc,
+        plaster_conc,
+        soffit_conc,
     )
 
     # Continuous Watertight Buff-Brick + Copper-Capped Clerestory Step Parapet rising UP from the

@@ -1,0 +1,104 @@
+{
+  "prefix": "seg07_the_reading_well",
+  "html": "../../../docs/library-3d.html",
+  "injected_js_file": "../../library_choreography.js",
+  "query_params": {
+    "studio": "1",
+    "hud": "0"
+  },
+  "width": 2560,
+  "height": 1440,
+  "duration_sec": 32.0,
+  "fps": 30,
+  "warmup_frames": 0,
+  "thumb_sec": 12.0,
+  "audio_wav": "seg07_the_reading_well.wav",
+  "wide_mp4": "seg07_the_reading_well.mp4",
+  "wide_thumb": "seg07_the_reading_well_thumb.png",
+  "render_short": false,
+  "ambient_drone": false,
+  "hideLayers": [
+    "0_Regulating_Grid"
+  ],
+  "caster": "envelope",
+  "keyframes": [
+    {
+      "t": 0.0,
+      "tx": 1.2,
+      "ty": 6.8,
+      "tz": 0.22,
+      "yaw": 2.95,
+      "pitch": 0.11,
+      "dist": 13.5,
+      "fov": 56.0,
+      "doy": 172,
+      "hour": 11.4,
+      "comment": "Level 3 workbench POV: matte-black linoleum counter, 3-legged Artek Stool 60, mushroom lamps & stairwell bookcase"
+    },
+    {
+      "t": 6.5,
+      "tx": 2.25,
+      "ty": 8.45,
+      "tz": -0.45,
+      "yaw": 2.98,
+      "pitch": 0.21,
+      "dist": 9.0,
+      "fov": 54.0,
+      "doy": 172,
+      "hour": 12.15,
+      "comment": "Gliding cleanly above Level 3 parapet & angled-arm lamps into the open double-height Reading Well"
+    },
+    {
+      "t": 13.0,
+      "tx": 2.55,
+      "ty": 9.55,
+      "tz": -1.1,
+      "yaw": 3.48,
+      "pitch": 0.26,
+      "dist": 5.3,
+      "fov": 52.0,
+      "doy": 172,
+      "hour": 12.9,
+      "comment": "Mezzanine (-5'-4\" / -1.63 m): slate-blue carpet, Artek 69 chairs, workbench, lamps & 3-shelf curved Reference Bookwall"
+    },
+    {
+      "t": 18.5,
+      "tx": 2.15,
+      "ty": 5.55,
+      "tz": -0.95,
+      "yaw": 1.98,
+      "pitch": 0.33,
+      "dist": 4.3,
+      "fov": 54.0,
+      "doy": 172,
+      "hour": 13.55,
+      "comment": "Sweeping past the 3-shelf Birch Reference Bookwall tucked cleanly beneath the Level 3 plaster soffit"
+    },
+    {
+      "t": 25.0,
+      "tx": -3.2,
+      "ty": 10.65,
+      "tz": 0.9,
+      "yaw": 0.38,
+      "pitch": -0.21,
+      "dist": 5.6,
+      "fov": 53.0,
+      "doy": 172,
+      "hour": 14.35,
+      "comment": "Descending into the outer Sunken Well through the wide column bay as camera tilts smoothly upward"
+    },
+    {
+      "t": 32.0,
+      "tx": -4.8,
+      "ty": 11.1,
+      "tz": 2.05,
+      "yaw": 0.24,
+      "pitch": -0.29,
+      "dist": 7.8,
+      "fov": 52.0,
+      "doy": 172,
+      "hour": 15.2,
+      "comment": "Dramatic upward pan from Sunken Well across 18\" round columns & 3 radial skylight header beams into glowing curved Scoop"
+    }
+  ]
+}

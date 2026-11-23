@@ -84,6 +84,12 @@ MATERIALS: dict[str, dict] = {
 }
 
 
+def as_concrete(mat: dict) -> dict:
+    """Return a copy of material attributes tagged as primary cast-in-place concrete structure."""
+    return {**mat, "concrete_struct": True}
+
+
+
 # =============================================================================
 # LOW-LEVEL INGETRAZO MESH HELPERS
 # =============================================================================
@@ -696,6 +702,7 @@ def add_stepped_stair_ft(
     n_steps: int = 16,
     tread_attrs: dict | None = None,
     wall_side: int = 0,
+    concrete_struct: bool = False,
 ):
     """Build a true 3D stepped architectural stair with treads, white stringers, birch caps, and bronze handrails."""
     dx, dy = p_bot_ft[0] - p_top_ft[0], p_bot_ft[1] - p_top_ft[1]
@@ -708,6 +715,9 @@ def add_stepped_stair_ft(
     nx, ny = -uy, ux
 
     t_mat = tread_attrs or MATERIALS["birch_wood"]
+    if concrete_struct:
+        t_mat = as_concrete(t_mat)
+    stringer_mat = as_concrete(MATERIALS["white_plaster"]) if concrete_struct else MATERIALS["white_plaster"]
     step_run = L / n_steps
     dz = (z_top_m - z_bot_m) / n_steps
     for s in range(n_steps):
@@ -731,7 +741,7 @@ def add_stepped_stair_ft(
         is_wall = (wall_side < 0 and side < 0) or (wall_side > 0 and side > 0)
         if not is_wall:
             for z_lo_a, z_hi_a, z_lo_b, z_hi_b, mat in [
-                (z_top_m - 0.28, z_top_m + 0.54, z_bot_m - 0.28, z_bot_m + 0.54, MATERIALS["white_plaster"]),
+                (z_top_m - 0.28, z_top_m + 0.54, z_bot_m - 0.28, z_bot_m + 0.54, stringer_mat),
                 (z_top_m + 0.54, z_top_m + 0.59, z_bot_m + 0.54, z_bot_m + 0.59, MATERIALS["birch_wood"]),
             ]:
                 p_a0 = (s0[0], s0[1], z_lo_a)

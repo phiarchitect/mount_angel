@@ -33,6 +33,7 @@ if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from ingetrazo_3d.components import (
+    build_campus_trees,
     build_envelope_and_south_wing,
     build_level3_reading_room,
     build_lower_levels,
@@ -43,7 +44,7 @@ from ingetrazo_3d.components import (
 
 
 def build_mount_angel_scene(scene):
-    """Populate `scene` with all 8 architectural layers of Mount Angel Abbey Library."""
+    """Populate `scene` with all 10 architectural & landscape layers of Mount Angel Abbey Library."""
     scene.clear()
     build_regulating_lines(scene)
     build_site_terrain(scene)
@@ -51,6 +52,7 @@ def build_mount_angel_scene(scene):
     build_level3_reading_room(scene)
     build_envelope_and_south_wing(scene)
     build_roof_and_skylights(scene)
+    build_campus_trees(scene)
     scene.version += 1
 
 
@@ -69,9 +71,13 @@ def export_web_scene_json(scene, out_path: Path):
         return round(float(v), 3)
 
     for grp in scene.groups:
-        struct_pos: list[float] = []
-        struct_nrm: list[float] = []
-        struct_col: list[float] = []
+        conc_pos: list[float] = []
+        conc_nrm: list[float] = []
+        conc_col: list[float] = []
+
+        arch_pos: list[float] = []
+        arch_nrm: list[float] = []
+        arch_col: list[float] = []
 
         furn_pos: list[float] = []
         furn_nrm: list[float] = []
@@ -82,9 +88,11 @@ def export_web_scene_json(scene, out_path: Path):
         trans_col: list[float] = []
 
         edge_pos: list[float] = []
+        conc_edge_pos: list[float] = []
         edge_adj: dict[tuple[tuple[float, float, float], tuple[float, float, float]], list[tuple[float, float, float, tuple[float, float, float], bool, bool]]] = {}
+        conc_edge_adj: dict[tuple[tuple[float, float, float], tuple[float, float, float]], list[tuple[float, float, float, bool]]] = {}
 
-        is_terrain = grp.name.startswith("1_")
+        is_terrain = grp.name.startswith("1_") or grp.name.startswith("8_") or grp.name.startswith("9_")
         is_reg = grp.name.startswith("0_")
 
         # Pre-pass: accumulate smooth vertex normals across smooth-tagged faces sharing position & material
@@ -97,7 +105,8 @@ def export_web_scene_json(scene, out_path: Path):
             col_key = (round(col[0], 3), round(col[1], 3), round(col[2], 3))
             opacity = float(attrs.get("opacity", 1.0))
             emissive = 1.0 if attrs.get("emissive", False) else 0.0
-            is_furn = bool(attrs.get("furniture", False))
+            is_conc = bool(attrs.get("concrete_struct", False))
+            is_furn = (bool(attrs.get("furniture", False)) or bool(attrs.get("post_site", False))) and not is_conc
             is_smooth = bool(attrs.get("smooth", False))
             n = face.normal()
             fnx, fny, fnz = float(n.x()), float(n.y()), float(n.z())
@@ -119,16 +128,18 @@ def export_web_scene_json(scene, out_path: Path):
                         acc[1] += fny
                         acc[2] += fnz
 
-            face_records.append((col_key, opacity, emissive, is_furn, is_smooth, r3(fnx), r3(fny), r3(fnz), fnx, fny, fnz, tri_pts))
+            face_records.append((col_key, opacity, emissive, is_conc, is_furn, is_smooth, r3(fnx), r3(fny), r3(fnz), fnx, fny, fnz, tri_pts))
 
-        for col_key, opacity, emissive, is_furn, is_smooth, nx, ny, nz, fnx, fny, fnz, tri_pts in face_records:
+        for col_key, opacity, emissive, is_conc, is_furn, is_smooth, nx, ny, nz, fnx, fny, fnz, tri_pts in face_records:
             is_trans = opacity < 0.98
             if is_trans:
                 t_pos, t_nrm, t_col = trans_pos, trans_nrm, trans_col
+            elif is_conc:
+                t_pos, t_nrm, t_col = conc_pos, conc_nrm, conc_col
             elif is_furn:
                 t_pos, t_nrm, t_col = furn_pos, furn_nrm, furn_col
             else:
-                t_pos, t_nrm, t_col = struct_pos, struct_nrm, struct_col
+                t_pos, t_nrm, t_col = arch_pos, arch_nrm, arch_col
 
             face_edges: Counter = Counter()
             rgba = (*col_key, round(opacity if is_trans else (2.0 if emissive else 1.0), 3))
@@ -155,6 +166,8 @@ def export_web_scene_json(scene, out_path: Path):
             for ek, cnt in face_edges.items():
                 if cnt == 1:
                     edge_adj.setdefault(ek, []).append((nx, ny, nz, col_key, is_trans, is_smooth))
+                    if is_conc and not is_trans:
+                        conc_edge_adj.setdefault(ek, []).append((nx, ny, nz, is_smooth))
 
         for ek, infos in edge_adj.items():
             if len(infos) == 2:
@@ -166,14 +179,26 @@ def export_web_scene_json(scene, out_path: Path):
                     continue
             edge_pos.extend((*ek[0], *ek[1]))
 
-        poche_verts = len(struct_pos) // 3
-        opaque_pos = struct_pos + furn_pos
-        opaque_nrm = struct_nrm + furn_nrm
-        opaque_col = struct_col + furn_col
+        for ek, infos in conc_edge_adj.items():
+            if len(infos) == 2:
+                n0x, n0y, n0z, sm0 = infos[0]
+                n1x, n1y, n1z, sm1 = infos[1]
+                dot_n = n0x * n1x + n0y * n1y + n0z * n1z
+                thresh = 0.55 if (sm0 and sm1) else 0.985
+                if dot_n > thresh:
+                    continue
+            conc_edge_pos.extend((*ek[0], *ek[1]))
+
+        concrete_verts = len(conc_pos) // 3
+        poche_verts = (len(conc_pos) + len(arch_pos)) // 3
+        opaque_pos = conc_pos + arch_pos + furn_pos
+        opaque_nrm = conc_nrm + arch_nrm + furn_nrm
+        opaque_col = conc_col + arch_col + furn_col
 
         layers_out.append(
             {
                 "name": grp.name,
+                "concrete_verts": concrete_verts,
                 "poche_verts": poche_verts,
                 "opaque_pos": opaque_pos,
                 "opaque_nrm": opaque_nrm,
@@ -182,13 +207,14 @@ def export_web_scene_json(scene, out_path: Path):
                 "trans_nrm": trans_nrm,
                 "trans_col": trans_col,
                 "edge_pos": edge_pos,
+                "concrete_edge_pos": conc_edge_pos,
             }
         )
 
     payload = {
         "title": "Mount Angel Abbey Library — Alvar Aalto (1970)",
         "units": "metres",
-        "origin": "Working Point #4 on Level 3 Finished Floor",
+        "origin": "Working Point #3 on Level 3 Finished Floor",
         "layers": layers_out,
     }
     out_path.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
@@ -217,10 +243,11 @@ import ingetrazo_3d.components.lower_levels as _ll
 import ingetrazo_3d.components.level3_reading_room as _l3
 import ingetrazo_3d.components.envelope_and_south_wing as _ew
 import ingetrazo_3d.components.roof_and_skylights as _rs
+import ingetrazo_3d.components.campus_trees as _ct
 import ingetrazo_3d.components as _comp
 import ingetrazo_3d.build_ingetrazo_library as _bld
 
-for _m in (_vec, _pr, _ab, _swi, _rl, _st, _ll, _l3, _ew, _rs, _comp, _bld):
+for _m in (_vec, _pr, _ab, _swi, _rl, _st, _ll, _l3, _ew, _rs, _ct, _comp, _bld):
     importlib.reload(_m)
 
 _bld.build_mount_angel_scene(scene)

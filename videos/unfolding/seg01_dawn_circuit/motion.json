@@ -1,0 +1,117 @@
+{
+  "prefix": "seg01_dawn_circuit",
+  "html": "../../../docs/library-3d.html",
+  "injected_js_file": "../../library_choreography.js",
+  "query_params": {
+    "studio": "1",
+    "hud": "0"
+  },
+  "width": 2560,
+  "height": 1440,
+  "duration_sec": 36.0,
+  "fps": 30,
+  "warmup_frames": 0,
+  "thumb_sec": 22.0,
+  "audio_wav": "seg01_dawn_circuit.wav",
+  "wide_mp4": "seg01_dawn_circuit.mp4",
+  "wide_thumb": "seg01_dawn_circuit_thumb.png",
+  "render_short": false,
+  "ambient_drone": false,
+  "hideLayers": [
+    "0_Regulating_Grid"
+  ],
+  "caster": "envelope",
+  "keyframes": [
+    {
+      "t": 0.0,
+      "tx": 82.0,
+      "ty": -37.0,
+      "tz": 11.5,
+      "yaw": 3.1,
+      "pitch": -0.072,
+      "dist": 114.0,
+      "fov": 44.0,
+      "doy": 264,
+      "hour": 6.36,
+      "comment": "Low on West side of Abbey Quad looking straight East: dawn glowing behind Abbey Chapel & 118-ft Bell Tower"
+    },
+    {
+      "t": 5.5,
+      "tx": 54.0,
+      "ty": -30.0,
+      "tz": 10.0,
+      "yaw": 3.32,
+      "pitch": -0.035,
+      "dist": 86.0,
+      "fov": 44.0,
+      "doy": 264,
+      "hour": 6.74,
+      "comment": "Sun crests golden beside Bell Tower as camera rises gently and begins turning North-East"
+    },
+    {
+      "t": 11.5,
+      "tx": -4.0,
+      "ty": -14.0,
+      "tz": 2.4,
+      "yaw": 4.18,
+      "pitch": 0.16,
+      "dist": 38.0,
+      "fov": 45.0,
+      "doy": 264,
+      "hour": 7.35,
+      "comment": "Modest one-story South Entrance Portico & open white pergolas bathed in warm morning glow"
+    },
+    {
+      "t": 17.5,
+      "tx": 2.5,
+      "ty": 4.0,
+      "tz": 2.2,
+      "yaw": 5.65,
+      "pitch": 0.36,
+      "dist": 44.0,
+      "fov": 45.0,
+      "doy": 264,
+      "hour": 8.15,
+      "comment": "Rising over East bluff clear above East Monastery wing past Periodical Lounge & curved Daylight Scoop"
+    },
+    {
+      "t": 23.5,
+      "tx": -1.0,
+      "ty": 11.5,
+      "tz": -1.2,
+      "yaw": 7.42,
+      "pitch": 0.22,
+      "dist": 56.0,
+      "fov": 45.0,
+      "doy": 264,
+      "hour": 9.1,
+      "comment": "North hillside hero pass: three cantilevered buff-brick tiers, splayed H-columns & vertical hemlock louvers"
+    },
+    {
+      "t": 29.8,
+      "tx": -7.5,
+      "ty": 5.0,
+      "tz": 2.2,
+      "yaw": 9.12,
+      "pitch": 0.36,
+      "dist": 54.0,
+      "fov": 45.5,
+      "doy": 264,
+      "hour": 9.85,
+      "comment": "Sweeping cleanly around West bluff above Aquinas Hall & West Cataloging courtyard"
+    },
+    {
+      "t": 36.0,
+      "tx": -2.0,
+      "ty": 6.0,
+      "tz": 1.0,
+      "yaw": 10.996,
+      "pitch": 0.35,
+      "dist": 62.0,
+      "fov": 46.0,
+      "doy": 264,
+      "hour": 10.2,
+      "comment": "Completing full 360-deg circuit back to South front, looking straight North (-1.57 rad) over Library & valley"
+    }
+  ]
+}

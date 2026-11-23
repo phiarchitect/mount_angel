@@ -1,6 +1,7 @@
 """Modular IngeTrazo 0.6.0 architectural components for Mount Angel Abbey Library."""
 
 from .aalto_bookcases import add_aalto_bookcase_ft, add_aalto_curved_bookwall_ft
+from .campus_trees import build_campus_trees
 from .envelope_and_south_wing import build_envelope_and_south_wing
 from .level3_reading_room import build_level3_reading_room
 from .lower_levels import build_lower_levels
@@ -15,6 +16,7 @@ __all__ = [
     "MATERIALS",
     "add_aalto_bookcase_ft",
     "add_aalto_curved_bookwall_ft",
+    "build_campus_trees",
     "build_envelope_and_south_wing",
     "build_level3_reading_room",
     "build_lower_levels",

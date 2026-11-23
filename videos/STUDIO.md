@@ -23,8 +23,8 @@ Project-specific conventions for the 7-segment architectural fly-through film of
     - **Mt. Adams** (`161.8 km`, `38.4° NE`) -> `XY = 80.1°`.
     - **Mt. St. Helens** (`133.3 km`, `20.3° NNE`) -> `XY = 98.2°`.
 - **Deterministic Bridge (`window.__mountAngelStudio`)**:
-  - `videos/library_choreography.js` polls `window.__mountAngelStudio.isLoaded()` during `__studioSetup` until all 8 layers of `overlays/library_3d_scene.json` are uploaded to WebGL2.
-  - Keyframes in `<seg>/motion.json` (`keyframes` array) interpolate `tx, ty, tz, yaw, pitch, dist, fov, doy, hour, secD` via monotonic cubic Hermite splines (`PCHIP`), plus stepped state keys `secMode`, `secFlip`, `secRadialDeg`, `pocheTone`, `caster`, `heliodon`, `ortho`, and `hideLayers`.
+  - `videos/library_choreography.js` polls `window.__mountAngelStudio.isLoaded()` during `__studioSetup` until all 9 layers (`0_Regulating_Grid` through `8_PreConstruction_Hill`) of `overlays/library_3d_scene.json` are uploaded to WebGL2.
+  - Keyframes in `<seg>/motion.json` (`keyframes` array) interpolate `tx, ty, tz, yaw, pitch, dist, fov, doy, hour, secD, buildClipZ, cladD, cladDeg, regAlpha, regWp, regSweepDeg, regArc, regDrape` via monotonic cubic Hermite splines (`PCHIP`), plus stepped state keys `secMode`, `secFlip`, `secRadialDeg`, `pocheTone`, `caster`, `heliodon`, `ortho`, `hideLayers`, `bareHill`, `structureOnly`, `cladMode`, `cladFlip`, and `regActive`.
 
 ---
 
@@ -32,8 +32,8 @@ Project-specific conventions for the 7-segment architectural fly-through film of
 
 - **Narration (`studio speak`)**:
   - Voice: **Argon III-C** (`voice_xdhacg1pn1cq`, `[style:resonant]`).
-  - Pacing: Sparse — **1 concise sentence (`10–20` words) per segment**, leaving **`18–22 seconds` of pure visual flight and music**.
-  - **Segment 01 Lead-In**: Let animation and music establish the scene for **`4.50s` ( > 1 musical bar)** before speech enters right as the camera banks onto the Library.
+  - Pacing: Sparse — **1 concise sentence (`10–25` words) per segment**, leaving **`14–22 seconds` of pure visual flight and music**.
+  - **Segment 01 Lead-In**: Let animation and music establish the scene for **`4.5–5.5s` ( > 1 musical bar)** before speech enters.
 - **Tonal & Choral Score (`harmonic_resonance.midiator` + `timidity`)**:
   - Unified **`60 BPM` (`1 bar = 4.00s`) D-modal harmonic world**, with a distinct 4-chord rhythmic swell track per segment.
   - Rendered at `48 kHz` stereo via `timidity -c /etc/timidity/timidity.cfg -c /home/phi/.photon/timidity.cfg` combining Bank 1 (`KBH_Real_and_Swell_Choir.sf2` — `Little Swell Choir`, `Swell Choir`, `Mixed Choir`, `Choir Ooh`, `Solo Ooh`, `Solo Aah`) with Bank 0 (`FluidR3_GM.sf2` — cello pedal, vibraphone, harp, piano).
@@ -42,14 +42,21 @@ Project-specific conventions for the 7-segment architectural fly-through film of
 
 ## 4. Segment Render Workflow (One Segment at a Time)
 
+Active editions:
+- **Unfolding Edition (8 segments, `4m 04s`)**: `videos/unfolding/seg01_dawn_circuit/` through `seg08_ascent_and_dusk/` → `videos/unfolding/mount_angel_unfolding.mp4` via `python3 videos/unfolding/assemble_film.py`.
+- **Original Archive Edition (7 segments)**: `videos/seg01_hilltop/` through `seg07_ascent/` → `videos/mount_angel_library_film.mp4`.
+
 ```bash
-# 1. Build MIDI score + Argon III-C narration + ducked stereo master WAV
-PYTHONPATH=/home/phi/PROJECTS/harmonic-resonance/midiator/src uv run --no-project --offline --with mido --with numpy python3 videos/seg01_hilltop/score.py
+# 1. Verify zero camera collisions against campus buildings & hillside
+python3 videos/check_clearance.py videos/unfolding/seg01_dawn_circuit/motion.json
 
-# 2. Render 5 diagnostic QHD keyframes first & inspect visually
-studio motion videos/seg01_hilltop --test-frames
+# 2. Build MIDI score + Argon III-C narration + ducked stereo master WAV
+uv run --no-project --offline --with mido --with numpy --with pyyaml python3 videos/unfolding/seg01_dawn_circuit/score.py
 
-# 3. Render full 2560x1440 @ 30.00 fps CFR segment MP4 + verify streams
-studio motion videos/seg01_hilltop
-ffprobe -v error -show_entries stream=codec_name,width,height,pix_fmt,r_frame_rate,avg_frame_rate,duration -of json videos/seg01_hilltop/seg01_hilltop.mp4
+# 3. Render 5 diagnostic QHD keyframes first & inspect visually
+studio motion videos/unfolding/seg01_dawn_circuit --test-frames
+
+# 4. Render full 2560x1440 @ 30.00 fps CFR segment MP4 + verify streams
+studio motion videos/unfolding/seg01_dawn_circuit
+ffprobe -v error -show_entries stream=codec_name,width,height,pix_fmt,r_frame_rate,avg_frame_rate,duration -of json videos/unfolding/seg01_dawn_circuit/seg01_dawn_circuit.mp4
 ```

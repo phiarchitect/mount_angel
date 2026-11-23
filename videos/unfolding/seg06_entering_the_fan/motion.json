@@ -1,0 +1,104 @@
+{
+  "prefix": "seg06_entering_the_fan",
+  "html": "../../../docs/library-3d.html",
+  "injected_js_file": "../../library_choreography.js",
+  "query_params": {
+    "studio": "1",
+    "hud": "0"
+  },
+  "width": 2560,
+  "height": 1440,
+  "duration_sec": 28.0,
+  "fps": 30,
+  "warmup_frames": 0,
+  "thumb_sec": 14.0,
+  "audio_wav": "seg06_entering_the_fan.wav",
+  "wide_mp4": "seg06_entering_the_fan.mp4",
+  "wide_thumb": "seg06_entering_the_fan_thumb.png",
+  "render_short": false,
+  "ambient_drone": false,
+  "hideLayers": [
+    "0_Regulating_Grid"
+  ],
+  "caster": "envelope",
+  "keyframes": [
+    {
+      "t": 0.0,
+      "tx": -0.8,
+      "ty": -6.2,
+      "tz": 1.72,
+      "yaw": -2.14,
+      "pitch": 0.03,
+      "dist": 6.2,
+      "fov": 54.0,
+      "doy": 135,
+      "hour": 9.2,
+      "comment": "Upper Lobby (+1'-4\" / +0.41 m floor) beside 32-batten birch privacy screen looking NNE toward wide birch Entry Steps"
+    },
+    {
+      "t": 6.5,
+      "tx": 6.55,
+      "ty": 3.45,
+      "tz": 1.68,
+      "yaw": -2.32,
+      "pitch": -0.008,
+      "dist": 8.4,
+      "fov": 53.0,
+      "doy": 135,
+      "hour": 9.7,
+      "comment": "Bottom of wide Entry Steps beneath 1x1 radial wood-slatted ceiling, curved Control Desk left & 14-bay birch glass wall right"
+    },
+    {
+      "t": 13.5,
+      "tx": 7.77,
+      "ty": 13.69,
+      "tz": 1.54,
+      "yaw": -1.9675,
+      "pitch": 0.002,
+      "dist": 11.97,
+      "fov": 49.0,
+      "doy": 135,
+      "hour": 10.25,
+      "comment": "Calibrated alcove_mthood Entry Vista: past 3-shelf birch stairwell bookcase down true 64.5 deg Ray D radial aisle"
+    },
+    {
+      "t": 20.0,
+      "tx": 10.65,
+      "ty": 22.25,
+      "tz": 1.72,
+      "yaw": -2.015,
+      "pitch": -0.004,
+      "dist": 8.2,
+      "fov": 48.5,
+      "doy": 135,
+      "hour": 10.8,
+      "comment": "Gliding dead-center down true 64.5 deg Ray D between slatted birch stacks straight toward Pair_D twin column gate"
+    },
+    {
+      "t": 24.0,
+      "tx": 11.85,
+      "ty": 24.75,
+      "tz": 1.74,
+      "yaw": -2.015,
+      "pitch": 0.0,
+      "dist": 7.1,
+      "fov": 49.0,
+      "doy": 135,
+      "hour": 11.1,
+      "comment": "Passing dead-center between Pair_D_L (7.82,18.31) & Pair_D_R (9.38,17.81) into sunlit perimeter reading gallery"
+    },
+    {
+      "t": 28.0,
+      "tx": 12.26,
+      "ty": 25.61,
+      "tz": 1.62,
+      "yaw": -2.264,
+      "pitch": -0.022,
+      "dist": 2.75,
+      "fov": 48.0,
+      "doy": 135,
+      "hour": 11.4,
+      "comment": "Arriving at H-Column D carrel desk: square punched window frames snow-capped Mount Hood (azXY 50.3 deg) dead-center"
+    }
+  ]
+}

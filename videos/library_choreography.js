@@ -186,7 +186,40 @@
       const defaultHide = cfg.hideLayers || ["0_Regulating_Grid"];
       const activeHide = sampleSteppedProp(kfs, "hideLayers", defaultHide, tSec);
       for (const name of Object.keys(st.layerVisible)) {
+        if (name === "8_PreConstruction_Hill") continue;
         st.layerVisible[name] = !activeHide.includes(name);
+      }
+
+      // Unfolding & Tectonic Studio Controls (bareHill, structureOnly, buildClipZ, clad curtain, Aalto regulating sweep)
+      const bareOn = Boolean(sampleSteppedProp(kfs, "bareHill", Boolean(cfg.bareHill), tSec));
+      if (st.setBareHill) st.setBareHill(bareOn);
+
+      const structOn = Boolean(sampleSteppedProp(kfs, "structureOnly", Boolean(cfg.structureOnly), tSec));
+      if (st.setStructureOnly) st.setStructureOnly(structOn, true);
+
+      const bClipZ = sampleNumericProp(kfs, "buildClipZ", cfg.buildClipZ !== undefined ? cfg.buildClipZ : 1e6, tSec);
+      if (st.setBuildClipZ) st.setBuildClipZ(bClipZ);
+
+      if (st.clad) {
+        const cMode = sampleSteppedProp(kfs, "cladMode", cfg.cladMode || "off", tSec);
+        st.clad.mode = cMode;
+        if (cMode !== "off") {
+          st.clad.d = sampleNumericProp(kfs, "cladD", cfg.cladD !== undefined ? cfg.cladD : 0.0, tSec);
+          st.clad.deg = sampleNumericProp(kfs, "cladDeg", cfg.cladDeg !== undefined ? cfg.cladDeg : 99.4, tSec);
+          st.clad.flip = sampleSteppedProp(kfs, "cladFlip", cfg.cladFlip !== undefined ? cfg.cladFlip : 1, tSec);
+        }
+      }
+
+      if (st.reg) {
+        const regOn = Boolean(sampleSteppedProp(kfs, "regActive", Boolean(cfg.regActive), tSec));
+        st.reg.active = regOn;
+        if (regOn) {
+          st.reg.alpha = sampleNumericProp(kfs, "regAlpha", cfg.regAlpha !== undefined ? cfg.regAlpha : 1.0, tSec);
+          st.reg.wp = sampleNumericProp(kfs, "regWp", cfg.regWp !== undefined ? cfg.regWp : 1.0, tSec);
+          st.reg.sweepDeg = sampleNumericProp(kfs, "regSweepDeg", cfg.regSweepDeg !== undefined ? cfg.regSweepDeg : 180.0, tSec);
+          st.reg.arc = sampleNumericProp(kfs, "regArc", cfg.regArc !== undefined ? cfg.regArc : 1.0, tSec);
+          st.reg.drape = sampleNumericProp(kfs, "regDrape", cfg.regDrape !== undefined ? cfg.regDrape : 1.0, tSec);
+        }
       }
     }
 

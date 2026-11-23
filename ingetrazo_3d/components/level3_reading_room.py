@@ -46,6 +46,7 @@ from .primitives import (
     add_stepped_stair_ft,
     add_tubular_arc_railing_ft,
     add_wall_strip_ft,
+    as_concrete,
     create_scene_group,
     m_ft,
     offset_polyline_right_ft,
@@ -121,13 +122,14 @@ def _add_l3_stair_bookcase(
     r_in = G.R_GALLERY_RAIL          # 22'-0" (meets curved Control Peninsula bronze guardrail)
     r_out = G.R_MEZZ_OPENING + 0.30  # 44'-3.6" (meets outer curved Level 3 workbench parapet)
 
-    # 1. Stairwell-facing white-plaster guardrail backing wall (z = -0.28 .. +0.89 m)
+    # 1. Stairwell-facing structural concrete guardrail backing wall (z = -0.28 .. +0.89 m)
+    plaster_conc = as_concrete(MATERIALS["white_plaster"])
     wall_quad = _clean_ring_2d([rpt(r_in, -0.10), rpt(r_out, -0.10), rpt(r_out, 0.32), rpt(r_in, 0.32)], ccw=True)
-    add_extruded_polygon_ft(mesh, wall_quad, z_l3 - 0.28, z_l3 + 0.89, MATERIALS["white_plaster"])
+    add_extruded_polygon_ft(mesh, wall_quad, z_l3 - 0.28, z_l3 + 0.89, plaster_conc)
 
-    # Plaster spandrel fascia over 3-shelf Mezzanine end bookcase (z = -0.38 .. -0.285 m) + sloped stair-cheek infill
+    # Structural spandrel fascia over 3-shelf Mezzanine end bookcase (z = -0.38 .. -0.285 m) + sloped stair-cheek infill
     spandrel_quad = _clean_ring_2d([rpt(r_in, -0.10), rpt(32.25, -0.10), rpt(32.25, 0.30), rpt(r_in, 0.30)], ccw=True)
-    add_extruded_polygon_ft(mesh, spandrel_quad, z_l3 - 0.38, z_l3 - 0.285, MATERIALS["white_plaster"])
+    add_extruded_polygon_ft(mesh, spandrel_quad, z_l3 - 0.38, z_l3 - 0.285, plaster_conc)
     _add_sloped_bottom_wall_ft(
         mesh,
         rpt(32.30, -0.10),
@@ -137,7 +139,7 @@ def _add_l3_stair_bookcase(
         z_top_m=z_l3 - 0.285,
         z_bot_in_m=z_gal - 0.305,
         z_bot_out_m=z_l3 - 0.34,
-        attrs=MATERIALS["white_plaster"],
+        attrs=plaster_conc,
     )
 
     # Continuous raised Birch Curb / Rail Cap matching the curved Level 3 workbench parapet (+0.895 .. +0.99 m)
@@ -225,8 +227,8 @@ def _add_l3_workbench_segment(
     birch_furn = {**MATERIALS["birch_wood"], "furniture": True}
     lino_furn = {**MATERIALS["black_linoleum"], "furniture": True}
 
-    # White plaster vertical parapet wall + room-side birch baseboard + raised birch book-stop curb
-    add_arc_band_ft(mesh, G.WP3A, r_well_face, r_room_face, deg0, deg1, z_l3 - 0.28, z_l3 + 0.89, MATERIALS["white_plaster"], steps=steps)
+    # Structural concrete well parapet wall + room-side birch baseboard + raised birch book-stop curb
+    add_arc_band_ft(mesh, G.WP3A, r_well_face, r_room_face, deg0, deg1, z_l3 - 0.28, z_l3 + 0.89, as_concrete(MATERIALS["white_plaster"]), steps=steps)
     add_arc_band_ft(mesh, G.WP3A, r_room_face - 0.02, r_room_face + 0.09, deg0, deg1, z_l3, z_l3 + 0.09, birch_furn, steps=steps)
     add_arc_band_ft(mesh, G.WP3A, r_well_face - 0.05, r_room_face + 0.06, deg0, deg1, z_l3 + 0.89, z_l3 + 0.99, MATERIALS["birch_wood"], steps=steps)
 
@@ -307,6 +309,8 @@ def build_level3_reading_room(scene):
     slat_furn = {**MATERIALS["hemlock_slat"], "furniture": True}
     brass_furn = {**MATERIALS["brass"], "furniture": True}
     plaster_mat = MATERIALS["white_plaster"]
+    plaster_conc = as_concrete(MATERIALS["white_plaster"])
+    conc_mat = as_concrete(MATERIALS["concrete"])
     glass_mat = MATERIALS["glass_clear"]
     col_mat = MATERIALS["white_column"]
 
@@ -335,13 +339,13 @@ def build_level3_reading_room(scene):
         [well_hole_poly],
         z_l3 - 0.28,
         z_l3,
-        MATERIALS["floor_oatmeal"],
-        MATERIALS["concrete"],
-        MATERIALS["white_plaster"],
-        MATERIALS["white_plaster"],
+        as_concrete(MATERIALS["floor_oatmeal"]),
+        conc_mat,
+        plaster_conc,
+        plaster_conc,
     )
 
-    # Control Peninsula 4" Plaster Soffit Lip (`Sheet 13-a13 Detail 9`): drops from -0.28 to -0.38 m
+    # Control Peninsula 4" Structural Soffit Lip (`Sheet 13-a13 Detail 9`): drops from -0.28 to -0.38 m
     # right over the top of the 3-shelf curved Mezzanine Reference Bookwall (`top = -0.386 m`)!
     add_arc_band_ft(
         mesh,
@@ -352,7 +356,7 @@ def build_level3_reading_room(scene):
         deg_well_w,
         z_l3 - 0.38,
         z_l3 - 0.28,
-        plaster_mat,
+        plaster_conc,
         steps=36,
     )
 
@@ -381,8 +385,8 @@ def build_level3_reading_room(scene):
         south_upper_poly,
         z_lobby - 0.32,
         z_lobby,
-        MATERIALS["floor_lobby"],
-        MATERIALS["concrete"],
+        as_concrete(MATERIALS["floor_lobby"]),
+        conc_mat,
     )
 
     # 0.50 ft Concrete riser apron spanning z_l3 .. z_lobby - 0.32 (+0.086 m) to seal floor step
@@ -392,7 +396,7 @@ def build_level3_reading_room(scene):
         0.50,
         z_l3,
         z_lobby - 0.32,
-        MATERIALS["concrete"],
+        conc_mat,
     )
 
     # Wide Lobby -> Entry Area threshold steps (`Sheet 13-a13 Detail 15`: 3 risers = 1'-4"!)
@@ -405,6 +409,7 @@ def build_level3_reading_room(scene):
         z_bot_m=z_l3,
         n_steps=3,
         tread_attrs=birch_furn,
+        concrete_struct=True,
     )
 
     # Aalto curved central brass threshold arc band at Entry Area

@@ -34,6 +34,7 @@ from .primitives import (
     add_quad,
     add_tri,
     add_wall_strip_ft,
+    as_concrete,
     create_scene_group,
     m_ft,
     offset_polyline_right_ft,
@@ -67,10 +68,10 @@ def _add_hpier_solid_ft(
     # hp_poly_ft is 12 vertices in CW order:
     # 0:L_tip_out, 1:L_tip_in, 2:wL_out, 3:wR_out, 4:R_tip_in, 5:R_tip_out,
     # 6:R_bot_out, 7:R_bot_in, 8:wR_in,  9:wL_in,  10:L_bot_in, 11:L_bot_out
-    brick_side = MATERIALS["buff_brick_dark"]
-    brick_top = MATERIALS["buff_brick"]
-    conc_bot = MATERIALS["concrete"]
-    plaster = MATERIALS["white_plaster"]
+    brick_side = as_concrete(MATERIALS["buff_brick_dark"])
+    brick_top = as_concrete(MATERIALS["buff_brick"])
+    conc_bot = as_concrete(MATERIALS["concrete"])
+    plaster = as_concrete(MATERIALS["white_plaster"])
 
     # Collar split points `cL` (on L_tip_out->L_bot_out) and `cR` (on R_tip_out->R_bot_out)
     # plus mid-leg spine vertices `bL`, `bR` opposite `wL_out`, `wR_out` so `collar_ccw` never
@@ -352,8 +353,9 @@ def _add_stepped_l1_concrete_bay(
     # Sheet 17-a17 Sec. 1: L1 floor-to-L2 = 14'-6" (4.42 m); high ribbon window ~6'-8"..10'-10" above L1
     z_win_bot = z_l1_m + 2.35
     z_win_top = z_l2_m - 0.68
-    add_wall_strip_ft(mesh, [q0, q1], 1.15, z_base_m, z_win_bot, MATERIALS["concrete"], offset_mode="right")
-    add_wall_strip_ft(mesh, [q0, q1], 1.15, z_win_top, z_l2_m - 0.30, MATERIALS["concrete"], offset_mode="right")
+    conc_mat = as_concrete(MATERIALS["concrete"])
+    add_wall_strip_ft(mesh, [q0, q1], 1.15, z_base_m, z_win_bot, conc_mat, offset_mode="right")
+    add_wall_strip_ft(mesh, [q0, q1], 1.15, z_win_top, z_l2_m - 0.30, conc_mat, offset_mode="right")
 
     g0 = (q0[0] + ix * 0.45, q0[1] + iy * 0.45)
     g1 = (q1[0] + ix * 0.45, q1[1] + iy * 0.45)
@@ -417,6 +419,11 @@ def build_envelope_and_south_wing(scene):
     y_g2 = G.GRID_Y["2"]       #  -51'-8"
     y_g1 = G.GRID_Y["1"]       #  -61'-0"
 
+    conc_mat = as_concrete(MATERIALS["concrete"])
+    col_conc = as_concrete(MATERIALS["white_column"])
+    soffit_conc = as_concrete(MATERIALS["white_soffit"])
+    brick_shear = as_concrete(MATERIALS["buff_brick"])
+
     # =========================================================================
     # LAYER 5: STRUCTURAL COLUMNS, PAIRED COLUMNS & 3 IRREGULAR H-COLUMNS
     # =========================================================================
@@ -433,22 +440,22 @@ def build_envelope_and_south_wing(scene):
     scoop_well_cols = {"Well_1_WNW", "Well_2_NNW", "Well_3_NNE"}
     for cname, cpt in G.WELL_COLS_FT.items():
         z_top = z_hb_bot if cname in scoop_well_cols else z_s_ceil
-        add_cylinder_ft(ms, cpt, 0.78, z_l1, z_top, MATERIALS["white_column"], sides=18)
+        add_cylinder_ft(ms, cpt, 0.78, z_l1, z_top, col_conc, sides=18)
 
     # 6 Paired Twin 18"Ø Columns straddling WP #3 Radial Axes B, C, D (5'-4" c/c, Sheet 06-a6 & Sheet 47-s16 Detail D):
     # Terminate cleanly at the flat fan ceiling soffit (`z_fan_ceil = +3.45 m`), below the 1.20 m 24WF68 roof plenum!
     for cpt in G.PAIRED_COLS_FT.values():
-        add_cylinder_ft(ms, cpt, 0.75, z_l1, z_fan_ceil, MATERIALS["white_column"], sides=18)
+        add_cylinder_ft(ms, cpt, 0.75, z_l1, z_fan_ceil, col_conc, sides=18)
 
     # South Wing & Periodical Lounge Structural Columns (terminating cleanly at interior ceiling soffit `z_s_ceil`)
     for cpt in G.SOUTH_WING_COLS_FT:
         z_bot = z_l2 if cpt[1] > y_g3 - 0.5 else z_lobby - 0.8
-        add_cylinder_ft(ms, cpt, 0.68, z_bot, z_s_ceil, MATERIALS["white_column"], sides=14)
+        add_cylinder_ft(ms, cpt, 0.68, z_bot, z_s_ceil, col_conc, sides=14)
 
     # 3 Distinct Irregular Perimeter H-Columns (B @ WP #5, C @ WP #6/#7, D @ WP #8/#9; Sheets 06-a6 & 45-s14):
     #   (a) Level 1 Stepped-Back Concrete U-Channel Piers (+1'-6" inner leg extension)
     for u_poly in get_h_pier_polygons_ft(level=1):
-        add_extruded_polygon_ft(ms, u_poly, z_crawl + 0.6, z_l2 - 0.30, MATERIALS["concrete"], MATERIALS["concrete"])
+        add_extruded_polygon_ft(ms, u_poly, z_crawl + 0.6, z_l2 - 0.30, conc_mat, conc_mat)
 
     #   (b) Levels 2–Roof Splayed Irregular Buff-Brick H-Columns (with eye-level square Mt. Hood window in HPier_D!)
     for hp_idx, hp_poly in enumerate(get_h_pier_polygons_ft(level=3)):
@@ -475,7 +482,7 @@ def build_envelope_and_south_wing(scene):
     for b_deg in (152.5, G.RAY_B_DEG, 118.2, G.RAY_C_DEG, 82.0, G.RAY_D_DEG, 51.5):
         p_in = polar_pt(G.WP3, 45.5, b_deg)
         p_out = polar_pt(G.WP3, 68.5, b_deg)
-        add_wall_strip_ft(ms, [p_in, p_out], 0.65, z_fan_ceil - 0.14, z_fan_ceil, MATERIALS["white_soffit"])
+        add_wall_strip_ft(ms, [p_in, p_out], 0.65, z_fan_ceil - 0.14, z_fan_ceil, soffit_conc)
 
     # =========================================================================
     # LAYER 6: FACETED NORTH BRICK CURTAIN WALL, ACUTE PROWS & SOUTH WING
@@ -516,7 +523,7 @@ def build_envelope_and_south_wing(scene):
         1.15,
         z_crawl + 1.0,
         z_l2 - 0.30,
-        MATERIALS["concrete"],
+        conc_mat,
     )
     _add_mitered_strip_between_offsets_ft(
         me,
@@ -525,14 +532,14 @@ def build_envelope_and_south_wing(scene):
         1.15,
         z_crawl + 1.1,
         z_l2 - 0.30,
-        MATERIALS["concrete"],
+        conc_mat,
     )
 
     # Continuous Concrete Cantilever Soffit wrapping seamlessly around North Curtain Wall & BOTH Acute Prows!
     soffit_outer = offset_polyline_right_ft([G.PT_A_INNER_JUNC, *get_north_perimeter_with_pockets_ft(level=3), G.PT_LOUNGE_JUNC], 0.42)
     soffit_inner = offset_polyline_right_ft([G.PT_A_INNER_JUNC, *l1_perim, (44.5, 25.0)], 0.85)
     cantilever_soffit_poly = [*soffit_outer, *reversed(soffit_inner)]
-    add_extruded_polygon_ft(me, cantilever_soffit_poly, z_l2 - 0.34, z_l2 - 0.28, MATERIALS["concrete"], MATERIALS["concrete"])
+    add_extruded_polygon_ft(me, cantilever_soffit_poly, z_l2 - 0.34, z_l2 - 0.28, conc_mat, conc_mat)
 
     # Exact Acute Mitered Buff-Brick Veneer Corners & Flank Walls (`Sheet 06-a6 Details 1 & 2`, `Sheet 11-a11`):
     b0_p0, b0_p1 = curtain_bays[0]
@@ -626,18 +633,18 @@ def build_envelope_and_south_wing(scene):
     # =========================================================================
     # ONE-STORY SOUTH ENTRANCE WING (TALLER AUDITORIUM, LOBBY & WEST WING)
     # =========================================================================
-    # Rare Book Vault East Wall (rising to z_s_par = +4.57 m)
+    # Rare Book Vault East Concrete Bearing Wall (rising to z_s_par = +4.57 m)
     add_wall_strip_ft(
         me,
         [(x_lng_e, y_g5), (x_aud_e, y_g5), (x_aud_e, y_g4)],
         1.35,
         z_lobby - 0.55,
         z_s_par,
-        MATERIALS["buff_brick"],
+        brick_shear,
         offset_mode="right",
     )
 
-    # Taller SE Auditorium Windowless Buff-Brick Envelope (rising up to z_aud_par = +5.88 m!)
+    # Taller SE Auditorium Windowless Concrete Shear Box (rising up to z_aud_par = +5.88 m!)
     aud_envelope_pts = [
         (18.5, y_g4),
         (18.5, -13.8),
@@ -655,7 +662,7 @@ def build_envelope_and_south_wing(scene):
         1.35,
         z_lobby - 0.55,
         z_aud_par,
-        MATERIALS["buff_brick"],
+        brick_shear,
         offset_mode="right",
     )
 
@@ -684,14 +691,14 @@ def build_envelope_and_south_wing(scene):
     add_wall_strip_ft(me, [(x_v0, y_g2), (x_step, y_g2)], 1.25, z_lobby + 2.65, z_s_par, MATERIALS["buff_brick"])
     add_louver_bank_ft(me, (x_v0 - 1.0, y_g2 - 0.4), (x_step + 1.5, y_g2 - 0.4), z_lobby + 1.40, z_lobby + 2.60, spacing_ft=2.5, blade_depth_ft=0.85)
 
-    # West Cataloging & Bindery Wing Perimeter (stepping along Grid 3 -> X = X_WEST_WING -> Grid 6)
+    # West Cataloging & Bindery Wing Concrete Bearing Perimeter (stepping along Grid 3 -> X = X_WEST_WING -> Grid 6)
     add_wall_strip_ft(
         me,
         [(x_step, y_g2), (x_step, y_g3), (x_w, y_g3), (x_w, y_g6), (x_elev, y_g6)],
         1.25,
         z_l2 - 0.5,
         z_s_par,
-        MATERIALS["buff_brick"],
+        brick_shear,
     )
 
     # Central Solid Copper/White-Fascia + Hemlock-Soffit Portico Marquee (X = -19.5..+1.5, Y = y_g2..-67.0)
@@ -703,12 +710,12 @@ def build_envelope_and_south_wing(scene):
         canopy_poly,
         z_canopy - 0.16,
         z_canopy + 0.08,
-        MATERIALS["copper_roof"],
-        MATERIALS["white_soffit"],
-        MATERIALS["hemlock_slat"],
+        as_concrete(MATERIALS["copper_roof"]),
+        soffit_conc,
+        as_concrete(MATERIALS["hemlock_slat"]),
     )
     for cx_ft in (-18.0, -9.0, 0.0):
-        add_cylinder_ft(me, (cx_ft, y_can_s + 1.0), 0.38, z_col_base, z_canopy - 0.16, MATERIALS["white_column"], sides=14)
+        add_cylinder_ft(me, (cx_ft, y_can_s + 1.0), 0.38, z_col_base, z_canopy - 0.16, col_conc, sides=14)
 
     # Flanking Open White Pergola Trellises (West: X = X_RESTROOM_E..-19.5; East: X = +1.5..X_LOBBY_E_G2; Sheet 12-a12)
     z_tr_b = z_canopy - 0.14
@@ -719,27 +726,27 @@ def build_envelope_and_south_wing(scene):
     # West Pergola Trellis
     x_tw0, x_tw1 = G.X_RESTROOM_E, -19.5
     for y_b in y_trellis_lines:
-        add_oriented_box_ft(me, (0.5 * (x_tw0 + x_tw1), y_b), x_tw1 - x_tw0, 0.36, 0.0, z_tr_b, z_tr_t, MATERIALS["white_column"])
+        add_oriented_box_ft(me, (0.5 * (x_tw0 + x_tw1), y_b), x_tw1 - x_tw0, 0.36, 0.0, z_tr_b, z_tr_t, col_conc)
     for k_x in range(4):
         x_b = x_tw0 + (x_tw1 - x_tw0) * (k_x / 3.0)
         for k in range(len(y_trellis_lines) - 1):
             y_mid = 0.5 * (y_trellis_lines[k] + y_trellis_lines[k + 1])
             y_span = (y_trellis_lines[k] - 0.18) - (y_trellis_lines[k + 1] + 0.18)
-            add_oriented_box_ft(me, (x_b, y_mid), 0.36, y_span, 0.0, z_tr_b, z_tr_t, MATERIALS["white_column"])
+            add_oriented_box_ft(me, (x_b, y_mid), 0.36, y_span, 0.0, z_tr_b, z_tr_t, col_conc)
     for c_pt in ((x_tw0, y_tr_s), (x_tw0 + 2.0 * (x_tw1 - x_tw0) / 3.0, y_tr_s), (x_tw0, y_g2 - 6.8)):
-        add_cylinder_ft(me, c_pt, 0.35, z_col_base, z_tr_b, MATERIALS["white_column"], sides=14)
+        add_cylinder_ft(me, c_pt, 0.35, z_col_base, z_tr_b, col_conc, sides=14)
 
     # East Pergola Trellis
     x_te0, x_te1 = 1.5, x_lob_e
     for y_b in y_trellis_lines:
-        add_oriented_box_ft(me, (0.5 * (x_te0 + x_te1), y_b), x_te1 - x_te0, 0.36, 0.0, z_tr_b, z_tr_t, MATERIALS["white_column"])
+        add_oriented_box_ft(me, (0.5 * (x_te0 + x_te1), y_b), x_te1 - x_te0, 0.36, 0.0, z_tr_b, z_tr_t, col_conc)
     for k_x in range(4):
         x_b = x_te0 + (x_te1 - x_te0) * (k_x / 3.0)
         for k in range(len(y_trellis_lines) - 1):
             y_mid = 0.5 * (y_trellis_lines[k] + y_trellis_lines[k + 1])
             y_span = (y_trellis_lines[k] - 0.18) - (y_trellis_lines[k + 1] + 0.18)
-            add_oriented_box_ft(me, (x_b, y_mid), 0.36, y_span, 0.0, z_tr_b, z_tr_t, MATERIALS["white_column"])
+            add_oriented_box_ft(me, (x_b, y_mid), 0.36, y_span, 0.0, z_tr_b, z_tr_t, col_conc)
     for c_pt in ((x_te1, y_tr_s), (x_te0 + (x_te1 - x_te0) / 3.0, y_tr_s), (x_te1, y_g2 - 6.8)):
-        add_cylinder_ft(me, c_pt, 0.35, z_col_base, z_tr_b, MATERIALS["white_column"], sides=14)
+        add_cylinder_ft(me, c_pt, 0.35, z_col_base, z_tr_b, col_conc, sides=14)
 
     return grp_str, grp_env

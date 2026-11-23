@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.8.0] - 2026-11-23
+
+### Added
+- **Tier 1 Cast-in-Place Concrete Structure Isolation** (`ingetrazo_3d/components/`, `docs/library-3d.html`): tagged primary cast-in-place concrete structure (`concrete_struct`) across all building layers and added the **`▦ Structure [S]`** toolbar button (`S` hotkey, `?structure=1`) with a procedural board-formed concrete shader, isolated concrete edge buffers, and structural stencil poché cuts.
+- **Monumental Campus Trees (`9_Campus_Trees`, `ingetrazo_3d/components/campus_trees.py`)**: 52 surveyed hilltop specimens calibrated directly to zoom-19 Google ortho-aerial imagery, Sheet `02-A2` (*"Preserve Existing Trees"*), and `docs/photos/campus_quad_aerial.jpg` — featuring cantilevered flat-topped **Cedars of Lebanon** (*Cedrus libani*), continuous single-envelope fluted **100-ft Giant Sequoias** (*Sequoiadendron giganteum*), and 80-facet geodesic **Copper Beeches & Quad Oaks** (`19,162` tris, `0` boundary/non-manifold/winding errors, `0` building collisions).
+- **3-State `🌲 Trees` Viewer Control (`T` hotkey, `?trees=solid|ghost|off`)** in `docs/library-3d.html`: switches smoothly between **Solid** (real-time 4096px shadows), **Ghost** (front-face-culled matte frosted architectural veil via `uAlphaScale`), and **Off** (automatic on section cuts, Cutaway, Structure, and bare-hill modes).
+- **Pre-Construction Bare Hill & "Unfolding" Film Workspace** (`8_PreConstruction_Hill`, `videos/unfolding/`, `videos/library_choreography.js`, `videos/STUDIO.md`): added toggleable bare-hill excavation patch (`?barehill=1`), procedural draped Aalto radial regulating sweep (`?reg=1`), progressive vertical build-clip & cladding wipe shaders, and complete 8-segment production scripts for the *Unfolding* architectural film.
+
+### Changed
+- **Surveyed Abbey Hilltop Campus & Formal Quad Walkways** (`ingetrazo_3d/components/site_terrain.py`, `videos/check_clearance.py`): GPS-calibrated hilltop terrain (`X = [-560, +580] ft`, `Y = [-480, +240] ft`, Reference North `26.81°` CW from True North), seamless mitered ribbons (`_add_mitered_ribbon_ft`) for North/South Abbey Drive and all formal Quad walkways (Central Promenade at `Y = -198 ft`, semicircular Church Forecourt, square crossing node, curved crescent walk), and all 8 surveyed campus buildings (**Damian Center**, **Anselm Hall**, **Post-Knox**, **Aquinas Hall**, **Abbey Church / 118-ft Campanile / 318-ft Monastery**, **Annunciation Hall**, **Saint Benedict Guesthouse & Retreat Center**, and **Abbey Press**; `0` boundary/winding errors).
+- **Rebuilt 10-layer 3D scene bundle** (`docs/overlays/library_3d_scene.json`, `181,196` faces), widened hilltop shadow frustum (`shadowRadius` up to `188 m`) and zoom-out range (`340 m`), updated `campus_aerial` and `south_entry` presets in `docs/library-3d.html`, and regenerated QHD studio renders `studio_01_hillside_hero.png`, `studio_02_south_entry_canopy.png`, and `studio_18_campus_aerial.png`.
+
 ## [0.7.0] - 2026-11-19
 
 ### Added

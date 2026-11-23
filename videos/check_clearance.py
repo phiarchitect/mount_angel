@@ -24,31 +24,65 @@ M_TO_FT = 1.0 / FT_TO_M
 # Exact surrounding campus building envelopes from `ingetrazo_3d/components/site_terrain.py`
 # Tuple: (name, x_min_ft, x_max_ft, y_min_ft, y_max_ft, z_top_m)
 CAMPUS_BUILDINGS = [
-    ("Aquinas Hall Main", -244.0, -146.0, -82.0, -40.0, 14.55),
-    ("Aquinas Hall North Wing", -244.0, -206.0, -42.0, 16.0, 14.55),
-    ("Aquinas Hall South Entry", -206.5, -173.5, -95.5, -78.5, 14.05),
-    ("Aquinas East Porch", -149.0, -135.0, -71.0, -51.0, 5.85),
-    ("Downhill NW Annex", -197.0, -133.0, 38.0, 77.0, 2.75),
-    ("Bluff-Side East Monastery Wing", 123.5, 211.5, -59.5, -16.5, 14.05),
-    ("Abbey Church Portico & Nave", 235.0, 357.0, -185.5, -58.5, 18.25),
-    ("Abbey Bell Tower", 258.0, 280.0, -164.0, -142.0, 38.60),
-    ("East 3-Story Monastery", 314.0, 382.0, -256.0, 12.0, 15.05),
-    ("SW Romanesque Academic Hall", -237.0, -133.0, -187.0, -123.0, 12.50),
-    ("Modern Seminary North Pavilion", -65.5, 15.5, -235.5, -189.5, 8.40),
-    ("Modern Seminary South Pavilion", -50.5, 25.5, -290.5, -244.5, 8.40),
+    ("Post-Knox / Boiler House", -216.0, -118.0, 18.0, 74.0, 2.75),
+    ("Anselm Hall (Minor Seminary)", -326.0, -154.0, -144.0, -8.0, 14.70),
+    ("Damian Center (West End Hall)", -482.0, -370.0, -307.0, -140.0, 12.65),
+    ("Aquinas Hall (Major Seminary)", 153.5, 323.5, -43.0, 12.0, 14.50),
+    ("Aquinas Hall North Annex", 174.0, 299.0, 10.0, 55.0, 5.50),
+    ("Abbey Church Portico & Nave", 225.0, 440.0, -262.0, -142.0, 18.50),
+    ("Abbey Bell Tower", 258.0, 282.0, -241.0, -217.0, 38.70),
+    ("East 3-Story Monastery", 368.0, 492.0, -358.0, -36.0, 15.30),
+    ("Annunciation Hall (SW Seminary)", -366.0, -136.0, -406.0, -313.0, 8.75),
+    ("Saint Benedict Guesthouse & Retreat Center", 193.0, 356.0, -448.0, -390.0, 10.70),
+    ("Abbey Press Building", -556.0, -394.0, 5.0, 65.0, 7.70),
 ]
+
+
+def _smoothstep(edge0: float, edge1: float, x: float) -> float:
+    t = max(0.0, min(1.0, (x - edge0) / (edge1 - edge0)))
+    return t * t * (3.0 - 2.0 * t)
 
 
 def natural_hillside_z_m(x_ft: float, y_ft: float) -> float:
     """Match `natural_hillside_z_m` from `site_terrain.py`."""
-    if y_ft <= 2.0:
-        base = 0.55 - max(0.0, (-y_ft - 80.0)) * 0.004
+    if -140.0 <= x_ft <= 115.0 and -70.0 <= y_ft <= 110.0:
+        if y_ft <= -42.0:
+            return 0.32 - 0.002 * max(0.0, -42.0 - y_ft) - 0.0008 * max(0.0, abs(x_ft) - 70.0)
+        if y_ft <= 88.0:
+            t = (y_ft - (-42.0)) / (88.0 - (-42.0))
+            s = t * t * (3.0 - 2.0 * t)
+            z = 0.32 * (1.0 - s) + (-9.85) * s
+        else:
+            t2 = (y_ft - 88.0) / 54.0
+            z = -9.85 - 2.35 * t2
+        return z - 0.000045 * (x_ft * x_ft)
+
+    if x_ft < -140.0:
+        w = _smoothstep(-140.0, -240.0, x_ft)
+        y_crest = -42.0 * (1.0 - w) + 12.0 * w
+    elif x_ft > 115.0:
+        w = _smoothstep(115.0, 195.0, x_ft)
+        y_crest = -42.0 * (1.0 - w) + 18.0 * w
     else:
-        u = min(1.0, (y_ft - 2.0) / 118.0)
-        drop = 14.8 * (u**1.35)
-        base = 0.55 - drop
-    east_roll = -max(0.0, x_ft - 95.0) * 0.018
-    return base + east_roll
+        y_crest = -42.0
+
+    if y_ft <= y_crest:
+        z = 0.30 - 0.0003 * max(0.0, y_crest - y_ft)
+        if y_ft < -455.0:
+            z -= 0.065 * (-455.0 - y_ft)
+        if x_ft < -500.0:
+            z -= 0.030 * (-500.0 - x_ft)
+        elif x_ft > 510.0:
+            z -= 0.030 * (x_ft - 510.0)
+        return z
+    dy = y_ft - y_crest
+    if dy <= 130.0:
+        t = dy / 130.0
+        s = t * t * (3.0 - 2.0 * t)
+        z = 0.30 * (1.0 - s) + (-9.85) * s
+    else:
+        z = -9.85 - 2.35 * ((dy - 130.0) / 54.0)
+    return z
 
 
 def prepare_keyframes(raw_kfs: list[dict]) -> list[dict]:

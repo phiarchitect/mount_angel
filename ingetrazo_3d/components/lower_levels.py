@@ -37,6 +37,7 @@ from .primitives import (
     add_extruded_polygon_ft,
     add_stepped_stair_ft,
     add_wall_strip_ft,
+    as_concrete,
     create_scene_group,
     m_ft,
     offset_polyline_right_ft,
@@ -96,6 +97,9 @@ def build_lower_levels(scene):
     z_l3 = m_ft(G.Z_L3_FT)              #  0.00 m (  0'-0" / EL. +128'-6")
     mezz_slab_m = m_ft(1.0)             #  0.305 m (1'-0" concrete slab per Sheet 46-s15 Detail N2)
 
+    conc_mat = as_concrete(MATERIALS["concrete"])
+    plaster_conc = as_concrete(MATERIALS["white_plaster"])
+
     # =========================================================================
     # LAYER 2: LEVEL 1 DOWNHILL BASE (-8.69 m / -28'-6")
     # =========================================================================
@@ -108,13 +112,13 @@ def build_lower_levels(scene):
         get_level1_envelope_ft(),
         z_l1 - 0.38,
         z_l1,
-        MATERIALS["floor_lower"],
-        MATERIALS["concrete"],
+        as_concrete(MATERIALS["floor_lower"]),
+        conc_mat,
     )
 
     # 5-Sided Interior Reinforced-Concrete Retaining Wall along Well Columns
     pent = get_l1_inner_pentagon_ft()
-    add_wall_strip_ft(m1, pent, 1.25, z_l1, z_l2 - 0.28, MATERIALS["concrete"])
+    add_wall_strip_ft(m1, pent, 1.25, z_l1, z_l2 - 0.28, conc_mat)
     # South retaining wall closing Level 1 core along Grid 6
     add_wall_strip_ft(
         m1,
@@ -122,7 +126,7 @@ def build_lower_levels(scene):
         1.20,
         z_l1,
         z_l2 - 0.28,
-        MATERIALS["concrete"],
+        conc_mat,
     )
 
     # Level 1 Archival Radial Bookstacks (6 open shelves, canopy_style="slate_grey", end_slats="none")
@@ -165,8 +169,8 @@ def build_lower_levels(scene):
         offset_polyline_right_ft(get_level2_envelope_ft(), 0.52, closed=True),
         z_l2 - 0.30,
         z_l2,
-        MATERIALS["floor_oatmeal"],
-        MATERIALS["concrete"],
+        as_concrete(MATERIALS["floor_oatmeal"]),
+        conc_mat,
     )
 
     # South Retaining Wall of Level 2 along Grid 4 & West Bindery
@@ -183,10 +187,10 @@ def build_lower_levels(scene):
         1.10,
         z_l2,
         z_l3 - 0.25,
-        MATERIALS["concrete"],
+        conc_mat,
     )
 
-    # Curved White Plaster Wall at R = 31'-10" enclosing Level 2 Mechanical / Vertical File (`04-a4` & `Sheet 13`)
+    # Curved Structural Concrete Core Wall at R = 31'-10" enclosing Level 2 Mechanical / Vertical File (`04-a4` & `46-s15`)
     add_arc_band_ft(
         m2,
         G.WP3A,
@@ -196,7 +200,7 @@ def build_lower_levels(scene):
         161.0,
         z_l2,
         z_gal - mezz_slab_m,
-        MATERIALS["white_plaster"],
+        plaster_conc,
         steps=36,
     )
 
@@ -284,7 +288,7 @@ def build_lower_levels(scene):
         161.5,
         z_gal - mezz_slab_m,
         z_gal - 0.02,
-        MATERIALS["white_plaster"],
+        plaster_conc,
         steps=40,
     )
     add_arc_band_ft(
@@ -324,14 +328,14 @@ def build_lower_levels(scene):
         urx, ury = math.cos(rad_e), math.sin(rad_e)
         itx, ity = in_sign * (-ury), in_sign * urx  # points inward onto Mezzanine carpet
         cx0, cy0 = G.WP3A
-        # White plaster end backing wall under Level 3 stairwell edge
+        # Structural concrete end wall under Level 3 stairwell edge
         back_quad = [
             (cx0 + (G.R_GALLERY_RAIL - 0.90) * urx - 0.28 * itx, cy0 + (G.R_GALLERY_RAIL - 0.90) * ury - 0.28 * ity),
             (cx0 + 32.1 * urx - 0.28 * itx, cy0 + 32.1 * ury - 0.28 * ity),
             (cx0 + 32.1 * urx + 0.05 * itx, cy0 + 32.1 * ury + 0.05 * ity),
             (cx0 + (G.R_GALLERY_RAIL - 0.90) * urx + 0.05 * itx, cy0 + (G.R_GALLERY_RAIL - 0.90) * ury + 0.05 * ity),
         ]
-        add_extruded_polygon_ft(m2, back_quad, z_gal - mezz_slab_m, z_l3 - 0.28, MATERIALS["white_plaster"])
+        add_extruded_polygon_ft(m2, back_quad, z_gal - mezz_slab_m, z_l3 - 0.28, plaster_conc)
 
         # 3-shelf birch bookcase (R = 22.35..31.45 ft, L = 9.10 ft, D = 1.05 ft, H = 1.24 m) under plaster spandrel beam
         r_mid = 26.90
@@ -361,8 +365,8 @@ def build_lower_levels(scene):
     r_mezz_in = G.R_WELL_L2_WALL - 0.18   # 31.65 ft (Mezzanine-facing plaster wall)
     r_mezz_out = G.R_WELL_L2_WALL + 0.42  # 32.25 ft (Well-facing plaster wall overlooking Level 2 stacks)
 
-    # White plaster outer parapet wall + inner birch baseboard + raised birch book-stop curb
-    add_arc_band_ft(m2, G.WP3A, r_mezz_in, r_mezz_out, mezz_deg0, mezz_deg1, z_gal - mezz_slab_m, z_gal + 0.85, MATERIALS["white_plaster"], steps=38)
+    # Structural upturned concrete parapet wall + inner birch baseboard + raised birch book-stop curb
+    add_arc_band_ft(m2, G.WP3A, r_mezz_in, r_mezz_out, mezz_deg0, mezz_deg1, z_gal - mezz_slab_m, z_gal + 0.85, plaster_conc, steps=38)
     add_arc_band_ft(m2, G.WP3A, r_mezz_in - 0.10, r_mezz_in + 0.02, mezz_deg0, mezz_deg1, z_gal, z_gal + 0.09, birch_furn, steps=38)
     add_arc_band_ft(m2, G.WP3A, r_mezz_in - 0.05, r_mezz_out + 0.05, mezz_deg0, mezz_deg1, z_gal + 0.85, z_gal + 0.95, MATERIALS["birch_wood"], steps=38)
 
@@ -408,6 +412,7 @@ def build_lower_levels(scene):
             n_steps=10,
             tread_attrs=MATERIALS["carpet_blue"],
             wall_side=w_side,
+            concrete_struct=True,
         )
 
         p_mezz_out = polar_pt(G.WP3A, 32.4, ang_dn)
@@ -421,6 +426,7 @@ def build_lower_levels(scene):
             z_bot_m=z_l2,
             n_steps=16,
             tread_attrs=MATERIALS["carpet_blue"],
+            concrete_struct=True,
         )
 
     # SE Stair #2 tucked inside Axis E diagonal brick wall (connecting Level 3 0'-0" -> Level 2 -14'-0")
@@ -432,7 +438,7 @@ def build_lower_levels(scene):
     c_dist = 4.05  # 1.12 ft wall + 0.15 ft clearance + 2.78 ft half-width = 4.05 ft
     st2_top = (G.PT_LOUNGE_JUNC[0] + 15.0 * uxe_w + c_dist * nxe_w, G.PT_LOUNGE_JUNC[1] + 15.0 * uye_w + c_dist * nye_w)
     st2_bot = (G.PT_LOUNGE_JUNC[0] + 34.5 * uxe_w + c_dist * nxe_w, G.PT_LOUNGE_JUNC[1] + 34.5 * uye_w + c_dist * nye_w)
-    add_stepped_stair_ft(m2, st2_top, st2_bot, width_ft=5.8, z_top_m=z_l3, z_bot_m=z_l2, n_steps=22, wall_side=-1)
+    add_stepped_stair_ft(m2, st2_top, st2_bot, width_ft=5.8, z_top_m=z_l3, z_bot_m=z_l2, n_steps=22, wall_side=-1, concrete_struct=True)
 
     return grp_l1, grp_l2
 
