@@ -61,9 +61,9 @@ Everything below is for anyone updating the model or the website.
    - Seven sheets are registered: 03, 04, 05, 06, 07, 13 and S4.
    - The script writes vector overlays (`docs/overlays/sheet_*.svg`) and proof images (`docs/overlays/proofs/`).
 2. **Building the 3D model**: [`ingetrazo_3d/`](ingetrazo_3d/)
-   - Uses IngeTrazo (phi-WORKS) to build a watertight model with 166,645 faces (`0` unpaired edges). The outputs are `mount_angel_library.igz`, `.obj` and `.mtl`, plus the web scene `docs/overlays/library_3d_scene.json`.
+   - Uses IngeTrazo (phi-WORKS) to build a watertight 10-layer model with 181,196 faces (`0` unpaired edges). The outputs are `mount_angel_library.igz`, `.obj` and `.mtl`, plus the componentized web scene manifest `docs/overlays/library_3d_scene.json` referencing reusable furniture prototypes (`docs/overlays/scene/components/*.json`) and per-layer JSONs (`docs/overlays/scene/layers/*.json`).
 3. **The website**: [`docs/`](docs/)
-   - Plain HTML, CSS and WebGL2, with no build step. GitHub Pages serves it directly from `docs/`.
+   - Plain HTML, CSS and WebGL2, with no build step (`library-3d.html`, `library-3d.css`, `library-3d.js`). GitHub Pages serves it directly from `docs/`.
    - All pages share the header in `suite.css`.
 
 ### Model components (`ingetrazo_3d/components/`)
@@ -71,7 +71,8 @@ Everything below is for anyone updating the model or the website.
 | Module | Builds |
 |---|---|
 | `regulating_lines.py` | Working points (`WP #3`, `WP #2`, `WP #3A`), structural rays A–E and the regulating arcs |
-| `site_terrain.py` | The hillside bluff, plaza and Abbey campus context (church and bell tower, monastery, Aquinas Hall, seminary) |
+| `site_terrain.py` | Surveyed Abbey hilltop bluff, formal Quad walkways, mitered Abbey Drive, and all 8 surrounding campus buildings |
+| `campus_trees.py` | 52 surveyed monumental hilltop trees (Cedars of Lebanon, 100-ft Giant Sequoias, Quad Copper Beeches & Oaks) |
 | `lower_levels.py` | Levels 1 (`-28'-6"`), Level 2 (`-14'-0"`), the `-5'-4"` Mezzanine reference gallery (3-shelf bookwalls), retaining wall, and `10R+16R` flanking stairs |
 | `level3_reading_room.py` | The Level 3 reading room (`0'-0"`), reading well rim, reading counter and lamps, control desk, 3-riser Lobby steps (`+1'-4"`), and periodical lounge |
 | `aalto_bookcases.py` | Parametric Aalto bookcases for every level (3-shelf Mezzanine & stair counters, 6-shelf full-height stacks) |

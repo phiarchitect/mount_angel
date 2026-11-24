@@ -24,7 +24,7 @@ import threading
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from capture_studio_renders import SCENE_JSON, find_browser_bin
+from capture_studio_renders import expected_scene_urls, find_browser_bin
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DOCS_DIR = REPO_ROOT / "docs"
@@ -95,6 +95,7 @@ def main() -> int:
         return 1
 
     shots = [s for s in FURNITURE_SHOTS if not args.only or s["id"] in args.only]
+    required_urls = expected_scene_urls(DOCS_DIR)
     served: list[str] = []
 
     class TrackingHandler(http.server.SimpleHTTPRequestHandler):
@@ -138,7 +139,7 @@ def main() -> int:
                     f"--screenshot={png}", url,
                 ]
                 subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
-                if png.is_file() and SCENE_JSON in served:
+                if png.is_file() and required_urls.issubset(served):
                     ok = True
                     break
                 print(f"  retry {s['id']} (attempt {attempt} failed)")

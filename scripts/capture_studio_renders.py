@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import functools
 import http.server
+import json
 import shutil
 import socketserver
 import subprocess
@@ -32,6 +33,20 @@ BUILD_RENDERS = REPO_ROOT / "ingetrazo_3d" / "renders"
 SCENE_JSON = "/overlays/library_3d_scene.json"
 
 W, H = 2560, 1440
+
+
+def expected_scene_urls(docs_dir: Path = DOCS_DIR) -> set[str]:
+    """Return all overlay JSON URLs required for a complete scene load."""
+    urls = {SCENE_JSON}
+    manifest_path = docs_dir / SCENE_JSON.lstrip("/")
+    if manifest_path.is_file():
+        data = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if data.get("format") == "mount-angel-scene-v2":
+            for comp in data.get("components", []):
+                urls.add(f"/overlays/{comp['file']}")
+            for lyr in data.get("layers", []):
+                urls.add(f"/overlays/{lyr['file']}")
+    return urls
 
 SHOTS = [
     ("hillside_hero", "studio_01_hillside_hero.png"),
@@ -65,7 +80,7 @@ def find_browser_bin() -> str | None:
         or shutil.which("chromium-browser")
     )
     if not browser_bin:
-        pw_root = Path.home() / ".cache" / "ms-playwright"
+        pw_root = Path.home() / ".cache/ms-playwright"
         if pw_root.is_dir():
             for candidate in sorted(pw_root.glob("chromium-*/chrome-linux*/chrome"), reverse=True):
                 return str(candidate)
@@ -93,6 +108,7 @@ def main() -> int:
 
     DOCS_RENDERS.mkdir(parents=True, exist_ok=True)
     BUILD_RENDERS.mkdir(parents=True, exist_ok=True)
+    required_urls = expected_scene_urls(DOCS_DIR)
 
     served: list[str] = []
 
@@ -140,7 +156,7 @@ def main() -> int:
                     url,
                 ]
                 subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
-                if out_file.is_file() and SCENE_JSON in served:
+                if out_file.is_file() and required_urls.issubset(served):
                     ok = True
                     break
                 print(f"  retry {fname} (attempt {attempt} failed, budget {budget} ms)")

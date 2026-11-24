@@ -14,7 +14,7 @@ Project-specific conventions for the 7-segment architectural fly-through film of
 
 ---
 
-## 2. WebGL2 Engine & Choreography (`docs/library-3d.html` + `library_choreography.js`)
+## 2. WebGL2 Engine & Choreography (`docs/library-3d.{html,css,js}` + `library_choreography.js`)
 
 - **Panoramic 3D Cascade & Mt. Hood Horizon (`FS_SKY`)**:
   - Calibrated to the Abbey's surveyed `28.5°` NNE Reference-North grid rotation (`45.0692° N, 122.7972° W`):
@@ -23,7 +23,7 @@ Project-specific conventions for the 7-segment architectural fly-through film of
     - **Mt. Adams** (`161.8 km`, `38.4° NE`) -> `XY = 80.1°`.
     - **Mt. St. Helens** (`133.3 km`, `20.3° NNE`) -> `XY = 98.2°`.
 - **Deterministic Bridge (`window.__mountAngelStudio`)**:
-  - `videos/library_choreography.js` polls `window.__mountAngelStudio.isLoaded()` during `__studioSetup` until all 9 layers (`0_Regulating_Grid` through `8_PreConstruction_Hill`) of `overlays/library_3d_scene.json` are uploaded to WebGL2.
+  - `videos/library_choreography.js` polls `window.__mountAngelStudio.isLoaded()` during `__studioSetup` until all 7 reusable furniture components and all 10 layers (`0_Regulating_Grid` through `9_Campus_Trees`) referenced by `overlays/library_3d_scene.json` (`overlays/scene/`) are uploaded to WebGL2.
   - Keyframes in `<seg>/motion.json` (`keyframes` array) interpolate `tx, ty, tz, yaw, pitch, dist, fov, doy, hour, secD, buildClipZ, cladD, cladDeg, regAlpha, regWp, regSweepDeg, regArc, regDrape` via monotonic cubic Hermite splines (`PCHIP`), plus stepped state keys `secMode`, `secFlip`, `secRadialDeg`, `pocheTone`, `caster`, `heliodon`, `ortho`, `hideLayers`, `bareHill`, `structureOnly`, `cladMode`, `cladFlip`, and `regActive`.
 
 ---

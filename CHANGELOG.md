@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.0] - 2026-11-24
+
+### Added
+- **Reusable Furniture, Lighting & Stack Component Library (`docs/overlays/scene/components/*.json`)**: extracted 7 canonical pure-JSON prototypes (`artek_stool_60`, `artek_chair_69`, `aalto_parapet_lamp`, `aalto_linear_parapet_lamp`, `counter_wall_bracket`, `unit_box`, `unit_box_slate_top`, `308 KB` total) via `mark_web_instance()` and `build_component_prototypes()` in `ingetrazo_3d/components/primitives.py` and `aalto_bookcases.py`, driving **13,822 hardware-instanced placements** while keeping native `.igz`/`.obj` CAD geometry 100% intact.
+- **Native WebGL2 Hardware Instancing (`gl.drawArraysInstanced`)** across all 4 rendering passes (`VS_SHADOW` 4096px solar shadows, `VS_SOLID` lit shading, `VS_STENCIL` section poché caps, and `VS_EDGE` architectural ink lines).
+- **Standalone Viewer Assets**: extracted inline CSS and WebGL2 engine out of `docs/library-3d.html` (now `170` lines of clean HTML) into **`docs/library-3d.css`** and **`docs/library-3d.js`**.
+
+### Changed
+- **Pure-JSON Componentized Scene Architecture (`51.59 MB` → `15.01 MB`, 71% smaller)**: replaced the monolithic `docs/overlays/library_3d_scene.json` with a `3.4 KB` index manifest (`format: "mount-angel-scene-v2"`) referencing the 7 furniture component JSONs and 10 modular per-layer JSON files under `docs/overlays/scene/layers/` (largest file `3.53 MB`; `2_Level_1_Base` reduced 40× from `12.8 MB` → `323 KB`), eliminating GitHub's 50 MB large-file warning and enabling two-wave progressive parallel loading.
+- **Headless Capture & Docs Sync**: updated `scripts/capture_studio_renders.py` and `scripts/capture_furniture_renders.py` (`expected_scene_urls()`) to verify all manifest/component/layer URLs load before accepting screenshots, and synced `README.md`, `videos/STUDIO.md`, and `videos/library_choreography.js`.
+
 ## [0.8.0] - 2026-11-23
 
 ### Added

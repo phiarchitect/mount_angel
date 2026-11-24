@@ -119,7 +119,7 @@
   window.__studioSetup = async (width, height, duration, fps) => {
     hideAllMenus();
 
-    // Poll until 39 MB library_3d_scene.json finishes uploading all 8 GPU layers
+    // Poll until componentized library_3d_scene.json manifest, components, and all layers finish uploading to GPU
     const deadline = Date.now() + 45000;
     while (
       !(window.__mountAngelStudio && window.__mountAngelStudio.isLoaded()) &&

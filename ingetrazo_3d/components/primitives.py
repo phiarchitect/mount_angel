@@ -99,9 +99,54 @@ def create_scene_group(scene, name: str):
     from core.group import Group
     from core.mesh import Mesh
 
-    grp = Group(name=name, mesh=Mesh())
+    mesh = Mesh()
+    mesh._web_instances = {}
+    grp = Group(name=name, mesh=mesh)
     scene.groups.append(grp)
     return grp
+
+
+def mark_web_instance(
+    mesh,
+    start_face_idx: int,
+    comp_id: str,
+    tx_m: float,
+    ty_m: float,
+    tz_m: float,
+    rot_rad: float = 0.0,
+    sx: float = 1.0,
+    sy: float = 1.0,
+    sz: float = 1.0,
+    color_rgb: tuple[float, float, float] | None = None,
+) -> None:
+    """
+    Tag baked faces in `mesh.faces[start_face_idx:]` as `web_instanced=True` so
+    native `.igz`/`.obj` exports retain full world-space CAD geometry while the
+    componentized WebGL2 JSON exporter emits lightweight instanced transforms.
+    """
+    for f in mesh.faces[start_face_idx:]:
+        f.attrs["web_instanced"] = True
+    reg = getattr(mesh, "_web_instances", None)
+    if reg is None:
+        reg = {}
+        mesh._web_instances = reg
+    col_key = (
+        (round(float(color_rgb[0]), 3), round(float(color_rgb[1]), 3), round(float(color_rgb[2]), 3))
+        if color_rgb is not None
+        else None
+    )
+    reg.setdefault(comp_id, []).append(
+        (
+            round(float(tx_m), 4),
+            round(float(ty_m), 4),
+            round(float(tz_m), 4),
+            round(float(rot_rad), 5),
+            round(float(sx), 4),
+            round(float(sy), 4),
+            round(float(sz), 4),
+            col_key,
+        )
+    )
 
 
 def add_face(mesh, pts, attrs: dict):
@@ -1022,6 +1067,8 @@ def add_aalto_parapet_lamp(
     deg: float,
     z_floor_m: float,
     inward_sign: int = 1,
+    *,
+    _baking_proto: bool = False,
 ):
     """
     Alvar Aalto's custom parapet-wall-mounted workbench reading lamp (`Angel-090508`, `IMG_5143`, `mezzaninestairsweb`):
@@ -1031,6 +1078,7 @@ def add_aalto_parapet_lamp(
       - Smooth oblate rounded white spun-aluminum mushroom dome + stepped cylindrical anti-glare collar
         + recessed warm glowing diffuser + delicate vertical pull-switch stem (leaving the desk 100% clear!).
     """
+    start_idx = len(mesh.faces)
     rad = math.radians(deg)
     urx, ury = math.cos(rad), math.sin(rad)
     ix, iy = inward_sign * urx, inward_sign * ury
@@ -1097,18 +1145,25 @@ def add_aalto_parapet_lamp(
     sw_y = oy + (s_dome - 0.045) * iy
     add_polytube_m(mesh, [(sw_x, sw_y, z_floor_m + 1.215), (sw_x, sw_y, z_floor_m + 1.287)], 0.004, brass_mat, sides=6)
 
+    if not _baking_proto:
+        arm_deg = deg if inward_sign > 0 else (deg + 180.0)
+        mark_web_instance(mesh, start_idx, "aalto_parapet_lamp", ox, oy, z_floor_m, math.radians(arm_deg))
+
 
 def add_aalto_linear_parapet_lamp(
     mesh,
     mount_pt_ft: tuple[float, float],
     arm_dir_deg: float,
     z_floor_m: float,
+    *,
+    _baking_proto: bool = False,
 ):
     """
     Alvar Aalto's custom parapet-wall-mounted reading lamp along straight radial stairwell bookcases
     (`mezzaninewithdictionaryweb2` & `Angel-090508`), bolted to `mount_pt_ft` on the stairwell face
     and angling across the birch cap along `arm_dir_deg` over the counter-height bookcase.
     """
+    start_idx = len(mesh.faces)
     rad = math.radians(arm_dir_deg)
     ix, iy = math.cos(rad), math.sin(rad)
     ox, oy = xy_m(mount_pt_ft)
@@ -1168,6 +1223,9 @@ def add_aalto_linear_parapet_lamp(
     sw_y = oy + (s_dome - 0.045) * iy
     add_polytube_m(mesh, [(sw_x, sw_y, z_floor_m + 1.215), (sw_x, sw_y, z_floor_m + 1.287)], 0.004, brass_mat, sides=6)
 
+    if not _baking_proto:
+        mark_web_instance(mesh, start_idx, "aalto_linear_parapet_lamp", ox, oy, z_floor_m, math.radians(arm_dir_deg))
+
 
 def add_counter_wall_bracket(
     mesh,
@@ -1176,8 +1234,11 @@ def add_counter_wall_bracket(
     deg: float,
     z_floor_m: float,
     seat_sign: int = 1,
+    *,
+    _baking_proto: bool = False,
 ):
     """White painted steel wall T-bracket supporting the cantilevered reading counters (`IMG_5143`, `Angel-090508`)."""
+    start_idx = len(mesh.faces)
     rad = math.radians(deg)
     urx, ury = math.cos(rad), math.sin(rad)
     sx, sy = seat_sign * urx, seat_sign * ury
@@ -1206,9 +1267,21 @@ def add_counter_wall_bracket(
             sides=6,
         )
 
+    if not _baking_proto:
+        dir_deg = deg if seat_sign > 0 else (deg + 180.0)
+        mark_web_instance(mesh, start_idx, "counter_wall_bracket", ox, oy, z_floor_m, math.radians(dir_deg))
 
-def add_artek_stool_60(mesh, pt_ft: tuple[float, float], z_floor_m: float, rot_deg: float = 0.0):
+
+def add_artek_stool_60(
+    mesh,
+    pt_ft: tuple[float, float],
+    z_floor_m: float,
+    rot_deg: float = 0.0,
+    *,
+    _baking_proto: bool = False,
+):
     """Alvar Aalto Artek Stool 60: 3-legged bent-birch backless reading stool (`Angel-090508` Level 3 counter)."""
+    start_idx = len(mesh.faces)
     birch = {**MATERIALS["birch_wood"], "furniture": True}
     lino = {**MATERIALS["black_linoleum"], "furniture": True}
 
@@ -1228,8 +1301,18 @@ def add_artek_stool_60(mesh, pt_ft: tuple[float, float], z_floor_m: float, rot_d
         ]
         add_polytube_m(mesh, leg_pts, 0.015, birch, sides=6)
 
+    if not _baking_proto:
+        mark_web_instance(mesh, start_idx, "artek_stool_60", cx, cy, z_floor_m, math.radians(rot_deg))
 
-def add_artek_chair_69(mesh, pt_ft: tuple[float, float], facing_deg: float, z_floor_m: float):
+
+def add_artek_chair_69(
+    mesh,
+    pt_ft: tuple[float, float],
+    facing_deg: float,
+    z_floor_m: float,
+    *,
+    _baking_proto: bool = False,
+):
     """
     Alvar Aalto Artek 69 reading chair (`IMG_5143` Mezzanine outer-arc workstations):
       - Wide cushioned matte-black circular seat over birch seat ring
@@ -1237,6 +1320,7 @@ def add_artek_chair_69(mesh, pt_ft: tuple[float, float], facing_deg: float, z_fl
       - 2 rear splayed birch legs rising continuously into side-bolted backrest uprights
       - Curved steam-bent birch backrest rail hugging the reader's back.
     """
+    start_idx = len(mesh.faces)
     birch = {**MATERIALS["birch_wood"], "furniture": True}
     cushion = {**MATERIALS["black_linoleum"], "furniture": True}
 
@@ -1280,4 +1364,64 @@ def add_artek_chair_69(mesh, pt_ft: tuple[float, float], facing_deg: float, z_fl
         birch,
         steps=7,
     )
+
+    if not _baking_proto:
+        mark_web_instance(mesh, start_idx, "artek_chair_69", cx, cy, z_floor_m, math.radians(facing_deg))
+
+
+def build_component_prototypes() -> dict[str, object]:
+    """
+    Build canonical origin-space IngeTrazo Mesh prototypes for every instanced
+    furniture, lighting, and modular bookcase/book component in the WebGL2 scene.
+    """
+    from core.mesh import Mesh
+
+    protos: dict[str, object] = {}
+
+    # 1. Artek Stool 60
+    m = Mesh()
+    add_artek_stool_60(m, (0.0, 0.0), 0.0, rot_deg=0.0, _baking_proto=True)
+    protos["artek_stool_60"] = m
+
+    # 2. Artek Chair 69
+    m = Mesh()
+    add_artek_chair_69(m, (0.0, 0.0), facing_deg=0.0, z_floor_m=0.0, _baking_proto=True)
+    protos["artek_chair_69"] = m
+
+    # 3. Alvar Aalto Curved-Parapet Mushroom Lamp
+    m = Mesh()
+    add_aalto_parapet_lamp(m, (0.0, 0.0), 0.0, 0.0, 0.0, inward_sign=1, _baking_proto=True)
+    protos["aalto_parapet_lamp"] = m
+
+    # 4. Alvar Aalto Linear Stairwell-Parapet Lamp
+    m = Mesh()
+    add_aalto_linear_parapet_lamp(m, (0.0, 0.0), 0.0, 0.0, _baking_proto=True)
+    protos["aalto_linear_parapet_lamp"] = m
+
+    # 5. White Painted Steel Reading-Counter Wall Bracket
+    m = Mesh()
+    add_counter_wall_bracket(m, (0.0, 0.0), 0.0, 0.0, 0.0, seat_sign=1, _baking_proto=True)
+    protos["counter_wall_bracket"] = m
+
+    # 6. Unit Architectural Box [-0.5, +0.5]^3 m (bookcase boards, slats, book clusters)
+    half_ft = 0.5 / FT_TO_M
+    unit_sq = [(-half_ft, -half_ft), (half_ft, -half_ft), (half_ft, half_ft), (-half_ft, half_ft)]
+    m = Mesh()
+    add_extruded_polygon_ft(m, unit_sq, -0.5, 0.5, {"color": (1.0, 1.0, 1.0), "furniture": True})
+    protos["unit_box"] = m
+
+    # 7. Unit Slate-Top Bookcase Canopy [-0.5, +0.5]^3 m (slate-grey laminate top, birch edge/underside)
+    m = Mesh()
+    add_extruded_polygon_ft(
+        m,
+        unit_sq,
+        -0.5,
+        0.5,
+        {**MATERIALS["stack_canopy_grey"], "furniture": True},
+        {**MATERIALS["birch_wood"], "furniture": True},
+        {**MATERIALS["birch_wood"], "furniture": True},
+    )
+    protos["unit_box_slate_top"] = m
+
+    return protos
 

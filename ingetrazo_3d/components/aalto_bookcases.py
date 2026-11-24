@@ -27,8 +27,10 @@ from __future__ import annotations
 import math
 
 from .primitives import (
+    FT_TO_M,
     MATERIALS,
     add_extruded_polygon_ft,
+    mark_web_instance,
 )
 
 # -----------------------------------------------------------------------------
@@ -107,7 +109,34 @@ def _add_box_local_ft(
     p2 = (cx + s1 * ux + t1 * nx, cy + s1 * uy + t1 * ny)
     p3 = (cx + s0 * ux + t1 * nx, cy + s0 * uy + t1 * ny)
 
+    start_idx = len(mesh.faces)
     add_extruded_polygon_ft(mesh, [p0, p1, p2, p3], z0_m, z1_m, top_attrs, side_attrs, bottom_attrs)
+
+    sx_m = (s1 - s0) * FT_TO_M
+    sy_m = (t1 - t0) * FT_TO_M
+    sz_m = z1_m - z0_m
+    if sx_m > 1e-5 and sy_m > 1e-5 and sz_m > 1e-5:
+        sm = 0.5 * (s0 + s1)
+        tm = 0.5 * (t0 + t1)
+        tx_m = (cx + sm * ux + tm * nx) * FT_TO_M
+        ty_m = (cy + sm * uy + tm * ny) * FT_TO_M
+        tz_m = 0.5 * (z0_m + z1_m)
+        rot_rad = math.atan2(uy, ux)
+        has_slate_top = (
+            side_attrs is not None
+            and top_attrs.get("color") != side_attrs.get("color")
+        )
+        if has_slate_top:
+            mark_web_instance(
+                mesh, start_idx, "unit_box_slate_top",
+                tx_m, ty_m, tz_m, rot_rad, sx_m, sy_m, sz_m,
+            )
+        else:
+            mark_web_instance(
+                mesh, start_idx, "unit_box",
+                tx_m, ty_m, tz_m, rot_rad, sx_m, sy_m, sz_m,
+                color_rgb=top_attrs.get("color"),
+            )
 
 
 def add_aalto_bookcase_ft(
